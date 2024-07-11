@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://example.com/css/%E9%A1%B5%E9%9D%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%87%8F%E5%B0%91%E5%9B%9E%E6%B5%81%E7%9A%8410%E7%A7%8D%E6%96%B9%E6%B3%95/</loc>
+    
+    <lastmod>2024-07-11</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://example.com/ai/AI%E5%85%A5%E9%97%A8%E4%B9%8B%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/</loc>
     
     <lastmod>2024-07-11</lastmod>
@@ -372,15 +381,6 @@
   
   <url>
     <loc>http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/</loc>
-    
-    <lastmod>2024-07-11</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/css/%E9%A1%B5%E9%9D%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%87%8F%E5%B0%91%E5%9B%9E%E6%B5%81%E7%9A%8410%E7%A7%8D%E6%96%B9%E6%B3%95/</loc>
     
     <lastmod>2024-07-11</lastmod>
     
