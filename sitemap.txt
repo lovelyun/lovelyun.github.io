@@ -1,8 +1,3 @@
-http://example.com/js/Promise%E6%80%BB%E7%BB%93/
-http://example.com/%E5%8A%A8%E6%95%88/SVG%20Path%E5%AE%9E%E7%8E%B0tooltips/
-http://example.com/%E5%8A%A8%E6%95%88/SVG%E7%BA%BF%E6%9D%A1%E5%8A%A8%E7%94%BB/
-http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/Shutterstock%20Editor%E5%85%B3%E4%BA%8ECanvas%E5%92%8CWebGL%E5%9B%BE%E7%89%87%E6%BB%A4%E9%95%9C%E7%9A%84%E5%AE%9E%E7%8E%B0/
-http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/WebGL%E5%8F%8A%E5%85%B6%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8/
 http://example.com/%E5%8A%A8%E6%95%88/Web%E5%8A%A8%E7%94%BB%E4%B9%8BAE-Bodymovin/
 http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/canvas%E5%8F%98%E6%8D%A2%E7%9F%A9%E9%98%B5/
 http://example.com/ai/conda%E5%BB%BA%E7%AB%8B%E5%8F%8A%E7%AE%A1%E7%90%86%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/
@@ -41,6 +36,11 @@ http://example.com/js/Debouncing%E5%92%8CThrottling/
 http://example.com/%E5%8A%A8%E6%95%88/FLIP%E4%BD%A0%E7%9A%84%E5%8A%A8%E7%94%BB/
 http://example.com/js/JavaScript%E5%BC%95%E6%93%8E%E5%9F%BA%E7%A1%80%E4%B9%8B%E5%86%85%E8%81%94%E7%BC%93%E5%AD%98/
 http://example.com/js/JavaScript%E5%BC%95%E6%93%8E%E5%9F%BA%E7%A1%80%E4%B9%8B%E5%BD%A2%E7%8A%B6/
+http://example.com/js/Promise%E6%80%BB%E7%BB%93/
+http://example.com/%E5%8A%A8%E6%95%88/SVG%20Path%E5%AE%9E%E7%8E%B0tooltips/
+http://example.com/%E5%8A%A8%E6%95%88/SVG%E7%BA%BF%E6%9D%A1%E5%8A%A8%E7%94%BB/
+http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/Shutterstock%20Editor%E5%85%B3%E4%BA%8ECanvas%E5%92%8CWebGL%E5%9B%BE%E7%89%87%E6%BB%A4%E9%95%9C%E7%9A%84%E5%AE%9E%E7%8E%B0/
+http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/WebGL%E5%8F%8A%E5%85%B6%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8/
 http://example.com/
 http://example.com/categories/ai/
 http://example.com/categories/js/
