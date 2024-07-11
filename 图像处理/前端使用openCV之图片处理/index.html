@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言前文我们讲了openCV如何在前端应用，本文我们跟着官方文档的图片处理部分，看看能做些什么。 我们继续在上文的基础上编码，这里简单的回顾一下。 页面中有个上传图片的按钮： 1&lt;input type&#x3D;&quot;file&quot; id&#x3D;&quot;fileInput&quot;&#x2F;&gt;  点击按钮上传图片，触发input的onchange事件： 12345let imgElement">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端使用openCV之图片处理">
+<meta property="og:url" content="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E4%B9%8B%E5%9B%BE%E7%89%87%E5%A4%84%E7%90%86/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言前文我们讲了openCV如何在前端应用，本文我们跟着官方文档的图片处理部分，看看能做些什么。 我们继续在上文的基础上编码，这里简单的回顾一下。 页面中有个上传图片的按钮： 1&lt;input type&#x3D;&quot;file&quot; id&#x3D;&quot;fileInput&quot;&#x2F;&gt;  点击按钮上传图片，触发input的onchange事件： 12345let imgElement">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/2021/cv_color_gray.png">
+<meta property="og:image" content="http://example.com/images/2021/cv_color_inRange.png">
+<meta property="og:image" content="http://example.com/images/2021/resize.png">
+<meta property="og:image" content="http://example.com/images/2021/translate.png">
+<meta property="og:image" content="http://example.com/images/2021/rotate.png">
+<meta property="og:image" content="http://example.com/images/2021/transform.png">
+<meta property="og:image" content="http://example.com/images/2021/threshold.png">
+<meta property="og:image" content="http://example.com/images/2021/filter_blur.png">
+<meta property="og:image" content="http://example.com/images/2021/filter_gaussianBlur.png">
+<meta property="og:image" content="http://example.com/images/2021/filter_medianBlur.png">
+<meta property="og:image" content="http://example.com/images/2021/filter_bilateralBlur.png">
+<meta property="og:image" content="http://example.com/images/2021/erosion.png">
+<meta property="og:image" content="http://example.com/images/2021/dilate.png">
+<meta property="og:image" content="http://example.com/images/2021/open.png">
+<meta property="og:image" content="http://example.com/images/2021/close.png">
+<meta property="og:image" content="http://example.com/images/2021/gradient.png">
+<meta property="og:image" content="http://example.com/images/2021/Sobel.png">
+<meta property="og:image" content="http://example.com/images/2021/Scharr.png">
+<meta property="og:image" content="http://example.com/images/2021/Laplacian.png">
+<meta property="og:image" content="http://example.com/images/2021/Canny_edge.png">
+<meta property="og:image" content="http://example.com/images/2021/down_sample.png">
+<meta property="og:image" content="http://example.com/images/2021/Fourier.png">
+<meta property="article:published_time" content="2021-10-12T15:07:08.000Z">
+<meta property="article:modified_time" content="2024-07-11T02:49:12.957Z">
+<meta property="article:author" content="Lovelyun">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/2021/cv_color_gray.png">
+
+
+<link rel="canonical" href="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E4%B9%8B%E5%9B%BE%E7%89%87%E5%A4%84%E7%90%86/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E4%B9%8B%E5%9B%BE%E7%89%87%E5%A4%84%E7%90%86/","path":"图像处理/前端使用openCV之图片处理/","title":"前端使用openCV之图片处理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>前端使用openCV之图片处理 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E5%8F%98%E9%A2%9C%E8%89%B2"><span class="nav-number">2.</span> <span class="nav-text">改变颜色</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#inRange"><span class="nav-number">2.1.</span> <span class="nav-text">inRange</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%A0%E4%BD%95%E5%8F%98%E6%8D%A2"><span class="nav-number">3.</span> <span class="nav-text">几何变换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%A9%E6%94%BE"><span class="nav-number">3.1.</span> <span class="nav-text">缩放</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B3%E7%A7%BB"><span class="nav-number">3.2.</span> <span class="nav-text">平移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC"><span class="nav-number">3.3.</span> <span class="nav-text">旋转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%BF%E5%B0%84%E5%8F%98%E6%8D%A2"><span class="nav-number">3.4.</span> <span class="nav-text">仿射变换</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E9%98%88%E5%80%BC%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text">图像阈值化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E6%A8%A1%E7%B3%8A"><span class="nav-number">5.</span> <span class="nav-text">图像模糊</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%B7%E7%A7%AF%E6%BB%A4%E6%B3%A2"><span class="nav-number">5.1.</span> <span class="nav-text">卷积滤波</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%87%E5%80%BC%E6%A8%A1%E7%B3%8A"><span class="nav-number">5.2.</span> <span class="nav-text">均值模糊</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E6%96%AF%E6%A8%A1%E7%B3%8A"><span class="nav-number">5.3.</span> <span class="nav-text">高斯模糊</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E5%80%BC%E6%A8%A1%E7%B3%8A"><span class="nav-number">5.4.</span> <span class="nav-text">中值模糊</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8C%E8%BE%B9%E6%BB%A4%E6%B3%A2"><span class="nav-number">5.5.</span> <span class="nav-text">双边滤波</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%A2%E6%80%81%E5%8F%98%E6%8D%A2"><span class="nav-number">6.</span> <span class="nav-text">形态变换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%B5%E8%9A%80"><span class="nav-number">6.1.</span> <span class="nav-text">侵蚀</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%86%A8%E8%83%80"><span class="nav-number">6.2.</span> <span class="nav-text">膨胀</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%93%E5%BC%80"><span class="nav-number">6.3.</span> <span class="nav-text">打开</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%97%AD"><span class="nav-number">6.4.</span> <span class="nav-text">关闭</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A2%AF%E5%BA%A6"><span class="nav-number">6.5.</span> <span class="nav-text">梯度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E6%A2%AF%E5%BA%A6"><span class="nav-number">7.</span> <span class="nav-text">图像梯度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Canny%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B"><span class="nav-number">8.</span> <span class="nav-text">Canny边缘检测</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E9%87%91%E5%AD%97%E5%A1%94"><span class="nav-number">8.1.</span> <span class="nav-text">图像金字塔</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%8D%E4%BD%8E%E5%88%86%E8%BE%A8%E7%8E%87"><span class="nav-number">8.2.</span> <span class="nav-text">降低分辨率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E9%AB%98%E5%88%86%E8%BE%A8%E7%8E%87"><span class="nav-number">8.3.</span> <span class="nav-text">提高分辨率</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2"><span class="nav-number">9.</span> <span class="nav-text">傅里叶变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">10.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lovelyun</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E4%B9%8B%E5%9B%BE%E7%89%87%E5%A4%84%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lovelyun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="前端使用openCV之图片处理 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          前端使用openCV之图片处理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-10-12 15:07:08" itemprop="dateCreated datePublished" datetime="2021-10-12T15:07:08+00:00">2021-10-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-07-11 02:49:12" itemprop="dateModified" datetime="2024-07-11T02:49:12+00:00">2024-07-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">图像处理</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a target="_blank" rel="noopener" href="https://lovelyun.github.io/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/openCV/">前文</a>我们讲了openCV如何在前端应用，本文我们跟着官方文档的<a target="_blank" rel="noopener" href="https://docs.opencv.org/4.5.4/d2/df0/tutorial_js_table_of_contents_imgproc.html">图片处理</a>部分，看看能做些什么。</p>
+<p>我们继续在上文的基础上编码，这里简单的回顾一下。</p>
+<p>页面中有个上传图片的按钮：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">id</span>=<span class="string">&quot;fileInput&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>点击按钮上传图片，触发input的onchange事件：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> imgElement = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> inputElement = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;fileInput&#x27;</span>);</span><br><span class="line">inputElement.<span class="property">onchange</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">  imgElement.<span class="property">src</span> = <span class="variable constant_">URL</span>.<span class="title function_">createObjectURL</span>(event.<span class="property">target</span>.<span class="property">files</span>[<span class="number">0</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上传事件中我们设置页面中img标签的图片地址：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">id</span>=<span class="string">&quot;imageUpload&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;No Image&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>由于我们给img绑定了onload事件，设置图片地址后就会触发：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">imgElement.<span class="property">onload</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="comment">// 图片处理程序</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>我们的图片处理程序放在onload中，所以上传图片后就自动处理，<br>然后页面中有个canvas:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">canvas</span> <span class="attr">id</span>=<span class="string">&quot;canvasOutput&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">canvas</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们通过imshow把处理结果显示到canvas中：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br></pre></td></tr></table></figure>
+
+<p>这样我们修改onload中的图片处理程序，就可以在上传图片后看到自动处理后的图片，下面我们来看一些例子。</p>
+<h2 id="改变颜色"><a href="#改变颜色" class="headerlink" title="改变颜色"></a>改变颜色</h2><p>转换图片的颜色通道，比如RGB↔Gray，RGB↔HSV等等<br>cvtColor<br>cv.cvtColor (src, dst, code, dstCn &#x3D; 0)改变图片的颜色通道。<br>其中code参数是颜色转换码，在OpenCV中有150多种可以使用，可以在cv.ColorConversionCodes中查询，比如COLOR_BGR2BGRA、COLOR_BGR2HSV、COLOR_BGR2HLS、COLOR_BayerBG2BGR_EA等等。<br>现在我们看看应用最广泛的RGB↔Gray：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;canvasInput&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line">cv.<span class="title function_">cvtColor</span>(src, dst, cv.<span class="property">COLOR_RGBA2GRAY</span>, <span class="number">0</span>);</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/cv_color_gray.png" alt="cv_color_gray"></p>
+<h3 id="inRange"><a href="#inRange" class="headerlink" title="inRange"></a>inRange</h3><p>cv.inRange (src, lowerb, upperb, dst)检查颜色是否在范围内。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;canvasInput&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line"><span class="keyword">let</span> low = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>(src.<span class="property">rows</span>, src.<span class="property">cols</span>, src.<span class="title function_">type</span>(), [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]);</span><br><span class="line"><span class="keyword">let</span> high = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>(src.<span class="property">rows</span>, src.<span class="property">cols</span>, src.<span class="title function_">type</span>(), [<span class="number">150</span>, <span class="number">160</span>, <span class="number">200</span>, <span class="number">255</span>]);</span><br><span class="line">cv.<span class="title function_">inRange</span>(src, low, high, dst);</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>(); low.<span class="title function_">delete</span>(); high.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/cv_color_inRange.png" alt="cv_color_inRange"></p>
+<h2 id="几何变换"><a href="#几何变换" class="headerlink" title="几何变换"></a>几何变换</h2><p>对图片应用不同的几何变换，比如平移、旋转、仿射变换等等</p>
+<h3 id="缩放"><a href="#缩放" class="headerlink" title="缩放"></a>缩放</h3><p>缩放其实就是改变图片大小，OpenCV中用cv.resize (src, dst, dsize, fx &#x3D; 0, fy &#x3D; 0, interpolation &#x3D; cv.INTER_LINEAR)实现缩放，图片大小可以手动填写任意值，或者是缩放系数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line"><span class="keyword">let</span> dsize = <span class="keyword">new</span> cv.<span class="title class_">Size</span>(<span class="number">300</span>, <span class="number">80</span>);</span><br><span class="line">cv.<span class="title function_">resize</span>(src, dst, dsize, 0INTER_AREA);</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+
+<p>这里我们通过直接设置图片宽高的方式，把600x473的图片，变成了300x80.</p>
+<p><img src="/../images/2021/resize.png" alt="resize"></p>
+<h3 id="平移"><a href="#平移" class="headerlink" title="平移"></a>平移</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cv.<span class="property">warpAffine</span> (src, dst, M, dsize, flags = cv.<span class="property">INTER_LINEAR</span>, borderMode = cv.<span class="property">BORDER_CONSTANT</span>, borderValue = <span class="keyword">new</span> cv.<span class="title class_">Scalar</span>())</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line"><span class="keyword">let</span> M = cv.<span class="title function_">matFromArray</span>(<span class="number">2</span>, <span class="number">3</span>, cv.<span class="property">CV_64FC1</span>, [<span class="number">1</span>, <span class="number">0</span>, <span class="number">50</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">100</span>]);</span><br><span class="line"><span class="keyword">let</span> dsize = <span class="keyword">new</span> cv.<span class="title class_">Size</span>(src.<span class="property">cols</span>, src.<span class="property">rows</span>);</span><br><span class="line">cv.<span class="title function_">warpAffine</span>(src, dst, M, dsize, cv.<span class="property">INTER_LINEAR</span>, cv.<span class="property">BORDER_CONSTANT</span>, <span class="keyword">new</span> cv.<span class="title class_">Scalar</span>());</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>(); M.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/translate.png" alt="translate"></p>
+<h3 id="旋转"><a href="#旋转" class="headerlink" title="旋转"></a>旋转</h3><p>和平移一样，也是warpAffine函数，只是M代表的矩阵不同，这里用cv.getRotationMatrix2D(center, angle, scale)计算出旋转矩阵，比如下面以图片中心为旋转点，旋转45°：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line"><span class="keyword">let</span> dsize = <span class="keyword">new</span> cv.<span class="title class_">Size</span>(src.<span class="property">cols</span>, src.<span class="property">rows</span>);</span><br><span class="line"><span class="keyword">let</span> center = <span class="keyword">new</span> cv.<span class="title class_">Point</span>(src.<span class="property">cols</span> / <span class="number">2</span>, src.<span class="property">rows</span> / <span class="number">2</span>);</span><br><span class="line"><span class="keyword">let</span> M = cv.<span class="title function_">getRotationMatrix2D</span>(center, <span class="number">45</span>, <span class="number">1</span>);</span><br><span class="line">cv.<span class="title function_">warpAffine</span>(src, dst, M, dsize, cv.<span class="property">INTER_LINEAR</span>, cv.<span class="property">BORDER_CONSTANT</span>, <span class="keyword">new</span> cv.<span class="title class_">Scalar</span>());</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>(); M.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/rotate.png" alt="rotate"></p>
+<h3 id="仿射变换"><a href="#仿射变换" class="headerlink" title="仿射变换"></a>仿射变换</h3><p>通过cv.getAffineTransform (src, dst)得到仿射变换的矩阵M，然后调用warpAffine函数。<br>getAffineTransform需要输入图像中的3个点在输出图像中的对应点，比如下面的srcTri中的3个点[0, 0, 0, 1, 1, 0]对应dstTri中的[0.6, 0.2, 0.1, 1.3, 1.5, 0.3]。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line"><span class="keyword">let</span> srcTri = cv.<span class="title function_">matFromArray</span>(<span class="number">3</span>, <span class="number">1</span>, cv.<span class="property">CV_32FC2</span>, [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>]);</span><br><span class="line"><span class="keyword">let</span> dstTri = cv.<span class="title function_">matFromArray</span>(<span class="number">3</span>, <span class="number">1</span>, cv.<span class="property">CV_32FC2</span>, [<span class="number">0.6</span>, <span class="number">0.2</span>, <span class="number">0.1</span>, <span class="number">1.3</span>, <span class="number">1.5</span>, <span class="number">0.3</span>]);</span><br><span class="line"><span class="keyword">let</span> M = cv.<span class="title function_">getAffineTransform</span>(srcTri, dstTri);</span><br><span class="line"><span class="keyword">let</span> dsize = <span class="keyword">new</span> cv.<span class="title class_">Size</span>(src.<span class="property">cols</span>, src.<span class="property">rows</span>);</span><br><span class="line">cv.<span class="title function_">warpAffine</span>(src, dst, M, dsize, cv.<span class="property">INTER_LINEAR</span>, cv.<span class="property">BORDER_CONSTANT</span>, <span class="keyword">new</span> cv.<span class="title class_">Scalar</span>());</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>(); M.<span class="title function_">delete</span>(); srcTri.<span class="title function_">delete</span>(); dstTri.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/transform.png" alt="transform"></p>
+<h2 id="图像阈值化"><a href="#图像阈值化" class="headerlink" title="图像阈值化"></a>图像阈值化</h2><p>cv.threshold(src, dst, thresh, maxval, type)<br>如果像素值大于阈值，它被赋一个值(可能是白色)，否则被赋另一个值(可能是黑色)。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line">cv.<span class="title function_">cvtColor</span>(src, dst, cv.<span class="property">COLOR_RGBA2GRAY</span>, <span class="number">0</span>);</span><br><span class="line">cv.<span class="title function_">threshold</span>(dst, dst, <span class="number">0</span>, <span class="number">255</span>, cv.<span class="property">THRESH_BINARY_INV</span> + cv.<span class="property">THRESH_OTSU</span>);</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/threshold.png" alt="threshold"></p>
+<h2 id="图像模糊"><a href="#图像模糊" class="headerlink" title="图像模糊"></a>图像模糊</h2><ul>
+<li>自定义滤波</li>
+<li>低通滤波模糊图片</li>
+</ul>
+<h3 id="卷积滤波"><a href="#卷积滤波" class="headerlink" title="卷积滤波"></a>卷积滤波</h3><p>和一维信号一样，图像也可以用各种低通滤波器(LPF)、高通滤波器(HPF)等进行滤波。<br>LPF有助于去除噪声，模糊图像等。HPF有助于在图像中找到边缘。</p>
+<p>OpenCV提供cv.filter2D(src, dst, ddepth, kernel[, anchor[, delta[, borderType]]])函数来对图片进行卷积核运算。关于卷积，可以看看之前写的《<a target="_blank" rel="noopener" href="https://lovelyun.github.io/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%8D%B7%E7%A7%AF%E5%9C%A8%E5%89%8D%E7%AB%AF%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E4%B8%8A%E7%9A%84%E5%BA%94%E7%94%A8/">卷积在前端图像处理上的应用</a>》，比如前文的模糊卷积核：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> kernel = [<span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>,</span><br><span class="line">                <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>,</span><br><span class="line">                <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>]; <span class="comment">// 模糊卷积核</span></span><br></pre></td></tr></table></figure>
+
+<p>这里可以这么用：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line"><span class="keyword">let</span> M = cv.<span class="title function_">matFromArray</span>(<span class="number">3</span>, <span class="number">3</span>, cv.<span class="property">CV_64FC1</span>, [<span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>]);</span><br><span class="line">cv.<span class="title function_">filter2D</span>(src, dst, cv.<span class="property">CV_8U</span>, M);</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>(); M.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+<p><img src="/../images/2021/filter_blur.png" alt="filter_blur"></p>
+<p>下面看看OpenCV内置的4个模糊处理。</p>
+<h3 id="均值模糊"><a href="#均值模糊" class="headerlink" title="均值模糊"></a>均值模糊</h3><p>上面例子中的模糊卷积核，OpenCV提供了cv.blur()函数直接调用。下面的两种写法效果一致。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 运用filter2D</span></span><br><span class="line"><span class="keyword">let</span> M = cv.<span class="title function_">matFromArray</span>(<span class="number">3</span>, <span class="number">3</span>, cv.<span class="property">CV_64FC1</span>, [<span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>, <span class="number">1</span> / <span class="number">9</span>]);</span><br><span class="line">cv.<span class="title function_">filter2D</span>(src, dst, cv.<span class="property">CV_8U</span>, M);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运用blur</span></span><br><span class="line"><span class="keyword">let</span> ksize = <span class="keyword">new</span> cv.<span class="title class_">Size</span>(<span class="number">3</span>, <span class="number">3</span>);</span><br><span class="line">cv.<span class="title function_">blur</span>(src, dst, ksize);</span><br></pre></td></tr></table></figure>
+
+<h3 id="高斯模糊"><a href="#高斯模糊" class="headerlink" title="高斯模糊"></a>高斯模糊</h3><p>cv.GaussianBlur(src, dst, ksize, sigmaX[, sigmaY[, borderType]])</p>
+<p>不同于均值模糊直接取周围像素的平均值，高斯模糊取像素周围的高斯加权平均值。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line"><span class="keyword">let</span> ksize = <span class="keyword">new</span> cv.<span class="title class_">Size</span>(<span class="number">3</span>, <span class="number">3</span>);</span><br><span class="line">cv.<span class="title class_">GaussianBlur</span>(src, dst, ksize, <span class="number">0</span>);</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/filter_gaussianBlur.png" alt="filter_gaussianBlur"></p>
+<h3 id="中值模糊"><a href="#中值模糊" class="headerlink" title="中值模糊"></a>中值模糊</h3><p>cv.medianBlur (src, dst, ksize)<br>中值模糊取核内所有像素的中值，中心元素被替换为这个中值。<br>这对图像中的椒盐噪声非常有效。<br>上面的过滤器，中心元素是一个新计算的值，它可能是图像中的一个像素值，也可能是一个新值。但在中值模糊中，中心元素总是被图像中的某个像素值所替代。它有效地降低了噪声。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line">cv.<span class="title function_">medianBlur</span>(src, dst, <span class="number">5</span>);</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+<p><img src="/../images/2021/filter_medianBlur.png" alt="filter_medianBlur"></p>
+<h3 id="双边滤波"><a href="#双边滤波" class="headerlink" title="双边滤波"></a>双边滤波</h3><p>cv.bilateralFilter(src, dst, d, sigmaColor, sigmaSpace[, borderType])<br>双边滤波在保持边缘锐利的同时对去除噪音非常有效。<br>但与其他过滤器相比，该操作较慢。<br>比如高斯滤波器取像素周围的一个邻域并找到它的高斯加权平均值，在滤波时考虑附近的像素，但不考虑像素是否具有几乎相同的强度，不考虑像素是否是边缘像素。所以边缘也会模糊，这不是我们想要的。</p>
+<p>双边滤波器实际上是2个高斯滤波器组成，一个对周围像素进行模糊，一个确保只有强度差别不大的像素会被模糊处理，所以能在模糊的同时保留边缘。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line">cv.<span class="title function_">cvtColor</span>(src, src, cv.<span class="property">COLOR_RGBA2RGB</span>, <span class="number">0</span>);</span><br><span class="line">cv.<span class="title function_">bilateralFilter</span>(src, dst, <span class="number">9</span>, <span class="number">75</span>, <span class="number">75</span>);</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/filter_bilateralBlur.png" alt="filter_bilateralBlur"></p>
+<h2 id="形态变换"><a href="#形态变换" class="headerlink" title="形态变换"></a>形态变换</h2><p>形态变换是对图片形状的简单运算。它通常在二进制图像上执行。<br>它需要两个输入，一个是我们的原始图像，另一个是卷积核。<br>两个基本的形态学运算是侵蚀和膨胀。然后它的进阶形式有打开，关闭，梯度等。</p>
+<h3 id="侵蚀"><a href="#侵蚀" class="headerlink" title="侵蚀"></a>侵蚀</h3><p>cv.erode(src, dst, kernel[, anchor[, iterations[, borderType[, borderValue]]]])<br>卷积运算时，核内所有像素都为1时运算结果为1，否则为0。所以靠近边缘的像素都被丢弃，图像尺寸会变小。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line"><span class="keyword">let</span> M = cv.<span class="property">Mat</span>.<span class="title function_">ones</span>(<span class="number">5</span>, <span class="number">5</span>, cv.<span class="property">CV_8U</span>);</span><br><span class="line">cv.<span class="title function_">erode</span>(src, dst, M);</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>(); M.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+<p><img src="/../images/2021/erosion.png" alt="erosion"></p>
+<h3 id="膨胀"><a href="#膨胀" class="headerlink" title="膨胀"></a>膨胀</h3><p>cv.dilate(src, dst, kernel[, anchor[, iterations[, borderType[, borderValue]]]])<br>与侵蚀相反，卷积运算时，核内有一个像素为1时，结果就为1，否则为0。所以图片尺寸会变大。<br>通常，在消除噪音时，侵蚀之后是膨胀，因为侵蚀消除了白噪音，但它也缩小了我们的目标，所以需要再放大。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line"><span class="keyword">let</span> M = cv.<span class="property">Mat</span>.<span class="title function_">ones</span>(<span class="number">5</span>, <span class="number">5</span>, cv.<span class="property">CV_8U</span>);</span><br><span class="line">cv.<span class="title function_">dilate</span>(src, dst, M);</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>(); M.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+<p><img src="/../images/2021/dilate.png" alt="dilate"></p>
+<h3 id="打开"><a href="#打开" class="headerlink" title="打开"></a>打开</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cv.<span class="title function_">morphologyEx</span>(src, dst, op, kernel[, anchor[, iterations[, borderType[, borderValue]]]])</span><br></pre></td></tr></table></figure>
+
+<p>打开只是侵蚀之后是再膨胀的另一个说法，常在去除噪音时使用。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line"><span class="keyword">let</span> M = cv.<span class="property">Mat</span>.<span class="title function_">ones</span>(<span class="number">5</span>, <span class="number">5</span>, cv.<span class="property">CV_8U</span>);</span><br><span class="line">cv.<span class="title function_">morphologyEx</span>(src, dst, cv.<span class="property">MORPH_OPEN</span>, M);</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>(); M.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/open.png" alt="open"></p>
+<h3 id="关闭"><a href="#关闭" class="headerlink" title="关闭"></a>关闭</h3><p>关闭和打开相反，是膨胀之后再侵蚀，对去除图片中的小黑点比较有用。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line"><span class="keyword">let</span> M = cv.<span class="property">Mat</span>.<span class="title function_">ones</span>(<span class="number">5</span>, <span class="number">5</span>, cv.<span class="property">CV_8U</span>);</span><br><span class="line">cv.<span class="title function_">morphologyEx</span>(src, dst, cv.<span class="property">MORPH_CLOSE</span>, M);</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>(); M.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+<p><img src="/../images/2021/close.png" alt="close"></p>
+<h3 id="梯度"><a href="#梯度" class="headerlink" title="梯度"></a>梯度</h3><p>与侵蚀和膨胀不同，它的处理结果看起来是形状的边缘。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line"><span class="keyword">let</span> M = cv.<span class="property">Mat</span>.<span class="title function_">ones</span>(<span class="number">5</span>, <span class="number">5</span>, cv.<span class="property">CV_8U</span>);</span><br><span class="line">cv.<span class="title function_">cvtColor</span>(src, src, cv.<span class="property">COLOR_RGBA2RGB</span>);</span><br><span class="line">cv.<span class="title function_">morphologyEx</span>(src, dst, cv.<span class="property">MORPH_GRADIENT</span>, M);</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>(); M.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+<p><img src="/../images/2021/gradient.png" alt="gradient"></p>
+<h2 id="图像梯度"><a href="#图像梯度" class="headerlink" title="图像梯度"></a>图像梯度</h2><p>OpenCV提供3种图像梯度过滤器：Sobel、Scharr 和 Laplacian。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dstx = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line"><span class="keyword">let</span> dsty = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line">cv.<span class="title function_">cvtColor</span>(src, src, cv.<span class="property">COLOR_RGB2GRAY</span>, <span class="number">0</span>);</span><br><span class="line">cv.<span class="title class_">Sobel</span>(src, dstx, cv.<span class="property">CV_8U</span>, <span class="number">1</span>, <span class="number">0</span>); <span class="comment">// 下图一左</span></span><br><span class="line"><span class="comment">// cv.Sobel(src, dsty, cv.CV_8U, 0, 1); // 下图一右</span></span><br><span class="line"><span class="comment">// cv.Scharr(src, dstx, cv.CV_8U, 1, 0); // 下图二左</span></span><br><span class="line"><span class="comment">// cv.Scharr(src, dsty, cv.CV_8U, 0, 1); // 下图二右</span></span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dstx);</span><br><span class="line">src.<span class="title function_">delete</span>(); dstx.<span class="title function_">delete</span>(); dsty.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+
+<p>下面4张图分别是Sobel和Scharr算子取横向和纵向：<br><img src="/../images/2021/Sobel.png" alt="Sobel"><br><img src="/../images/2021/Scharr.png" alt="Scharr"></p>
+<p>Laplacian使用的卷积核是：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> kernel = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>,</span><br><span class="line">                <span class="number">1</span>, -<span class="number">4</span>, <span class="number">1</span>,</span><br><span class="line">                <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>];</span><br></pre></td></tr></table></figure>
+
+<p>先灰度，再Laplacian:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cv.<span class="title function_">cvtColor</span>(src, src, cv.<span class="property">COLOR_RGB2GRAY</span>, <span class="number">0</span>);</span><br><span class="line">cv.<span class="title class_">Laplacian</span>(src, dst, cv.<span class="property">CV_8U</span>);</span><br></pre></td></tr></table></figure>
+<p><img src="/../images/2021/Laplacian.png" alt="Laplacian"></p>
+<blockquote>
+<p>注意输出的cv.CV_8U数据类型会导致检测结果不准确，需要用其他格式，比如 cv.CV_16S， cv.CV_64F等等，然后取绝对值再输出。具体的可以参考官网。</p>
+</blockquote>
+<h2 id="Canny边缘检测"><a href="#Canny边缘检测" class="headerlink" title="Canny边缘检测"></a>Canny边缘检测</h2><p>Canny边缘检测是一种流行的边缘检测算法，由John F. Canny在1986年开发。算法的实现及原理这里就不讲了，我们可以直接调用cv.Canny函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line">cv.<span class="title function_">cvtColor</span>(src, src, cv.<span class="property">COLOR_RGB2GRAY</span>, <span class="number">0</span>);</span><br><span class="line">cv.<span class="title class_">Canny</span>(src, dst, <span class="number">50</span>, <span class="number">100</span>);</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+<p><img src="/../images/2021/Canny_edge.png" alt="Canny_edge"></p>
+<h3 id="图像金字塔"><a href="#图像金字塔" class="headerlink" title="图像金字塔"></a>图像金字塔</h3><p>通常，我们使用固定大小的图像。但有时，我们需要使用不同分辨率的图像。<br>例如，当我们在一幅图像中搜索某物时，比如人脸，我们不确定人脸在图像中的大小。<br>这时我们需要创建一组具有不同分辨率的图像，并在所有图像中搜索对象。<br>这些不同分辨率的图像集合被称为图像金字塔(因为当它们被保存在一个堆栈中，高分辨率高的在底部，分辨率低的在顶部，它看起来像一个金字塔)。</p>
+<h3 id="降低分辨率"><a href="#降低分辨率" class="headerlink" title="降低分辨率"></a>降低分辨率</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br><span class="line">cv.<span class="title function_">pyrDown</span>(src, dst, <span class="keyword">new</span> cv.<span class="title class_">Size</span>(<span class="number">0</span>, <span class="number">0</span>));</span><br><span class="line">cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span><br><span class="line">src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+<p><img src="/../images/2021/down_sample.png" alt="down_sample"></p>
+<h3 id="提高分辨率"><a href="#提高分辨率" class="headerlink" title="提高分辨率"></a>提高分辨率</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cv.<span class="title function_">pyrUp</span>(src, dst, <span class="keyword">new</span> cv.<span class="title class_">Size</span>(<span class="number">0</span>, <span class="number">0</span>));</span><br></pre></td></tr></table></figure>
+
+<h2 id="傅里叶变换"><a href="#傅里叶变换" class="headerlink" title="傅里叶变换"></a>傅里叶变换</h2><p>傅里叶变换常用于图片的频域分析。<br>代码较多，这里就不详细分析了。<br><img src="/../images/2021/Fourier.png" alt="Fourier"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>上面列了OpenCV的一些基础的图像处理接口，比如几何变换、阈值化、形态变换等等，在实际应用中，通过这些接口，可以实现图片频域分析及处理、图像分割、图片匹配、图片轮廓或边缘检测等等。比如对图片频域加盲水印会用到傅里叶变换。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%8D%B7%E7%A7%AF%E5%9C%A8%E5%89%8D%E7%AB%AF%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E4%B8%8A%E7%9A%84%E5%BA%94%E7%94%A8/" rel="prev" title="卷积在前端图像处理上的应用">
+                  <i class="fa fa-angle-left"></i> 卷积在前端图像处理上的应用
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/" rel="next" title="前端使用openCV处理图片的基础">
+                  前端使用openCV处理图片的基础 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Lovelyun</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

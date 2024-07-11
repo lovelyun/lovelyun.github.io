@@ -2,24 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://example.com/%E5%8A%A8%E6%95%88/Web%E5%8A%A8%E7%94%BB%E4%B9%8BAE-Bodymovin/</loc>
-    
-    <lastmod>2024-07-11</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/canvas%E5%8F%98%E6%8D%A2%E7%9F%A9%E9%98%B5/</loc>
-    
-    <lastmod>2024-07-11</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/ai/conda%E5%BB%BA%E7%AB%8B%E5%8F%8A%E7%AE%A1%E7%90%86%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/</loc>
     
     <lastmod>2024-07-11</lastmod>
@@ -335,15 +317,6 @@
   </url>
   
   <url>
-    <loc>http://example.com/js/JavaScript%E5%BC%95%E6%93%8E%E5%9F%BA%E7%A1%80%E4%B9%8B%E5%BD%A2%E7%8A%B6/</loc>
-    
-    <lastmod>2024-07-11</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/js/Promise%E6%80%BB%E7%BB%93/</loc>
     
     <lastmod>2024-07-11</lastmod>
@@ -381,6 +354,33 @@
   
   <url>
     <loc>http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/WebGL%E5%8F%8A%E5%85%B6%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8/</loc>
+    
+    <lastmod>2024-07-11</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/%E5%8A%A8%E6%95%88/Web%E5%8A%A8%E7%94%BB%E4%B9%8BAE-Bodymovin/</loc>
+    
+    <lastmod>2024-07-11</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/js/JavaScript%E5%BC%95%E6%93%8E%E5%9F%BA%E7%A1%80%E4%B9%8B%E5%BD%A2%E7%8A%B6/</loc>
+    
+    <lastmod>2024-07-11</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/canvas%E5%8F%98%E6%8D%A2%E7%9F%A9%E9%98%B5/</loc>
     
     <lastmod>2024-07-11</lastmod>
     

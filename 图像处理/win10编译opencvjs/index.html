@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言本文主要讲win10系统怎么编译出opencv.js。主要编译过程跟官网一样，先安装Emscripten，再获取opencv源码，再编译opencv源码。本文主要解决的问题是在win10上怎么完成编译。 WSL先说一下背景，公司的电脑是win10，构建opencv.js需要用到Emscripten，而Emscripten官网不推荐直接在windows系统上运行，对windows用户推荐了win">
+<meta property="og:type" content="article">
+<meta property="og:title" content="win10编译opencvjs">
+<meta property="og:url" content="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/win10%E7%BC%96%E8%AF%91opencvjs/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言本文主要讲win10系统怎么编译出opencv.js。主要编译过程跟官网一样，先安装Emscripten，再获取opencv源码，再编译opencv源码。本文主要解决的问题是在win10上怎么完成编译。 WSL先说一下背景，公司的电脑是win10，构建opencv.js需要用到Emscripten，而Emscripten官网不推荐直接在windows系统上运行，对windows用户推荐了win">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/2022/emscripten_note.png">
+<meta property="og:image" content="http://example.com/images/2022/wsl_1.png">
+<meta property="og:image" content="http://example.com/images/2022/wsl_2.png">
+<meta property="og:image" content="http://example.com/images/2022/git_cmake_python.png">
+<meta property="og:image" content="http://example.com/images/2022/emscripten_1.png">
+<meta property="og:image" content="http://example.com/images/2022/emscripten_2.png">
+<meta property="og:image" content="http://example.com/images/2022/menu.png">
+<meta property="og:image" content="http://example.com/images/2022/build_out.png">
+<meta property="og:image" content="http://example.com/images/2022/build_out_2.png">
+<meta property="og:image" content="http://example.com/images/2022/wsl_3.png">
+<meta property="og:image" content="http://example.com/images/2022/wsl_4.png">
+<meta property="og:image" content="http://example.com/images/2022/remove_dnn.png">
+<meta property="og:image" content="http://example.com/images/2022/build_out_3.png">
+<meta property="og:image" content="http://example.com/images/2022/opencv_js_config.png">
+<meta property="og:image" content="http://example.com/images/2022/build_out_4.png">
+<meta property="article:published_time" content="2022-02-22T11:35:22.000Z">
+<meta property="article:modified_time" content="2024-07-11T02:49:12.957Z">
+<meta property="article:author" content="Lovelyun">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/2022/emscripten_note.png">
+
+
+<link rel="canonical" href="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/win10%E7%BC%96%E8%AF%91opencvjs/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/win10%E7%BC%96%E8%AF%91opencvjs/","path":"图像处理/win10编译opencvjs/","title":"win10编译opencvjs"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>win10编译opencvjs | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WSL"><span class="nav-number">2.</span> <span class="nav-text">WSL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85WSL"><span class="nav-number">2.1.</span> <span class="nav-text">安装WSL</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91opencvjs"><span class="nav-number">3.</span> <span class="nav-text">编译opencvjs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89opencv%E6%9E%84%E5%BB%BA%E6%A8%A1%E5%9D%97"><span class="nav-number">4.</span> <span class="nav-text">自定义opencv构建模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#demo"><span class="nav-number">4.1.</span> <span class="nav-text">demo</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lovelyun</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/win10%E7%BC%96%E8%AF%91opencvjs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lovelyun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="win10编译opencvjs | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          win10编译opencvjs
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-02-22 11:35:22" itemprop="dateCreated datePublished" datetime="2022-02-22T11:35:22+00:00">2022-02-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-07-11 02:49:12" itemprop="dateModified" datetime="2024-07-11T02:49:12+00:00">2024-07-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">图像处理</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文主要讲win10系统怎么编译出opencv.js。<br>主要编译过程跟<a target="_blank" rel="noopener" href="https://docs.opencv.org/4.5.5/d4/da1/tutorial_js_setup.html">官网</a>一样，先安装<a target="_blank" rel="noopener" href="https://emscripten.org/docs/getting_started/downloads.html">Emscripten</a>，再获取opencv源码，再编译opencv源码。<br>本文主要解决的问题是在win10上怎么完成编译。</p>
+<h2 id="WSL"><a href="#WSL" class="headerlink" title="WSL"></a>WSL</h2><p>先说一下背景，公司的电脑是win10，构建opencv.js需要用到<a target="_blank" rel="noopener" href="https://emscripten.org/docs/getting_started/downloads.html">Emscripten</a>，而Emscripten官网不推荐直接在windows系统上运行，对windows用户推荐了windows的Linux子系统。</p>
+<p><img src="/../images/2022/emscripten_note.png" alt="emscripten_note"></p>
+<p>一开始我不了解什么是window的Linux子系统，即WSL，于是我直接在windows中运行了（我不想装虚拟机，也不想重装系统，也不想把mac带到公司来），结果捣腾了2天也没把编译时的各种报错解决完，报错一个接一个，解决完一个又出现一个……</p>
+<p>最后我决定去看一下WSL，发现非常好用，编译opencv.js一举成功！</p>
+<h3 id="安装WSL"><a href="#安装WSL" class="headerlink" title="安装WSL"></a>安装WSL</h3><p>1、勾选适用于Linux的windows子系统<br>路径是「控制面板」-「程序」-「启用或关闭Windows功能」<br><img src="/../images/2022/wsl_1.png" alt="wsl_1"></p>
+<p>2、打开 Microsoft Store，搜索「WSL」，选1个安装，比如我装的第一个Ubantu 20.04。<br><img src="/../images/2022/wsl_2.png" alt="wsl_2"></p>
+<p>3、安装完成后自动打开终端，没有自动打开就手动打开，跟linux系统一样，设置好用户名和密码，就进入linux系统了。</p>
+<h2 id="编译opencvjs"><a href="#编译opencvjs" class="headerlink" title="编译opencvjs"></a>编译opencvjs</h2><p>1、确保安装了git、cmake、python，没有安装的话运行下列命令安装：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install git</span><br><span class="line">sudo apt install cmake</span><br><span class="line">sudo apt install python</span><br></pre></td></tr></table></figure>
+
+<p>安装后可以通过下列命令查看安装的版本：<br><img src="/../images/2022/git_cmake_python.png" alt="git_cmake_python"></p>
+<p>2、安装Emscripten</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># 创建customopencv目录</span><br><span class="line">mkdir customopencv</span><br><span class="line"></span><br><span class="line"># 进入customopencv目录</span><br><span class="line">cd customopencv/</span><br><span class="line"></span><br><span class="line"># 拉取emscripten源码</span><br><span class="line">git clone https://github.com/emscripten-core/emsdk.git</span><br><span class="line"></span><br><span class="line"># 进入emsdk目录</span><br><span class="line">cd emsdk/</span><br><span class="line"># 安装emsdk</span><br><span class="line">./emsdk install latest</span><br><span class="line"># 激活emsdk</span><br><span class="line">./emsdk activate latest</span><br><span class="line"># 设置环境变量</span><br><span class="line">source ./emsdk_env.sh</span><br></pre></td></tr></table></figure>
+<p><img src="/../images/2022/emscripten_1.png" alt="emscripten_1"><br><img src="/../images/2022/emscripten_2.png" alt="emscripten_2"></p>
+<p>3、获取opencv</p>
+<p>回到上级目录，clone opencv源码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 拉取opencv源码</span><br><span class="line">git clone https://github.com/opencv/opencv.git</span><br></pre></td></tr></table></figure>
+<p><img src="/../images/2022/menu.png" alt="menu"></p>
+<p>4、编译opencvjs</p>
+<p>运行下面的命令来编译：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python platforms/js/build_js.py build_out --emscripten_dir /home/lovelyun/customopencv/emsdk/upstream/emscripten --build_wasm --clean_build_dir</span><br></pre></td></tr></table></figure>
+
+<p>接下来去喝杯水，然后就可以看到编译成功了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">=====</span><br><span class="line">===== Build finished</span><br><span class="line">=====</span><br><span class="line">OpenCV.js location: /home/lovelyun/customopencv/opencv/build_out/bin/opencv.js</span><br></pre></td></tr></table></figure>
+
+<p>进入到上面的bin文件夹，运行ls -l可以看到文件详情：</p>
+<p><img src="/../images/2022/build_out.png" alt="build_out"></p>
+<p>或者用du -sh *查看它们占用的空间：<br><img src="/../images/2022/build_out_2.png" alt="build_out_2"></p>
+<p>这里的opencv.js就是我们最后需要的文件，现在在Linux子系统中，怎么传到windows系统中呢？</p>
+<p>最简单的是在文件资源管理器的地址栏输入<code>\\wsl$</code>，回车就可以看到所有的子系统。<br><img src="/../images/2022/wsl_3.png" alt="wsl_3"></p>
+<p>点进去就可以看到上面的文件，比如我的路径是<code>\\wsl$\Ubuntu-20.04\home\lovelyun\customopencv\opencv\build_out\bin</code>。<br><img src="/../images/2022/wsl_4.png" alt="wsl_4"></p>
+<h2 id="自定义opencv构建模块"><a href="#自定义opencv构建模块" class="headerlink" title="自定义opencv构建模块"></a>自定义opencv构建模块</h2><p>接下来我们去掉DNN模块，首先用vscode打开子系统中的opencv文件夹，打开<code>/platforms/js/build_js.py</code>文件，把<code>get_cmake_cmd(self)</code>函数中的<code>-DBUILD_opencv_dnn=ON</code>改为<code>-DBUILD_opencv_dnn=OFF</code>。<br><img src="/../images/2022/remove_dnn.png" alt="remove_dnn"></p>
+<p>重新构建后可以看到，opencv.js从一开始的8.6M减小到了5.5M。<br><img src="/../images/2022/build_out_3.png" alt="build_out_3"></p>
+<p>我们还可以修改opencv_js.config.py，去掉没用到的函数，比如只保留core和imgproc。<br><img src="/../images/2022/opencv_js_config.png" alt="opencv_js_config"></p>
+<p>此时编译出来的opencv.js就只有3.7M。<br><img src="/../images/2022/build_out_4.png" alt="build_out_4"></p>
+<p>或许你觉得3.7M也很大，当然大啦，但是core和imgproc中没用到的函数还可以接着删除呀。</p>
+<h3 id="demo"><a href="#demo" class="headerlink" title="demo"></a>demo</h3><p>直接把bin目录中的opencv.js复制到项目中，比如下面这样引用：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;js/opencv.js&quot;</span> <span class="attr">onload</span>=<span class="string">&quot;onOpenCvReady();&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后发现调用cv的api会报错，比如<code>cv.imread is not a function</code>。<br>打印发现cv是一个promise，这里我们简单的处理一下，把cv重新赋值为promise返回的结果，就可以运行起来了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">onOpenCvReady</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="variable language_">window</span>.<span class="property">cv</span> = <span class="keyword">await</span> <span class="variable language_">window</span>.<span class="property">cv</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>按照官网的说法，应该是可以直接使用编译出来的opencv.js的，即直接替换官网编译的opencv.js。这里实测直接替换有问题，那就解决它，我们暂时不纠结为什么会有问题了，</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>需要Linux环境的问题，就用Linux，不要用windows环境瞎折腾。</p>
+<p>这次编译的大部分时间都在解决windows上的报错问题，虽然windows上安装都是成功的，校验是否安装成功的结果都是ok的，但编译时各种报错，最后用了WSL，一开始为了省时间直接把windows上下载的emsdk文件夹cp过去用，而且WSL中的python环境默认是python3，这些因素也导致了编译报错，最后我想完全重新来一次，在WSL中重新下载emscripten，重新安装python，最后用的python2，编译一次性成功。</p>
+<p>用Linux编译，感觉就是超幸运，干什么都是一次成功。</p>
+<p>虽然觉得这种环境问题导致的报错解决起来浪费时间还没什么意义，但是编译成功的那一刻还是挺兴奋的，哈哈哈……</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/js/%E5%89%8D%E7%AB%AF%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8/" rel="prev" title="前端包管理器">
+                  <i class="fa fa-angle-left"></i> 前端包管理器
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/js/javascript%E5%BC%82%E6%AD%A5error/" rel="next" title="javascript异步error">
+                  javascript异步error <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Lovelyun</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="在地图指针之后，让我们来尝试下更多有趣的SVG Path形状：一个tooltip。点击查看例子  tooltip形状的path路径是由5个变量决定的：width,height,pointer offset,corner radius和placement(left,top,right或bottom)。 简单来说，我们先来完成一个没有圆角的向上的tooltip，我们需要这么做：1、移动到点A：M aX">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SVG Path实现tooltips">
+<meta property="og:url" content="http://example.com/%E5%8A%A8%E6%95%88/SVG%20Path%E5%AE%9E%E7%8E%B0tooltips/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="在地图指针之后，让我们来尝试下更多有趣的SVG Path形状：一个tooltip。点击查看例子  tooltip形状的path路径是由5个变量决定的：width,height,pointer offset,corner radius和placement(left,top,right或bottom)。 简单来说，我们先来完成一个没有圆角的向上的tooltip，我们需要这么做：1、移动到点A：M aX">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/2020/svgTooltip.png">
+<meta property="article:published_time" content="2020-11-25T17:39:48.000Z">
+<meta property="article:modified_time" content="2024-07-11T02:49:12.941Z">
+<meta property="article:author" content="Lovelyun">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/2020/svgTooltip.png">
+
+
+<link rel="canonical" href="http://example.com/%E5%8A%A8%E6%95%88/SVG%20Path%E5%AE%9E%E7%8E%B0tooltips/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/%E5%8A%A8%E6%95%88/SVG%20Path%E5%AE%9E%E7%8E%B0tooltips/","path":"动效/SVG Path实现tooltips/","title":"SVG Path实现tooltips"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SVG Path实现tooltips | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">1.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lovelyun</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/%E5%8A%A8%E6%95%88/SVG%20Path%E5%AE%9E%E7%8E%B0tooltips/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lovelyun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SVG Path实现tooltips | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SVG Path实现tooltips
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-11-25 17:39:48" itemprop="dateCreated datePublished" datetime="2020-11-25T17:39:48+00:00">2020-11-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-07-11 02:49:12" itemprop="dateModified" datetime="2024-07-11T02:49:12+00:00">2024-07-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%8A%A8%E6%95%88/" itemprop="url" rel="index"><span itemprop="name">动效</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>在地图指针之后，让我们来尝试下更多有趣的SVG Path形状：一个tooltip。<a target="_blank" rel="noopener" href="https://jsfiddle.net/mrovinsky/mmmpe817/">点击查看例子</a></p>
+<p><img src="/../images/2020/svgTooltip.png" alt="svgTooltip"></p>
+<p>tooltip形状的path路径是由5个变量决定的：<code>width</code>,<code>height</code>,<code>pointer offset</code>,<code>corner radius</code>和<code>placement</code>(left,top,right或bottom)。</p>
+<p>简单来说，我们先来完成一个没有圆角的向上的tooltip，我们需要这么做：<br>1、移动到点A：M aX,aY<br>2、连线到点B：L bX,bY<br>3、垂直连线到点C：H cX<br>4、水平连线到点D：V dY<br>5、垂直连线到点E：H eX<br>6、水平连线到点F：V fY<br>7、垂直连线到点G：H gX<br>8、连线到点A：L aX,aY<br>9、结束路径：z</p>
+<p>点A的坐标是(0,0)，其他点的坐标由width,height和offset计算出来：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">bx =  -offset</span><br><span class="line">by = -offset <span class="comment">// cy,fy,gy也是一样的</span></span><br><span class="line">cx = -width / <span class="number">2</span> <span class="comment">// dx也一样</span></span><br><span class="line">dy = -offset - height <span class="comment">// ey也一样</span></span><br><span class="line">ex = width / <span class="number">2</span> <span class="comment">// fx也一样</span></span><br><span class="line">gx = offset</span><br></pre></td></tr></table></figure>
+
+<p>整个路径实现出来就会是这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">topTooltipPath</span>(<span class="params">width, height, offset</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> left = -width / <span class="number">2</span></span><br><span class="line">  <span class="keyword">const</span> right = width / <span class="number">2</span></span><br><span class="line">  <span class="keyword">const</span> top = -offset - height</span><br><span class="line">  <span class="keyword">const</span> bottom = -offset</span><br><span class="line">  <span class="keyword">return</span> <span class="string">`M 0,0</span></span><br><span class="line"><span class="string">    L <span class="subst">$&#123;-offset&#125;</span>,<span class="subst">$&#123;bottom&#125;</span></span></span><br><span class="line"><span class="string">    H <span class="subst">$&#123;left&#125;</span></span></span><br><span class="line"><span class="string">    V <span class="subst">$&#123;top&#125;</span></span></span><br><span class="line"><span class="string">    H <span class="subst">$&#123;right&#125;</span></span></span><br><span class="line"><span class="string">    V <span class="subst">$&#123;bottom&#125;</span></span></span><br><span class="line"><span class="string">    H <span class="subst">$&#123;offset&#125;</span></span></span><br><span class="line"><span class="string">    L 0,0 z`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码解释下就是：画笔移动到点M，再画直线到点B，再水平画直线到点C，再垂直画直线到点D，再水平画直线到点E，再垂直画直线到点F，再水平画直线到点G，再画直线到点M，并结束。 <strong>需要注意的是坐标系是左上角为原点，x轴正方向朝右，y轴正方向朝下。</strong></p>
+<p>实现圆角，我们有2个方案：弧(Arc)和二次贝塞尔曲线(Quadratic Bezier curve)。<br>弧需要使用7个变量，但是二次贝塞尔曲线就要简单得多：它在当前路径上取得起点，另外2个点是顶点<code>(vX,vY)</code>和终点<code>(tX,tY)</code>。在SVG中，二次贝塞尔曲线的写法是<code>Q vX,vY tX,tY</code>。</p>
+<p>拿圆角C来举例，设圆角半径是r,圆角的起点在B到C的水平直线上，，故起点坐标是<code>(cX+r, cY)</code>,终点在出圆角去点D的垂直直线上，故终点坐标是<code>(cX,cY-r)</code>，顶点就是点<code>C(cX,cY)</code>，把上面例子中的直角变成圆角，我们只需要把<code>H cX V dY</code>换成<code>H cX+r Q cX, cY cX, (cY - r) V dY</code>，这样就得到了半径是<code>r</code>的圆角<code>C</code>，下面是优化后的代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">topTooltipPath</span>(<span class="params">width, height, offset, radius</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> left = -width / <span class="number">2</span></span><br><span class="line">  <span class="keyword">const</span> right = width / <span class="number">2</span></span><br><span class="line">  <span class="keyword">const</span> top = -offset - height</span><br><span class="line">  <span class="keyword">const</span> bottom = -offset</span><br><span class="line">  <span class="keyword">return</span> <span class="string">`M 0,0</span></span><br><span class="line"><span class="string">    L <span class="subst">$&#123;-offset&#125;</span>,<span class="subst">$&#123;bottom&#125;</span></span></span><br><span class="line"><span class="string">    H <span class="subst">$&#123;left + radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;left&#125;</span>,<span class="subst">$&#123;bottom&#125;</span> <span class="subst">$&#123;left&#125;</span>,<span class="subst">$&#123;bottom - radius&#125;</span></span></span><br><span class="line"><span class="string">    V <span class="subst">$&#123;top + radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;left&#125;</span>,<span class="subst">$&#123;top&#125;</span> <span class="subst">$&#123;left + radius&#125;</span>,<span class="subst">$&#123;top&#125;</span></span></span><br><span class="line"><span class="string">    H <span class="subst">$&#123;right - radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;right&#125;</span>,<span class="subst">$&#123;top&#125;</span> <span class="subst">$&#123;right&#125;</span>,<span class="subst">$&#123;top + radius&#125;</span></span></span><br><span class="line"><span class="string">    V <span class="subst">$&#123;bottom - radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;right&#125;</span>,<span class="subst">$&#123;bottom&#125;</span> <span class="subst">$&#123;right - radius&#125;</span>,<span class="subst">$&#123;bottom&#125;</span></span></span><br><span class="line"><span class="string">    H <span class="subst">$&#123;offset&#125;</span></span></span><br><span class="line"><span class="string">    L 0,0 z`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>获得圆角的向下的tooltip，我们只需要把路径中的Y坐标全部取反：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">bottomTooltipPath</span>(<span class="params">width, height, offset, radius</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> left = -width / <span class="number">2</span></span><br><span class="line">  <span class="keyword">const</span> right = width / <span class="number">2</span></span><br><span class="line">  <span class="keyword">const</span> bottom = offset + height</span><br><span class="line">  <span class="keyword">const</span> top = offset</span><br><span class="line">  <span class="keyword">return</span> <span class="string">`M 0,0</span></span><br><span class="line"><span class="string">    L <span class="subst">$&#123;-offset&#125;</span>,<span class="subst">$&#123;top&#125;</span></span></span><br><span class="line"><span class="string">    H <span class="subst">$&#123;left + radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;left&#125;</span>,<span class="subst">$&#123;top&#125;</span> <span class="subst">$&#123;left&#125;</span>,<span class="subst">$&#123;top + radius&#125;</span></span></span><br><span class="line"><span class="string">    V <span class="subst">$&#123;bottom - radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;left&#125;</span>,<span class="subst">$&#123;bottom&#125;</span> <span class="subst">$&#123;left + radius&#125;</span>,<span class="subst">$&#123;bottom&#125;</span></span></span><br><span class="line"><span class="string">    H <span class="subst">$&#123;right - radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;right&#125;</span>,<span class="subst">$&#123;bottom&#125;</span> <span class="subst">$&#123;right&#125;</span>,<span class="subst">$&#123;bottom - radius&#125;</span></span></span><br><span class="line"><span class="string">    V <span class="subst">$&#123;top + radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;right&#125;</span>,<span class="subst">$&#123;top&#125;</span> <span class="subst">$&#123;right - radius&#125;</span>,<span class="subst">$&#123;top&#125;</span></span></span><br><span class="line"><span class="string">    H <span class="subst">$&#123;offset&#125;</span></span></span><br><span class="line"><span class="string">    L 0,0 z`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样的可以得到朝左和朝右的tooltip:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">leftTooltipPath</span>(<span class="params">width, height, offset, radius</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> left = -offset - width</span><br><span class="line">  <span class="keyword">const</span> right = -offset</span><br><span class="line">  <span class="keyword">const</span> top = -height / <span class="number">2</span></span><br><span class="line">  <span class="keyword">const</span> bottom = height / <span class="number">2</span></span><br><span class="line">  <span class="keyword">return</span> <span class="string">`M 0,0</span></span><br><span class="line"><span class="string">    L <span class="subst">$&#123;right&#125;</span>,<span class="subst">$&#123;-offset&#125;</span></span></span><br><span class="line"><span class="string">    V <span class="subst">$&#123;top + radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;right&#125;</span>,<span class="subst">$&#123;top&#125;</span> <span class="subst">$&#123;right - radius&#125;</span>,<span class="subst">$&#123;top&#125;</span></span></span><br><span class="line"><span class="string">    H <span class="subst">$&#123;left + radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;left&#125;</span>,<span class="subst">$&#123;top&#125;</span> <span class="subst">$&#123;left&#125;</span>,<span class="subst">$&#123;top + radius&#125;</span></span></span><br><span class="line"><span class="string">    V <span class="subst">$&#123;bottom - radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;left&#125;</span>,<span class="subst">$&#123;bottom&#125;</span> <span class="subst">$&#123;left + radius&#125;</span>,<span class="subst">$&#123;bottom&#125;</span></span></span><br><span class="line"><span class="string">    H <span class="subst">$&#123;right - radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;right&#125;</span>,<span class="subst">$&#123;bottom&#125;</span> <span class="subst">$&#123;right&#125;</span>,<span class="subst">$&#123;bottom - radius&#125;</span></span></span><br><span class="line"><span class="string">    V <span class="subst">$&#123;offset&#125;</span></span></span><br><span class="line"><span class="string">    L 0,0 z`</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">rightTooltipPath</span>(<span class="params">width, height, offset, radius</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> left = offset</span><br><span class="line">  <span class="keyword">const</span> right = offset + width</span><br><span class="line">  <span class="keyword">const</span> top = -height / <span class="number">2</span></span><br><span class="line">  <span class="keyword">const</span> bottom = height / <span class="number">2</span></span><br><span class="line">  <span class="keyword">return</span> <span class="string">`M 0,0</span></span><br><span class="line"><span class="string">    L <span class="subst">$&#123;left&#125;</span>,<span class="subst">$&#123;-offset&#125;</span></span></span><br><span class="line"><span class="string">    V <span class="subst">$&#123;top + radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;left&#125;</span>,<span class="subst">$&#123;top&#125;</span> <span class="subst">$&#123;left + radius&#125;</span>,<span class="subst">$&#123;top&#125;</span></span></span><br><span class="line"><span class="string">    H <span class="subst">$&#123;right - radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;right&#125;</span>,<span class="subst">$&#123;top&#125;</span> <span class="subst">$&#123;right&#125;</span>,<span class="subst">$&#123;top + radius&#125;</span></span></span><br><span class="line"><span class="string">    V <span class="subst">$&#123;bottom - radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;right&#125;</span>,<span class="subst">$&#123;bottom&#125;</span> <span class="subst">$&#123;right - radius&#125;</span>,<span class="subst">$&#123;bottom&#125;</span></span></span><br><span class="line"><span class="string">    H <span class="subst">$&#123;left + radius&#125;</span></span></span><br><span class="line"><span class="string">    Q <span class="subst">$&#123;left&#125;</span>,<span class="subst">$&#123;bottom&#125;</span> <span class="subst">$&#123;left&#125;</span>,<span class="subst">$&#123;bottom - radius&#125;</span></span></span><br><span class="line"><span class="string">    V <span class="subst">$&#123;offset&#125;</span></span></span><br><span class="line"><span class="string">    L 0,0 z`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/SVG/Tutorial/Paths">SVG Paths | MDN</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/%E5%8A%A8%E6%95%88/lottie-web%E5%BA%94%E7%94%A8%E4%BC%98%E5%8C%96%E4%B9%8BBase64/" rel="prev" title="lottie-web应用优化之Base64">
+                  <i class="fa fa-angle-left"></i> lottie-web应用优化之Base64
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8openCV/" rel="next" title="前端如何使用openCV">
+                  前端如何使用openCV <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Lovelyun</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

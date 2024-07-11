@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言在计算机图形学的各种应用中都能找到矩阵的身影。它广泛应用于计算机视觉过滤器、图像处理（比如边缘检测）、锐化以及模糊变换。随着你不断地深入到更加高级的计算图形编程中，你会发现更多有关矩阵的应用。本文主要写如何在canvas中进行变换（平移、缩放、倾斜），再延伸到矩阵的应用。 状态的保存和恢复canvas中有两个绘制复杂图形时必不可少的方法：save()和restore()。save()保存画布所">
+<meta property="og:type" content="article">
+<meta property="og:title" content="canvas变换矩阵">
+<meta property="og:url" content="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/canvas%E5%8F%98%E6%8D%A2%E7%9F%A9%E9%98%B5/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言在计算机图形学的各种应用中都能找到矩阵的身影。它广泛应用于计算机视觉过滤器、图像处理（比如边缘检测）、锐化以及模糊变换。随着你不断地深入到更加高级的计算图形编程中，你会发现更多有关矩阵的应用。本文主要写如何在canvas中进行变换（平移、缩放、倾斜），再延伸到矩阵的应用。 状态的保存和恢复canvas中有两个绘制复杂图形时必不可少的方法：save()和restore()。save()保存画布所">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/2021/canvas_save_restore.png">
+<meta property="og:image" content="http://example.com/images/2021/Canvas_grid_translate.png">
+<meta property="og:image" content="http://example.com/images/2021/Canvas_grid_rotate.png">
+<meta property="og:image" content="http://example.com/images/2021/canvas_transform.png">
+<meta property="og:image" content="http://example.com/images/2021/matrix_plus.svg">
+<meta property="og:image" content="http://example.com/images/2021/matrix_multiply.svg">
+<meta property="og:image" content="http://example.com/images/2021/matrix_multiply_formula.svg">
+<meta property="og:image" content="http://example.com/images/2021/multiply_a.svg">
+<meta property="og:image" content="http://example.com/images/2021/multiply_scale.svg">
+<meta property="og:image" content="http://example.com/images/2021/multiply_rotate_x.svg">
+<meta property="og:image" content="http://example.com/images/2021/multiply_rotate_x_result.svg">
+<meta property="og:image" content="http://example.com/images/2021/multiply_rotate_y.svg">
+<meta property="og:image" content="http://example.com/images/2021/multiply_rotate_z.svg">
+<meta property="og:image" content="http://example.com/images/2021/multiply_b.svg">
+<meta property="og:image" content="http://example.com/images/2021/multiply_ampty.svg">
+<meta property="og:image" content="http://example.com/images/2021/multiply_rotate_2d.svg">
+<meta property="og:image" content="http://example.com/images/2021/canvas_rotate_45.png">
+<meta property="og:image" content="http://example.com/images/2021/multiply_rotate_z.svg">
+<meta property="og:image" content="http://example.com/images/2021/multiply_rotate_canvas_result.svg">
+<meta property="article:published_time" content="2021-09-27T14:37:03.000Z">
+<meta property="article:modified_time" content="2024-07-11T02:49:12.941Z">
+<meta property="article:author" content="Lovelyun">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/2021/canvas_save_restore.png">
+
+
+<link rel="canonical" href="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/canvas%E5%8F%98%E6%8D%A2%E7%9F%A9%E9%98%B5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/canvas%E5%8F%98%E6%8D%A2%E7%9F%A9%E9%98%B5/","path":"图像处理/canvas变换矩阵/","title":"canvas变换矩阵"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>canvas变换矩阵 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E7%9A%84%E4%BF%9D%E5%AD%98%E5%92%8C%E6%81%A2%E5%A4%8D"><span class="nav-number">2.</span> <span class="nav-text">状态的保存和恢复</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#translate"><span class="nav-number">3.</span> <span class="nav-text">translate</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rotate"><span class="nav-number">4.</span> <span class="nav-text">rotate</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%A7%E5%BA%A6%E4%B8%8E%E8%A7%92%E5%BA%A6"><span class="nav-number">4.1.</span> <span class="nav-text">弧度与角度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#scale"><span class="nav-number">5.</span> <span class="nav-text">scale</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#transform"><span class="nav-number">6.</span> <span class="nav-text">transform</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9F%A9%E9%98%B5"><span class="nav-number">7.</span> <span class="nav-text">矩阵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%BF%E5%B0%84%E5%8F%98%E6%8D%A2"><span class="nav-number">8.</span> <span class="nav-text">仿射变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E5%AF%BC%E6%97%8B%E8%BD%AC%E5%85%AC%E5%BC%8F"><span class="nav-number">9.</span> <span class="nav-text">推导旋转公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">10.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lovelyun</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/canvas%E5%8F%98%E6%8D%A2%E7%9F%A9%E9%98%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lovelyun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="canvas变换矩阵 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          canvas变换矩阵
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-09-27 14:37:03" itemprop="dateCreated datePublished" datetime="2021-09-27T14:37:03+00:00">2021-09-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-07-11 02:49:12" itemprop="dateModified" datetime="2024-07-11T02:49:12+00:00">2024-07-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">图像处理</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在计算机图形学的各种应用中都能找到矩阵的身影。它广泛应用于计算机视觉过滤器、图像处理（比如边缘检测）、锐化以及模糊变换。随着你不断地深入到更加高级的计算图形编程中，你会发现更多有关矩阵的应用。<br>本文主要写如何在canvas中进行变换（平移、缩放、倾斜），再延伸到矩阵的应用。</p>
+<h2 id="状态的保存和恢复"><a href="#状态的保存和恢复" class="headerlink" title="状态的保存和恢复"></a>状态的保存和恢复</h2><p>canvas中有两个绘制复杂图形时必不可少的方法：save()和restore()。<br>save()保存画布所有状态。调用后，将当前画布状态存到栈中。<br>restore()调用时将上一次save的状态从栈中取出并应用。<br>在做变形之前先保存状态是一个良好的习惯，做完变形再restore恢复即可。</p>
+<p>当前画布状态包括：<br>1、当前应用的变形（即移动，旋转和缩放）<br>2、下列属性：<br>strokeStyle, fillStyle, globalAlpha, lineWidth, lineCap, lineJoin, miterLimit, lineDashOffset, shadowOffsetX, shadowOffsetY, shadowBlur, shadowColor, globalCompositeOperation, font, textAlign, textBaseline, direction, imageSmoothingEnabled<br>3、当前的裁切路径（clipping path）</p>
+<p>如果对save和restore应用还不够清楚，接下来一起看看MDN上的例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">draw</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">var</span> ctx = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;canvas&#x27;</span>).<span class="title function_">getContext</span>(<span class="string">&#x27;2d&#x27;</span>);</span><br><span class="line"></span><br><span class="line">  ctx.<span class="title function_">fillRect</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">150</span>, <span class="number">150</span>);</span><br><span class="line">  ctx.<span class="title function_">save</span>();</span><br><span class="line"></span><br><span class="line">  ctx.<span class="property">fillStyle</span> = <span class="string">&#x27;#09F&#x27;</span>;</span><br><span class="line">  ctx.<span class="title function_">fillRect</span>(<span class="number">15</span>, <span class="number">15</span>, <span class="number">120</span>, <span class="number">120</span>);</span><br><span class="line">  ctx.<span class="title function_">save</span>();</span><br><span class="line"></span><br><span class="line">  ctx.<span class="property">fillStyle</span> = <span class="string">&#x27;#FFF&#x27;</span>;</span><br><span class="line">  ctx.<span class="property">globalAlpha</span> = <span class="number">0.5</span>;</span><br><span class="line">  ctx.<span class="title function_">fillRect</span>(<span class="number">30</span>, <span class="number">30</span>, <span class="number">90</span>, <span class="number">90</span>);</span><br><span class="line"></span><br><span class="line">  ctx.<span class="title function_">restore</span>();</span><br><span class="line">  ctx.<span class="title function_">fillRect</span>(<span class="number">45</span>, <span class="number">45</span>, <span class="number">60</span>, <span class="number">60</span>);</span><br><span class="line"></span><br><span class="line">  ctx.<span class="title function_">restore</span>();</span><br><span class="line">  ctx.<span class="title function_">fillRect</span>(<span class="number">60</span>, <span class="number">60</span>, <span class="number">30</span>, <span class="number">30</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码中共绘制了5次方形，每次fillRect之后对应下面的5张图：</p>
+<p><img src="/../images/2021/canvas_save_restore.png" alt="canvas_save_restore"></p>
+<h2 id="translate"><a href="#translate" class="headerlink" title="translate"></a>translate</h2><p>translate(x, y)用来移动 canvas 和它的原点到一个不同的位置。<br><img src="/../images/2021/Canvas_grid_translate.png" alt="Canvas_grid_translate"></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ctx.fillRect(60,60,30,30);</span></span><br><span class="line"><span class="comment">// 可以改成下面的写法</span></span><br><span class="line">ctx.<span class="title function_">translate</span>(<span class="number">60</span>, <span class="number">60</span>);</span><br><span class="line">ctx.<span class="title function_">fillRect</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">30</span>, <span class="number">30</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="rotate"><a href="#rotate" class="headerlink" title="rotate"></a>rotate</h2><p>rotate(angle)，顺时针方向，以原点为中心旋转把canvas旋转angle弧度。<br>（注意旋转中心是原点，单位是弧度，方向是顺时针）</p>
+<p><img src="/../images/2021/Canvas_grid_rotate.png" alt="Canvas_grid_rotate"></p>
+<h3 id="弧度与角度"><a href="#弧度与角度" class="headerlink" title="弧度与角度"></a>弧度与角度</h3><p>2PI 弧度 &#x3D; 360 度</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// degrees 角度</span></span><br><span class="line"><span class="comment">// radians 弧度</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">degreesToRadians</span> (deg) &#123;</span><br><span class="line">  <span class="keyword">return</span> deg * <span class="title class_">Math</span>.<span class="property">PI</span> / <span class="number">180</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">radiansToDegrees</span> (rad) &#123;</span><br><span class="line">  <span class="keyword">return</span> rad * <span class="number">180</span> / <span class="title class_">Math</span>.<span class="property">PI</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="scale"><a href="#scale" class="headerlink" title="scale"></a>scale</h2><p>scale(x, y)缩放画布的水平和垂直的单位。x&#x2F;y可以是负数，负数时以x&#x2F;y轴镜像翻转。</p>
+<p>默认情况下，canvas 的 1 个单位为 1 个像素。<br>如果我们设置缩放因子是 0.5，1 个单位就变成对应 0.5 个像素，这样绘制出来的形状就会是原先的一半。同理，设置为 2.0 时，1 个单位就对应变成了 2 像素，绘制的结果就是图形放大了 2 倍。<br>scale(1,-1)就以y轴作为对称轴镜像翻转。canvas画布左上角是原点，如果translate(0, canvas.height)将原点沿x轴移到画布底部，再scale(1, -1)将画布以y轴翻转，就可以得到笛卡尔坐标系（左下角为原点）。</p>
+<h2 id="transform"><a href="#transform" class="headerlink" title="transform"></a>transform</h2><p>transform(a, b, c, d, e, f)对当前画布应用该矩阵，其中：</p>
+<ul>
+<li>a: 水平方向的缩放scaleX</li>
+<li>b: 竖直方向的倾斜偏移skewY</li>
+<li>c: 水平方向的倾斜偏移skewX</li>
+<li>d: 竖直方向的缩放scaleY</li>
+<li>e: 水平方向的移动translateX</li>
+<li>f: 竖直方向的移动translateY</li>
+</ul>
+<p><img src="/../images/2021/canvas_transform.png" alt="canvas_transform"></p>
+<p>setTransform(a, b, c, d, e, f)取消当前变形，然后设置为指定的变形。<br>resetTransform()重置当前变形为单位矩阵，即取消当前变形。等同于setTransform(1, 0, 0, 1, 0, 0)，即scale都是1，无旋转，无平移。</p>
+<p>补充完上面这些基础，下面我们来看看矩阵数学的应用。</p>
+<h2 id="矩阵"><a href="#矩阵" class="headerlink" title="矩阵"></a>矩阵</h2><p>矩阵被大量应用于 3D 系统中，以实现旋转、缩放以及平移 3D 坐标的功能。它也常用于各种 2D 图形的变换。</p>
+<p>首先我们复习下线代中学到的矩阵的基本算法。</p>
+<p>矩阵加&#x2F;减法就是相同位置的数字相加&#x2F;减：<br><img src="/../images/2021/matrix_plus.svg" alt="matrix_plus"><br>矩阵乘以矩阵：<br><img src="/../images/2021/matrix_multiply.svg" alt="matrix_multiply"><br>结果矩阵第m行与第n列交叉位置的那个值，等于第一个矩阵第m行与第二个矩阵第n列，对应位置的每个值的乘积之和:<br><img src="/../images/2021/matrix_multiply_formula.svg" alt="matrix_multiply_formula"></p>
+<p>矩阵的加减可以用于平移。<br>比如一个点(x, y, z),看作是1x3的矩阵(x y z)，假如dx、dy、dz 分别为 x、y、z 轴上的移动距离，距离也看作一个1x3的矩阵(dx dy dz)。那么我们将这两个矩阵相加，就可以得到平移后的点。</p>
+<p>矩阵乘法通常用于缩放和旋转。<br>比如，(w h d)分别对应一个物体现在3条轴上的值（宽、高、深）。<br>应用下面的缩放矩阵（sx、sy、sz 分别为对应轴上的缩放比例）：<br><img src="/../images/2021/multiply_a.svg" alt="multiply_a"><br>就需要用乘法：<br><img src="/../images/2021/multiply_scale.svg" alt="multiply_scale"><br>如果要把点(x, y, z)旋转，我们需要一个旋转矩阵，通过旋转矩阵，在3条轴中任意一条轴上旋转。<br>比如围绕x轴的旋转矩阵：<br><img src="/../images/2021/multiply_rotate_x.svg" alt="multiply_rotate_x"><br>这里的 cos 与 sin 代表要旋转的角度（以弧度为单位）的余弦和正弦值。</p>
+<p>和点(x, y, z)相乘：<br><img src="/../images/2021/multiply_rotate_x_result.svg" alt="multiply_rotate_x_result"></p>
+<p>所以点(x, y, z)以x轴旋转后的点是(x, y * cos - z * sin, y * sin + z * cos)。<br>假设绕x轴旋转45°，45°转成弧度是π &#x2F; 4，所以用js表示就是：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">x = x</span><br><span class="line">y = y * <span class="title class_">Math</span>.<span class="title function_">cos</span>(<span class="title class_">Math</span>.<span class="property">PI</span> / <span class="number">4</span>) - z * <span class="title class_">Math</span>.<span class="title function_">sin</span>(<span class="title class_">Math</span>.<span class="property">PI</span> / <span class="number">4</span>)</span><br><span class="line">z = y * <span class="title class_">Math</span>.<span class="title function_">sin</span>(<span class="title class_">Math</span>.<span class="property">PI</span> / <span class="number">4</span>) + z * <span class="title class_">Math</span>.<span class="title function_">cos</span>(<span class="title class_">Math</span>.<span class="property">PI</span> / <span class="number">4</span>)</span><br></pre></td></tr></table></figure>
+
+<p>围绕 y 轴旋转的矩阵：<br><img src="/../images/2021/multiply_rotate_y.svg" alt="multiply_rotate_y"></p>
+<p>围绕 z 轴旋转的矩阵：<br><img src="/../images/2021/multiply_rotate_z.svg" alt="multiply_rotate_z"></p>
+<h2 id="仿射变换"><a href="#仿射变换" class="headerlink" title="仿射变换"></a>仿射变换</h2><p>canvas 的context变换使用下面这个 3x3 的变换矩阵，也叫做仿射变换：<br><img src="/../images/2021/multiply_b.svg" alt="multiply_b"></p>
+<p>为了能应用仿射变换，二维向量 (x, y) 需要改写为三维向量 (x, y, 1)。由于 (u, v, w) 并不会用到，他们会直接设为 (0, 0, 1)，并保持不变。<br>可以通过调用ctx.setTransform(a, b, c, d, dx, dy)设置 canvas 上下文的变换矩阵，或者ctx.transform(a, b, c, d, dx, dy)累计变换效果（不取消当前变形）。</p>
+<p>如果没有为 canvas 设置任何变换矩阵，那么 canvas 会认为我们使用了一个单位矩阵（identity matrix）或一个空矩阵，就是类似下面这样一个矩阵：<br><img src="/../images/2021/multiply_ampty.svg" alt="multiply_ampty"></p>
+<p>应用空矩阵，相当于ctx.setTransform(1, 0, 0, 1, 0, 0)。</p>
+<p>仿射变换矩阵中的dx 和 dy 控制 canvas 上下文将要在 x 与 y 轴上平移的距离，而 a、b、c、d 则有点复杂，还可以将 a、b、c、d 联合起来设置成下面这个我们熟悉的旋转矩阵(上文的绕z轴旋转矩阵):<br><img src="/../images/2021/multiply_rotate_2d.svg" alt="multiply_rotate_2d"></p>
+<p>文章开头的例子中，最后我们绘制了一个小的黑色方形：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctx.<span class="title function_">fillRect</span>(<span class="number">60</span>, <span class="number">60</span>, <span class="number">30</span>, <span class="number">30</span>);</span><br></pre></td></tr></table></figure>
+
+<p>如果我们要以方形的中心点旋转45度，可以将上面的ctx.fillRect(60, 60, 30, 30)换成下面的写法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> sin = <span class="title class_">Math</span>.<span class="title function_">sin</span>(<span class="title class_">Math</span>.<span class="property">PI</span> / <span class="number">4</span>);</span><br><span class="line"><span class="keyword">var</span> cos = <span class="title class_">Math</span>.<span class="title function_">cos</span>(<span class="title class_">Math</span>.<span class="property">PI</span> / <span class="number">4</span>);</span><br><span class="line">ctx.<span class="title function_">transform</span>(cos, sin, -sin, cos, <span class="number">75</span>, <span class="number">75</span>);</span><br><span class="line">ctx.<span class="title function_">fillRect</span>(-<span class="number">15</span>, -<span class="number">15</span>, <span class="number">30</span>, <span class="number">30</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/canvas_rotate_45.png" alt="canvas_rotate_45"></p>
+<p>这里的Math.PI &#x2F; 4改成直接调上面写过的角度与弧度的换算函数degreesToRadians(45)，会更好理解是旋转45°。</p>
+<h2 id="推导旋转公式"><a href="#推导旋转公式" class="headerlink" title="推导旋转公式"></a>推导旋转公式</h2><p>下面我们以2D平面旋转为例，推导旋转公式（即canvas旋转矩阵的推导）。<br>首先我们回顾下canvas旋转矩阵：</p>
+<p><img src="/../images/2021/multiply_rotate_z.svg" alt="multiply_rotate_z"></p>
+<p>点(x, y)应用该矩阵：<br><img src="/../images/2021/multiply_rotate_canvas_result.svg" alt="multiply_rotate_canvas_result"></p>
+<p>结果是点(x, y)变成点(x * cos - y * sin, x * six + y * cos)</p>
+<p>下面我们就一步步推导。</p>
+<p>我们已知点(x, y)要围绕中心点(0, 0)旋转rotation角度。<br>求旋转后的点的坐标(x1, y1)。</p>
+<p>设点(x, y)到原点的距离是radius，与x轴的夹角是angle。<br>那么：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">x = radius * <span class="title function_">cos</span>(angle)</span><br><span class="line">y = radius * <span class="title function_">sin</span>(angle)</span><br><span class="line"></span><br><span class="line">x1 = radius * <span class="title function_">cos</span>(angle + rotation)</span><br><span class="line">y1 = radius * <span class="title function_">sin</span>(angle + rotation)</span><br></pre></td></tr></table></figure>
+
+<p>接下来运用cos(a + b)和sin(a + b)的展开公式把x1和y1展开：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x1 = radius * <span class="title function_">cos</span>(angle) * <span class="title function_">cos</span>(rotation) - radius * <span class="title function_">sin</span>(angle) * <span class="title function_">sin</span>(rotation)</span><br><span class="line">y1 = radius * <span class="title function_">sin</span>(angle) * <span class="title function_">cos</span>(rotation) + radius * <span class="title function_">cos</span>(angle) * <span class="title function_">sin</span>(rotation)</span><br></pre></td></tr></table></figure>
+
+<p>再把x &#x3D; radius * cos(angle)和y &#x3D; radius * sin(angle)带入得：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x1 = x * <span class="title function_">cos</span>(rotation) - y * <span class="title function_">sin</span>(rotation)</span><br><span class="line">y1 = y * <span class="title function_">cos</span>(rotation) + x * <span class="title function_">sin</span>(rotation)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到(x1, y1)的值和运用旋转矩阵后的值一致。<br>矩阵只是组织各种公式与方程的另一种方法而已，所以并没有什么不同。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Canvas_API/Tutorial/Transformations">变形 Transformations</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/JChehe/blog/issues/40">HTML5 + JavaScript 动画基础</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2015/09/matrix-multiplication.html">理解矩阵乘法</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80%E6%BB%A4%E9%95%9C/" rel="prev" title="前端基础滤镜">
+                  <i class="fa fa-angle-left"></i> 前端基础滤镜
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%8D%B7%E7%A7%AF%E5%9C%A8%E5%89%8D%E7%AB%AF%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E4%B8%8A%E7%9A%84%E5%BA%94%E7%94%A8/" rel="next" title="卷积在前端图像处理上的应用">
+                  卷积在前端图像处理上的应用 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Lovelyun</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

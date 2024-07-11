@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言前端文件系统api（The File System Access API）让web应用可以读写用户本地的文件或文件夹。使我们可以开发出能够和用户本地文件交互的web应用，比如IDE，图片和视频编辑器，文字编辑器等等。 在用户开启web应用权限后，这些api可以直接在用户本地读写文件或文件夹，打开一个目录并显示里面的内容，在用户本地创建或删除文件夹和文件。 打开比如页面中有个打开按钮： 1&amp;lt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端文件系统">
+<meta property="og:url" content="http://example.com/js/%E5%89%8D%E7%AB%AF%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言前端文件系统api（The File System Access API）让web应用可以读写用户本地的文件或文件夹。使我们可以开发出能够和用户本地文件交互的web应用，比如IDE，图片和视频编辑器，文字编辑器等等。 在用户开启web应用权限后，这些api可以直接在用户本地读写文件或文件夹，打开一个目录并显示里面的内容，在用户本地创建或删除文件夹和文件。 打开比如页面中有个打开按钮： 1&amp;lt">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/2021/fileHandle.png">
+<meta property="og:image" content="http://example.com/images/2021/permission_save.png">
+<meta property="og:image" content="http://example.com/images/2021/DOMException.png">
+<meta property="og:image" content="http://example.com/images/2021/save_as_text.png">
+<meta property="og:image" content="http://example.com/images/2021/startIn.png">
+<meta property="og:image" content="http://example.com/images/2021/permission_openDir.png">
+<meta property="article:published_time" content="2021-11-16T17:58:10.000Z">
+<meta property="article:modified_time" content="2024-07-11T02:49:12.957Z">
+<meta property="article:author" content="Lovelyun">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/2021/fileHandle.png">
+
+
+<link rel="canonical" href="http://example.com/js/%E5%89%8D%E7%AB%AF%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/js/%E5%89%8D%E7%AB%AF%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/","path":"js/前端文件系统/","title":"前端文件系统"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>前端文件系统 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%93%E5%BC%80"><span class="nav-number">2.</span> <span class="nav-text">打开</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%BA%E5%88%86-file-pickers"><span class="nav-number">2.1.</span> <span class="nav-text">区分 file pickers</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%9D%E5%AD%98"><span class="nav-number">3.</span> <span class="nav-text">保存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%A6%E5%AD%98"><span class="nav-number">4.</span> <span class="nav-text">另存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%9D%E5%AD%98%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.1.</span> <span class="nav-text">保存类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4%E7%9B%AE%E5%BD%95"><span class="nav-number">4.2.</span> <span class="nav-text">默认目录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">5.</span> <span class="nav-text">文件夹</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%93%E5%BC%80%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">5.1.</span> <span class="nav-text">打开文件夹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%96%87%E4%BB%B6%E5%92%8C%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">5.2.</span> <span class="nav-text">创建文件和文件夹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90%E8%B7%AF%E5%BE%84"><span class="nav-number">5.3.</span> <span class="nav-text">解析路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A0%E9%99%A4"><span class="nav-number">5.4.</span> <span class="nav-text">删除</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%96%E6%8B%BD"><span class="nav-number">6.</span> <span class="nav-text">拖拽</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A5%E4%B8%81"><span class="nav-number">7.</span> <span class="nav-text">补丁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E5%85%A8"><span class="nav-number">8.</span> <span class="nav-text">安全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%93%E5%BC%80%E6%88%96%E5%8F%A6%E5%AD%98%E6%96%87%E4%BB%B6"><span class="nav-number">8.1.</span> <span class="nav-text">打开或另存文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%A4%B9%E9%99%90%E5%88%B6"><span class="nav-number">8.2.</span> <span class="nav-text">文件夹限制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%9D%E5%AD%98-1"><span class="nav-number">8.3.</span> <span class="nav-text">保存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%8F%E6%98%8E"><span class="nav-number">8.4.</span> <span class="nav-text">透明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%89%E6%95%88%E6%9C%9F"><span class="nav-number">8.5.</span> <span class="nav-text">有效期</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lovelyun</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/js/%E5%89%8D%E7%AB%AF%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lovelyun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="前端文件系统 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          前端文件系统
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-11-16 17:58:10" itemprop="dateCreated datePublished" datetime="2021-11-16T17:58:10+00:00">2021-11-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-07-11 02:49:12" itemprop="dateModified" datetime="2024-07-11T02:49:12+00:00">2024-07-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/js/" itemprop="url" rel="index"><span itemprop="name">js</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前端文件系统api（The File System Access API）让web应用可以读写用户本地的文件或文件夹。使我们可以开发出能够和用户本地文件交互的web应用，比如IDE，图片和视频编辑器，文字编辑器等等。</p>
+<p>在用户开启web应用权限后，这些api可以直接在用户本地读写文件或文件夹，打开一个目录并显示里面的内容，在用户本地创建或删除文件夹和文件。</p>
+<h2 id="打开"><a href="#打开" class="headerlink" title="打开"></a>打开</h2><p>比如页面中有个打开按钮：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;open&quot;</span>&gt;</span>打开<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>点击后，调用showOpenFilePicker就可以弹出文件选择窗，我们选择文件，再调用getFile即可获取文件的file数据，这个file数据和<input type="file">获取的file数据一样。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> openElm = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;open&#x27;</span>)</span><br><span class="line"><span class="keyword">let</span> fileHandle</span><br><span class="line">openElm.<span class="title function_">addEventListener</span>(<span class="string">&#x27;click&#x27;</span>, <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">  [fileHandle] = <span class="keyword">await</span> <span class="variable language_">window</span>.<span class="title function_">showOpenFilePicker</span>()</span><br><span class="line">  <span class="keyword">const</span> file = <span class="keyword">await</span> fileHandle.<span class="title function_">getFile</span>()</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>上面的例子中，我们选择了一个文件，showOpenFilePicker返回了FileSystemFileHandle类型的数组：</p>
+<p><img src="/../images/2021/fileHandle.png" alt="fileHandle"></p>
+<p>这里的fileHandle将会很有用，后面的保存等操作都需要它。</p>
+<h3 id="区分-file-pickers"><a href="#区分-file-pickers" class="headerlink" title="区分 file pickers"></a>区分 file pickers</h3><p>有时应用会有多个不同的picker，比如富文本编辑器可以打开文本，也可以打开图片，默认情况下，每个file picker会记住上次的路径，我们可以通过id来区分不同的file picker，让它们记住不同的最近一次打开的路径。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fileHandle1 = <span class="keyword">await</span> <span class="variable language_">window</span>.<span class="title function_">showSaveFilePicker</span>(&#123;</span><br><span class="line">  <span class="attr">id</span>: <span class="string">&#x27;openText&#x27;</span>,</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> fileHandle2 = <span class="keyword">await</span> <span class="variable language_">window</span>.<span class="title function_">showSaveFilePicker</span>(&#123;</span><br><span class="line">  <span class="attr">id</span>: <span class="string">&#x27;importImage&#x27;</span>,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>不过这个功能，我在windows上Chrome版本 96.0.4664.45（正式版本） （64 位）上试验失败了，file picker没有记住上次打开的路径。</p>
+<h2 id="保存"><a href="#保存" class="headerlink" title="保存"></a>保存</h2><p>保存会重写原文件。</p>
+<p>页面中，我们放一个打开和保存按钮，还有一个文本框：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;open&quot;</span>&gt;</span>打开<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;save&quot;</span>&gt;</span>保存<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">textarea</span> <span class="attr">id</span>=<span class="string">&quot;textArea&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">textarea</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>点击打开按钮，我们选择文件，比如test.txt，并把文本内容显示到textArea：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">openElm.<span class="title function_">addEventListener</span>(<span class="string">&#x27;click&#x27;</span>, <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">  [fileHandle] = <span class="keyword">await</span> <span class="variable language_">window</span>.<span class="title function_">showOpenFilePicker</span>()</span><br><span class="line">  <span class="keyword">const</span> file = <span class="keyword">await</span> fileHandle.<span class="title function_">getFile</span>()</span><br><span class="line">  <span class="keyword">const</span> contents = <span class="keyword">await</span> file.<span class="title function_">text</span>()</span><br><span class="line">  textArea.<span class="property">value</span> = contents</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>点击保存时调用writeFile：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">saveElm.<span class="title function_">addEventListener</span>(<span class="string">&#x27;click&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="title function_">writeFile</span>(fileHandle, textArea.<span class="property">value</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>writeFile函数中创建可写数据流，把textArea的内容写进去：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">writeFile</span>(<span class="params">fileHandle, contents</span>) &#123;</span><br><span class="line">  <span class="comment">// 创建一个FileSystemWritableFileStream用来写数据</span></span><br><span class="line">  <span class="keyword">const</span> writable = <span class="keyword">await</span> fileHandle.<span class="title function_">createWritable</span>()</span><br><span class="line">  <span class="comment">// 把file的数据写到流中</span></span><br><span class="line">  <span class="keyword">await</span> writable.<span class="title function_">write</span>(contents)</span><br><span class="line">  <span class="comment">// 关闭文件并将内容写入磁盘</span></span><br><span class="line">  <span class="keyword">await</span> writable.<span class="title function_">close</span>()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>写数据用到FileSystemWritableFileStream对象，它本质上是一个可写的流，调用fileHandle的createWritable就可以创建，调用createWritable时，浏览器会先检查是否有写的权限，没有的话浏览器就会弹对话框，让用户选择是否开启写权限：</p>
+<p><img src="/../images/2021/permission_save.png" alt="permission_save"></p>
+<p>用户拒绝时createWritable会抛出DOMException的错误：</p>
+<p><img src="/../images/2021/DOMException.png" alt="DOMException"></p>
+<p>这样，应用就不会保存更改。</p>
+<p>上面的writeFile方法在写数据时用的contents是字符串，我们也可以用其它格式的数据，比如BufferSource，或者Blob：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">writeURLToFile</span>(<span class="params">fileHandle, url</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> writable = <span class="keyword">await</span> fileHandle.<span class="title function_">createWritable</span>()</span><br><span class="line">  <span class="keyword">const</span> response = <span class="keyword">await</span> <span class="title function_">fetch</span>(url)</span><br><span class="line">  <span class="comment">// 让响应的数据流入文件中，pipeTo默认会关闭管道，不需要手动关闭</span></span><br><span class="line">  <span class="keyword">await</span> response.<span class="property">body</span>.<span class="title function_">pipeTo</span>(writable)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们还可以在打开时手动申请写的权限，用户打开文件时看到一个对话框，然后我们对打开的文件就有了读写权限，在保存时就不会再弹对话框。</p>
+<p>通过下面的verifyPermission函数来判断fileHandle是否有读写权限，结果是true则开启了，false则是用户拒绝了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">verifyPermission</span>(<span class="params">fileHandle, readWrite</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> options = &#123;&#125;</span><br><span class="line">  <span class="keyword">if</span> (readWrite) &#123;</span><br><span class="line">    options.<span class="property">mode</span> = <span class="string">&#x27;readwrite&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 是否开启权限，是就返回true</span></span><br><span class="line">  <span class="keyword">if</span> ((<span class="keyword">await</span> fileHandle.<span class="title function_">queryPermission</span>(options)) === <span class="string">&#x27;granted&#x27;</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 请求开启权限，是就返回true</span></span><br><span class="line">  <span class="keyword">if</span> ((<span class="keyword">await</span> fileHandle.<span class="title function_">requestPermission</span>(options)) === <span class="string">&#x27;granted&#x27;</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 用户拒绝开启权限，返回false</span></span><br><span class="line">  <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="另存"><a href="#另存" class="headerlink" title="另存"></a>另存</h2><p>另存会创建一个新的文件。<br>调用showSaveFilePicker会弹出保存弹窗:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">await</span> <span class="variable language_">window</span>.<span class="title function_">showSaveFilePicker</span>()</span><br></pre></td></tr></table></figure>
+
+<h3 id="保存类型"><a href="#保存类型" class="headerlink" title="保存类型"></a>保存类型</h3><p>types参数控制保存类型：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">await</span> <span class="variable language_">window</span>.<span class="title function_">showSaveFilePicker</span>(&#123;</span><br><span class="line">  <span class="attr">types</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">description</span>: <span class="string">&#x27;Text Files&#x27;</span>,</span><br><span class="line">      <span class="attr">accept</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;text/plain&#x27;</span>: [<span class="string">&#x27;.txt&#x27;</span>],</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">  ],</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/save_as_text.png" alt="save_as_text"></p>
+<h3 id="默认目录"><a href="#默认目录" class="headerlink" title="默认目录"></a>默认目录</h3><p>同样的，我们也可以设置启动目录。如果你是编辑文本，会希望打开或保存时的文件夹路径是文档，如果是编辑图片，则默认图片文件夹，这个路径可以通过配置startIn来实现：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">startIn</span>: <span class="string">&#x27;pictures&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>还有其他目录可以配置：</p>
+<ul>
+<li>desktop： 桌面</li>
+<li>documents： 文档</li>
+<li>downloads： 下载</li>
+<li>music： 音乐</li>
+<li>pictures： 图片</li>
+<li>videos： 视频<br>windows中对应文件夹的这些目录：</li>
+</ul>
+<p><img src="/../images/2021/startIn.png" alt="startIn"></p>
+<p>除了上面这些通用的目录，你还可以设置为存在的文件或目录地址：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> openElm = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;open&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> saveAsElm = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;saveAs&#x27;</span>)</span><br><span class="line"><span class="keyword">let</span> fileHandle</span><br><span class="line">openElm.<span class="title function_">addEventListener</span>(<span class="string">&#x27;click&#x27;</span>, <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">  [fileHandle] = <span class="keyword">await</span> <span class="variable language_">window</span>.<span class="title function_">showOpenFilePicker</span>()</span><br><span class="line">&#125;)</span><br><span class="line">saveAsElm.<span class="title function_">addEventListener</span>(<span class="string">&#x27;click&#x27;</span>, <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">  <span class="variable language_">window</span>.<span class="title function_">showSaveFilePicker</span>(&#123;</span><br><span class="line">    <span class="attr">startIn</span>: fileHandle</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>上面的例子中，我们showOpenFilePicker打开了文件，在showSaveFilePicker保存时startIn传打开的fileHandle，即可将保存弹窗的路径设置为和打开时选择的文件路径一致。</p>
+<h2 id="文件夹"><a href="#文件夹" class="headerlink" title="文件夹"></a>文件夹</h2><h3 id="打开文件夹"><a href="#打开文件夹" class="headerlink" title="打开文件夹"></a>打开文件夹</h3><p>showDirectoryPicker可以打开文件夹并获取其中的内容：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">openElm.<span class="title function_">addEventListener</span>(<span class="string">&#x27;click&#x27;</span>, <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> dirHandle = <span class="keyword">await</span> <span class="variable language_">window</span>.<span class="title function_">showDirectoryPicker</span>()</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> <span class="keyword">await</span> (<span class="keyword">const</span> entry <span class="keyword">of</span> dirHandle.<span class="title function_">values</span>()) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(entry)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>如果没有权限，浏览器会弹对话框：</p>
+<p><img src="/../images/2021/permission_openDir.png" alt="permission_openDir"></p>
+<h3 id="创建文件和文件夹"><a href="#创建文件和文件夹" class="headerlink" title="创建文件和文件夹"></a>创建文件和文件夹</h3><p>在文件夹中，你可以用getFileHandle读取文件，用getDirectoryHandle读取文件夹，在可选参数中传create来控制当新文件和文件夹不存在时是否需要创建。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 打开文件夹</span></span><br><span class="line"><span class="keyword">const</span> dirHandle = <span class="keyword">await</span> <span class="variable language_">window</span>.<span class="title function_">showDirectoryPicker</span>()</span><br><span class="line"><span class="comment">// 在打开的文件夹中新建名为 &quot;My Documents&quot;的文件夹</span></span><br><span class="line"><span class="keyword">const</span> newDirectoryHandle = <span class="keyword">await</span> dirHandle.<span class="title function_">getDirectoryHandle</span>(<span class="string">&#x27;My Documents&#x27;</span>, &#123; <span class="attr">create</span>: <span class="literal">true</span> &#125;)</span><br><span class="line"><span class="comment">// 在&quot;My Documents&quot;文件夹中新建名为 &quot;My Notes.txt&quot; 的文件</span></span><br><span class="line"><span class="keyword">const</span> newFileHandle = <span class="keyword">await</span> newDirectoryHandle.<span class="title function_">getFileHandle</span>(<span class="string">&#x27;My Notes.txt&#x27;</span>, &#123; <span class="attr">create</span>: <span class="literal">true</span> &#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="解析路径"><a href="#解析路径" class="headerlink" title="解析路径"></a>解析路径</h3><p>上面的例子在打开的文件夹中创建文件夹并在新文件夹中新建文件，我们可以解析新建文件的路径：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> path = <span class="keyword">await</span> dirHandle.<span class="title function_">resolve</span>(newFileHandle)</span><br><span class="line"><span class="comment">// path 的值是 [&quot;My Documents&quot;, &quot;My Notes.txt&quot;]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h3><p>删除上面新建的My Notes.txt文件：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">await</span> newDirectoryHandle.<span class="title function_">removeEntry</span>(<span class="string">&#x27;My Notes.txt&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>删除上面的My Documents文件夹：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">await</span> dirHandle.<span class="title function_">removeEntry</span>(<span class="string">&#x27;My Documents&#x27;</span>, &#123; <span class="attr">recursive</span>: <span class="literal">true</span> &#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="拖拽"><a href="#拖拽" class="headerlink" title="拖拽"></a>拖拽</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;dragover&#x27;</span>, <span class="keyword">async</span> (e) =&gt; &#123;</span><br><span class="line">  e.<span class="title function_">preventDefault</span>()</span><br><span class="line">&#125;)</span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;drop&#x27;</span>, <span class="keyword">async</span> (e) =&gt; &#123;</span><br><span class="line">  e.<span class="title function_">preventDefault</span>()</span><br><span class="line">  <span class="comment">// 遍历多有的item</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> item <span class="keyword">of</span> e.<span class="property">dataTransfer</span>.<span class="property">items</span>) &#123;</span><br><span class="line">    <span class="comment">// 注意：文件和文件夹的kind都是file</span></span><br><span class="line">    <span class="keyword">if</span> (item.<span class="property">kind</span> === <span class="string">&#x27;file&#x27;</span>) &#123;</span><br><span class="line">      <span class="keyword">const</span> entry = <span class="keyword">await</span> item.<span class="title function_">getAsFileSystemHandle</span>()</span><br><span class="line">      <span class="keyword">if</span> (entry.<span class="property">kind</span> === <span class="string">&#x27;directory&#x27;</span>) &#123;</span><br><span class="line">        <span class="comment">// 处理文件夹</span></span><br><span class="line">        <span class="title function_">handleDirectoryEntry</span>(entry)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 处理文件</span></span><br><span class="line">        <span class="title function_">handleFileEntry</span>(entry)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="补丁"><a href="#补丁" class="headerlink" title="补丁"></a>补丁</h2><p>还不能给File System Access API打完整的补丁。</p>
+<ul>
+<li>showOpenFilePicker可以用<code>&lt;input type=&quot;file&quot;&gt;</code>代替</li>
+<li>showSaveFilePicker可以用<code>&lt;a download=&quot;file_name&quot;&gt;</code>代替，尽管这能触发下载，但不能覆盖现有文件</li>
+<li>showDirectoryPicker可以用<code>&lt;input type=&quot;file&quot; webkitdirectory&gt;</code>替代<br>browser-fs-access封装了前端文件系统api，会尽量使用File System Access API，不支持的浏览器使用其他方案。</li>
+</ul>
+<h2 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h2><p>Chrome团队设计并实现了文件系统访问API，使用了控制访问强大Web平台功能的核心原则。</p>
+<h3 id="打开或另存文件"><a href="#打开或另存文件" class="headerlink" title="打开或另存文件"></a>打开或另存文件</h3><p>打开文件时，用户通过 file picker 提供读取文件的权限，用来打开的file picker只能用户手动点开，如果用户改变主意了，可以点取消，然后应用不会得到任何用户数据，表现和<input type="file">一样。</p>
+<p>同样的，当应用要另存时，浏览器会弹出保存窗口，让用户指定文件名和位置。</p>
+<h3 id="文件夹限制"><a href="#文件夹限制" class="headerlink" title="文件夹限制"></a>文件夹限制</h3><p>为了保护用户及其数据，浏览器不允许用户保存到一些文件夹，比如核心操作系统文件夹。如果要保存到这些位置，浏览器会弹窗让用户选择其他路径。</p>
+<h3 id="保存-1"><a href="#保存-1" class="headerlink" title="保存"></a>保存</h3><p>保存时会覆盖源文件，web应用必须得到用户明确同意后才能保存。</p>
+<p>如果用户要保存对开启了读取权限文件的更改，浏览器就会弹对话框，问用户是否要保存。</p>
+<p>另外，可以编辑多个文件的web应用程序(比如IDE)也可以在打开时请求保存更改的权限。</p>
+<p>如果在对话框中用户点击取消，不给写的权限，那么应用就不能保存更改。这时就需要提供保存的替代方案，让用户可以保存数据，比如提供下载途径，或者保存到云端等等。</p>
+<h3 id="透明"><a href="#透明" class="headerlink" title="透明"></a>透明</h3><p>用户开启应用保存权限后，浏览器会在地址栏显示一个图标，点击图标可以显示开启权限了的文件列表，也可以很方便的取消保存权限。</p>
+<h3 id="有效期"><a href="#有效期" class="headerlink" title="有效期"></a>有效期</h3><p>同一个域名下所有的页面都关闭后，保存权限就没了，用户下一次访问时，会再次弹对话框来询问是否开启权限。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://web.dev/file-system-access/">The File System Access API: simplifying access to local files</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/" rel="prev" title="前端那些文件格式">
+                  <i class="fa fa-angle-left"></i> 前端那些文件格式
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/ai/AI%E5%85%A5%E9%97%A8%E4%B9%8B%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/" rel="next" title="AI入门之环境安装">
+                  AI入门之环境安装 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Lovelyun</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

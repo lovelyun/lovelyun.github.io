@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="简介OpenCV(Open Source Computer Vision Library)，是一个在图像处理和识别上很强大的库，最开始只有C++版本，但现在构建了各种不同语言的版本，比如Python和Java，甚至是JavaScript，本文要介绍的就是JavaScript版本的OpenCV.js。 如何获取OpenCV.js1、官方编译好的版本下载地址为：https:&#x2F;&#x2F;docs.opencv.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端如何使用openCV">
+<meta property="og:url" content="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8openCV/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="简介OpenCV(Open Source Computer Vision Library)，是一个在图像处理和识别上很强大的库，最开始只有C++版本，但现在构建了各种不同语言的版本，比如Python和Java，甚至是JavaScript，本文要介绍的就是JavaScript版本的OpenCV.js。 如何获取OpenCV.js1、官方编译好的版本下载地址为：https:&#x2F;&#x2F;docs.opencv.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/2021/color_gray.png">
+<meta property="article:published_time" content="2021-08-05T09:55:43.000Z">
+<meta property="article:modified_time" content="2024-07-11T02:49:12.957Z">
+<meta property="article:author" content="Lovelyun">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/2021/color_gray.png">
+
+
+<link rel="canonical" href="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8openCV/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8openCV/","path":"图像处理/前端如何使用openCV/","title":"前端如何使用openCV"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>前端如何使用openCV | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96OpenCV-js"><span class="nav-number">2.</span> <span class="nav-text">如何获取OpenCV.js</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">实现一个简单的处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E5%9B%BE%E7%89%87"><span class="nav-number">4.</span> <span class="nav-text">下载图片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lovelyun</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8openCV/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lovelyun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="前端如何使用openCV | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          前端如何使用openCV
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-08-05 09:55:43" itemprop="dateCreated datePublished" datetime="2021-08-05T09:55:43+00:00">2021-08-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-07-11 02:49:12" itemprop="dateModified" datetime="2024-07-11T02:49:12+00:00">2024-07-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">图像处理</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>OpenCV(Open Source Computer Vision Library)，是一个在图像处理和识别上很强大的库，最开始只有C++版本，但现在构建了各种不同语言的版本，比如Python和Java，甚至是JavaScript，本文要介绍的就是JavaScript版本的OpenCV.js。</p>
+<h2 id="如何获取OpenCV-js"><a href="#如何获取OpenCV-js" class="headerlink" title="如何获取OpenCV.js"></a>如何获取OpenCV.js</h2><p>1、官方编译好的版本下载地址为：<br><a target="_blank" rel="noopener" href="https://docs.opencv.org/_VERSION_/opencv.js">https://docs.opencv.org/_VERSION_/opencv.js</a><br>其中 VERSION 换成你想要的版本。<br>目前最新的為 4.5.3 版本，那么下载地址就是<a target="_blank" rel="noopener" href="https://docs.opencv.org/4.5.3/opencv.js">https://docs.opencv.org/4.5.3/opencv.js</a></p>
+<p>2、参照<a target="_blank" rel="noopener" href="https://docs.opencv.org/4.5.3/d4/da1/tutorial_js_setup.html">官网</a>自行构建<code>OpenCV.js</code></p>
+<h2 id="实现一个简单的处理"><a href="#实现一个简单的处理" class="headerlink" title="实现一个简单的处理"></a>实现一个简单的处理</h2><p>图片灰度处理效果：</p>
+<p><img src="/../images/2021/color_gray.png" alt="color_gray"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">title</span>&gt;</span>OpenCV.js<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">style</span> <span class="attr">type</span>=<span class="string">&quot;text/css&quot;</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">            <span class="selector-class">.wrap-image</span> &#123;</span></span><br><span class="line"><span class="language-css">                <span class="attribute">display</span>: flex;</span></span><br><span class="line"><span class="language-css">                <span class="attribute">flex-direction</span>: row;</span></span><br><span class="line"><span class="language-css">                <span class="attribute">margin-top</span>: <span class="number">10px</span>;</span></span><br><span class="line"><span class="language-css">            &#125;</span></span><br><span class="line"><span class="language-css">            <span class="selector-class">.wrap-image</span> <span class="selector-tag">img</span>,</span></span><br><span class="line"><span class="language-css">            <span class="selector-class">.wrap-image</span> <span class="selector-tag">canvas</span> &#123;</span></span><br><span class="line"><span class="language-css">                <span class="attribute">width</span>: <span class="number">300px</span>;</span></span><br><span class="line"><span class="language-css">                <span class="attribute">margin-right</span>: <span class="number">10px</span>;</span></span><br><span class="line"><span class="language-css">            &#125;</span></span><br><span class="line"><span class="language-css">        </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">h3</span> <span class="attr">id</span>=<span class="string">&quot;status&quot;</span>&gt;</span>Loading the Opencv ...<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">id</span>=<span class="string">&quot;fileInput&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;wrap-image&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">img</span> <span class="attr">id</span>=<span class="string">&quot;imageUpload&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;No Image&quot;</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">canvas</span> <span class="attr">id</span>=<span class="string">&quot;canvasOutput&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">canvas</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">let</span> imgElement = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">let</span> inputElement = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;fileInput&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            inputElement.<span class="property">onchange</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">              imgElement.<span class="property">src</span> = <span class="variable constant_">URL</span>.<span class="title function_">createObjectURL</span>(event.<span class="property">target</span>.<span class="property">files</span>[<span class="number">0</span>]);</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            imgElement.<span class="property">onload</span> =<span class="keyword">function</span>(<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                <span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">                <span class="keyword">let</span> dst = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span></span><br><span class="line"><span class="language-javascript">                cv.<span class="title function_">cvtColor</span>(src, dst, cv.<span class="property">COLOR_RGBA2GRAY</span>, <span class="number">0</span>);</span></span><br><span class="line"><span class="language-javascript">                cv.<span class="title function_">imshow</span>(<span class="string">&#x27;canvasOutput&#x27;</span>, dst);</span></span><br><span class="line"><span class="language-javascript">                src.<span class="title function_">delete</span>(); dst.<span class="title function_">delete</span>();</span></span><br><span class="line"><span class="language-javascript">            &#125;;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">function</span> <span class="title function_">onOpenCvReady</span>(<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;status&#x27;</span>).<span class="title function_">remove</span>();</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript">        </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">async</span> <span class="attr">src</span>=<span class="string">&quot;js/opencv.js&quot;</span> <span class="attr">onload</span>=<span class="string">&quot;onOpenCvReady();&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>代码解析：<br>1、opencv.js很大，载入时需要加上async，并设定onload来检测是否载入完成。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">async</span> <span class="attr">src</span>=<span class="string">&quot;js/opencv.js&quot;</span> <span class="attr">onload</span>=<span class="string">&quot;onOpenCvReady();&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>2、记得及时清理Mat对象，释放内存。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">src.<span class="title function_">delete</span>();</span><br><span class="line">dst.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+
+<p>3、imread和imshow 必须传入 <code>&lt;img /&gt;</code> 或 <code>&lt;canvas /&gt;</code> 的 <code>id</code> 或是 <code>DOM</code>。</p>
+<h2 id="下载图片"><a href="#下载图片" class="headerlink" title="下载图片"></a>下载图片</h2><p>图片处理好了，用户想要下载，那就再html中加上下载链接：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span> <span class="attr">id</span>=<span class="string">&quot;downloadButton&quot;</span>&gt;</span>下载<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后把下面的JavaScript加到之前的script标签中：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;downloadButton&#x27;</span>).<span class="property">onclick</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">href</span> = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;canvasOutput&#x27;</span>).<span class="title function_">toDataURL</span>();</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">download</span> = <span class="string">&#x27;image.png&#x27;</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>总结<br>一旦你习惯了将图像作为Mat对象来操作，你就可以做更多的事情了,你可以在<a target="_blank" rel="noopener" href="https://docs.opencv.org/4.5.3/d5/d10/tutorial_js_root.html">OpenCV的网站</a>上找到更多的教程，包括人脸识别和模板匹配等等。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://hi-upchen.medium.com/%E5%A6%82%E4%BD%95%E5%9C%A8-nodejs-%E6%88%96%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8-opencv-%E5%85%8D%E5%AE%89%E8%A3%9D-cc2fea289054">如何在 Nodejs 或前端使用 OpenCV（免安裝）. 在本機使用 OpenCV 很簡單，在伺服器端使用 OpenCV… | by Up Chen | Medium</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.digitalocean.com/community/tutorials/introduction-to-computer-vision-in-javascript-using-opencvjs">An Introduction to Computer Vision in JavaScript using OpenCV.js | DigitalOcean</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/%E5%8A%A8%E6%95%88/SVG%20Path%E5%AE%9E%E7%8E%B0tooltips/" rel="prev" title="SVG Path实现tooltips">
+                  <i class="fa fa-angle-left"></i> SVG Path实现tooltips
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87LUT%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E6%BB%A4%E9%95%9C/" rel="next" title="前端如何通过LUT实现图片滤镜">
+                  前端如何通过LUT实现图片滤镜 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Lovelyun</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
