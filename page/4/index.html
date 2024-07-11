@@ -1,329 +1,419 @@
-<!DOCTYPE html>
-<html lang=en>
-<head>
-    <!-- so meta -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/page/4/index.html">
-<meta property="og:site_name" content="Hexo">
-<meta property="og:locale" content="en_US">
-<meta property="article:author" content="Lovelyun">
-<meta name="twitter:card" content="summary">
-    
-    
-      
-        
-          <link rel="shortcut icon" href="/images/favicon.ico">
-        
-      
-      
-        
-          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
-        
-      
-      
-        
-          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-        
-      
-    
-    <!-- title -->
-    <title>Hexo</title>
-    <!-- async scripts -->
-    <!-- Google Analytics -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="baidu-site-verification" content="1EB8XoOl0C"><meta name="google-site-verification" content="K7thEgdLm0UfRWJ5MGdF7sCcjClSzAlxFLPv2Oz5CGM"><title>Hexo</title><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content=""><meta name="keywords"><meta name="author" content="Lovelyun"><link rel="short icon" href="/images/favicon.ico"><link rel="stylesheet" href="/css/bubuzou.css"><link rel="search" type="application/opensearchdescription+xml" href="http://example.com/atom.xml" title="Hexo"><script src='//unpkg.com/valine/dist/Valine.min.js'></script><meta name="generator" content="Hexo 7.2.0"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head><body><header><div class="header row"><ul id="nav_list" class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" data-hover="博文" class="nav-list-link">博文</a></li><li class="nav-list-item"><a href="/archives/" target="_self" data-hover="归档" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/categories/live/" target="_self" data-hover="生活" class="nav-list-link">生活</a></li><li class="nav-list-item"><a href="/categories/read/" target="_self" data-hover="读书" class="nav-list-link">读书</a></li><li class="nav-list-item"><a href="/about/" target="_self" data-hover="关于" class="nav-list-link">关于</a></li></ul><div class="search"><a id="search_btn" href="#search"></a></div><div id="nav_btn" class="nav-btn"><span></span><span></span><span></span></div></div></header><div class="row scroll-con"><section class="container"><!-- for archive page--><ul class="home post-list"><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/%E5%8A%A8%E6%95%88/lottie-web%E5%BA%94%E7%94%A8%E4%BC%98%E5%8C%96/" class="post-title-link">lottie-web应用优化</a></h2><div class="post-info">2019-04-20<p id="busuanzi_container_page_pv" class="visit"><span id="busuanzi_value_page_pv"></span><span>次访问</span></p></div><div class="post-content"><p><a target="_blank" rel="noopener" href="https://lovelyun.github.io/animation/Web%E5%8A%A8%E7%94%BB%E4%B9%8BAE+Bodymovin/">Web动画之AE+Bodymovin</a>文中的应用过程最近找到了2点优化空间：</p>
+<p>1、图片资源加载2次，增加了CDN流量。优化方向：图片加载次数减小到1次；<br>2、设计输出的图片资源多且零散，有9张小图片。优化方向：多张图片合并成1张雪碧图，减少网络请求。</p>
+<h2 id="加载次数"><a href="#加载次数" class="headerlink" title="加载次数"></a>加载次数</h2><p><img src="/../images/2019/loadTwice.png" alt="loadTwice"><br>上图可以看到，同一张图加载了2次，且返回的status都是200。</p>
+<p>首先分析同一张图片加载2次的原因。</p>
+<p>查看源码发现图片加载主要有预加载逻辑和页面元素创建逻辑两处：<br><img src="/../images/2019/creatimagedata.png" alt="creatimagedata"><br><img src="/../images/2019/creatcontent.png" alt="creatcontent"></p>
+<p>预加载逻辑中会调用<code>creatimagedata</code>，这里会将所有的图片提前下载，后面创建svg页面元素时调用了<code>creatcontent</code>也会加载图片。</p>
+<p>点击图片查看请求Headers，发现Request Headers中的Cache-Control值为no-cache,表示客户端缓存内容，但是是否使用缓存则需要经过协商缓存来验证决定。协商缓存的概念和协商过程这里就不叙述了，但很明显，这里的协商缓存没有命中，如果协商缓存命中，请求响应返回的http状态为304并且会显示一个Not Modified的字符串。</p>
+<p>这就体现了协商缓存的缺陷：<br>如果资源更新的速度是秒以下单位，那么该缓存是不能被使用的，因为它的时间单位最低是秒。</p>
+<p>而我们这里的资源下载速度最慢的也只有293ms，所以预加载的图片缓存并没有体现出预计的效果。所以图片被加载了2次。</p>
+<p>如果不做上面方案二雪碧图的优化，可以简单的把预加载逻辑去掉。那么图片就不会加载2次了。</p>
+<h2 id="雪碧图"><a href="#雪碧图" class="headerlink" title="雪碧图"></a>雪碧图</h2><p>查看<a target="_blank" rel="noopener" href="https://github.com/airbnb/lottie-web">lottie-web</a>的文档和源码，发现并不支持雪碧图。<br>参阅开源项目<a target="_blank" rel="noopener" href="https://github.com/newbieYoung/lottie-web-sprite">lottie-web-sprite</a>源码后，对我们用到的lottie_svg做改造：</p>
+<h3 id="生成雪碧图"><a href="#生成雪碧图" class="headerlink" title="生成雪碧图"></a>生成雪碧图</h3><p>生成雪碧图使用<a target="_blank" rel="noopener" href="https://github.com/cupools/lia">lia</a>。步骤如下：</p>
+<p>创建精灵图配置文件<code>sprite_conf.js</code>。（使用lia init命令可以自动生成配置文件，只不过因为需要使用自定义模版，所以这里手动创建）</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&#x27;use strict&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = [&#123;</span><br><span class="line">    <span class="attr">src</span>: [<span class="string">&#x27;*.png&#x27;</span>], <span class="comment">// 图片素材路径匹配规则</span></span><br><span class="line">    <span class="attr">image</span>: <span class="string">&#x27;sprite.png&#x27;</span>, <span class="comment">// 生成的精灵图的路径</span></span><br><span class="line">    <span class="attr">style</span>: <span class="string">&#x27;sprite.js&#x27;</span>, <span class="comment">// 生成的图片素材和精灵图的位置关系数据文件的路径</span></span><br><span class="line">    <span class="attr">tmpl</span>: <span class="string">&#x27;./template.ejs&#x27;</span> <span class="comment">// 图片素材和精灵图的位置关系数据文件模版</span></span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
 
+<p>创建图片素材和精灵图的位置关系数据模版文件template.ejs。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">var opt = &#123;</span><br><span class="line">  width: &lt;%= size.width %&gt;,</span><br><span class="line">  height: &lt;%= size.height %&gt;,</span><br><span class="line">  src: &#x27;&lt;%= realpath %&gt;&#x27;,</span><br><span class="line">  count: &lt;%= items.length %&gt;,</span><br><span class="line">  items: [</span><br><span class="line">      &lt;% items.forEach(function(item, idx) &#123; -%&gt;</span><br><span class="line">      &#123;</span><br><span class="line">          index: &lt;%= idx %&gt;,</span><br><span class="line">          name: &#x27;&lt;%= item.name %&gt;&#x27;,</span><br><span class="line">          width: &lt;%= item.size.width %&gt;,</span><br><span class="line">          height: &lt;%= item.size.height %&gt;,</span><br><span class="line">          x: &lt;%= item.x %&gt;,</span><br><span class="line">          y: &lt;%= item.y %&gt;</span><br><span class="line">      &#125;,</span><br><span class="line">      &lt;% &#125;) -%&gt;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module.exports = opt;</span><br></pre></td></tr></table></figure>
 
-    <!-- Umami Analytics -->
+<p>运行下面2行命令得到精灵图sprite.png以及位置关系数据文件sprite.js：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm i -g lia</span><br><span class="line">lia</span><br></pre></td></tr></table></figure>
 
+<p>把位置关系数据文件sprite.js中的绝对路径改为相对路径：<code>src: &#39;./sprite.png&#39;,</code>。</p>
+<div class="tip">
+此文基础：所有文件都在同一目录层级，否则需要注意修改相对目录结构。
+</div>
 
-    <!-- styles -->
-    
-<link rel="stylesheet" href="/css/style.css">
+<h3 id="修改data-json"><a href="#修改data-json" class="headerlink" title="修改data.json"></a>修改data.json</h3><p>data.json新增字段_sprite，将sprite.js中的数据复制给_sprite。此时data.json中的数据看起来类似这样：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;v&quot;</span><span class="punctuation">:</span> <span class="string">&quot;5.5.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;fr&quot;</span><span class="punctuation">:</span> <span class="number">25</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;ip&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">  ...</span><br><span class="line">  <span class="attr">&quot;assets&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;image_0&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;w&quot;</span><span class="punctuation">:</span> <span class="number">66</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;h&quot;</span><span class="punctuation">:</span> <span class="number">55</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;u&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;p&quot;</span><span class="punctuation">:</span> <span class="string">&quot;img_0.png&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;e&quot;</span><span class="punctuation">:</span> <span class="number">0</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line">  ...</span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;layers&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span>...<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;markers&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;_sprite&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;width&quot;</span><span class="punctuation">:</span> <span class="number">733</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;height&quot;</span><span class="punctuation">:</span> <span class="number">568</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;src&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./sprite.png&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;count&quot;</span><span class="punctuation">:</span> <span class="number">9</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;items&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;index&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;img_0&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;width&quot;</span><span class="punctuation">:</span> <span class="number">66</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;height&quot;</span><span class="punctuation">:</span> <span class="number">55</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;x&quot;</span><span class="punctuation">:</span> <span class="number">243</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;y&quot;</span><span class="punctuation">:</span> <span class="number">310</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">      ...</span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
 
-    <!-- persian styles -->
-    
-    <!-- rss -->
-    
-    
-	<!-- mathjax -->
-	
-<meta name="generator" content="Hexo 7.2.0"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
-</head>
+<h3 id="更改源码"><a href="#更改源码" class="headerlink" title="更改源码"></a>更改源码</h3><p>更改configAnimation方法，增加preloadSprite方法和loadAssetsFromSprite方法，这些可参考lottie-web-sprite。</p>
+<p>另外需要更改getAssetsPath方法，如果有_spriteSrc，图片路径取雪碧图生成的base64编码。方法里的其他逻辑不变。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">AnimationItem</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">getAssetsPath</span> = <span class="keyword">function</span> (<span class="params">assetData</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> path = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable language_">this</span>.<span class="property">_spriteSrc</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">imagePreloader</span>.<span class="property">images</span>.<span class="property">assetData</span></span><br><span class="line">        <span class="keyword">var</span> i = <span class="number">0</span>, len = <span class="variable language_">this</span>.<span class="property">imagePreloader</span>.<span class="property">images</span>.<span class="property">length</span>;</span><br><span class="line">        <span class="keyword">while</span> (i &lt; len) &#123;</span><br><span class="line">            <span class="keyword">if</span>(assetData.<span class="property">id</span> == <span class="variable language_">this</span>.<span class="property">imagePreloader</span>.<span class="property">images</span>[i].<span class="property">assetData</span>.<span class="property">id</span>)&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">imagePreloader</span>.<span class="property">images</span>[i].<span class="property">img</span>.<span class="property">src</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            i += <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(assetData.<span class="property">e</span>) &#123;</span><br><span class="line">        path = assetData.<span class="property">p</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(<span class="variable language_">this</span>.<span class="property">assetsPath</span>)&#123;</span><br><span class="line">        <span class="keyword">var</span> imagePath = assetData.<span class="property">p</span>;</span><br><span class="line">        <span class="keyword">if</span>(imagePath.<span class="title function_">indexOf</span>(<span class="string">&#x27;images/&#x27;</span>) !== -<span class="number">1</span>)&#123;</span><br><span class="line">            imagePath = imagePath.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>)[<span class="number">1</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        path = <span class="variable language_">this</span>.<span class="property">assetsPath</span> + imagePath;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        path = <span class="variable language_">this</span>.<span class="property">path</span>;</span><br><span class="line">        path += assetData.<span class="property">u</span> ? assetData.<span class="property">u</span> : <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">        path += assetData.<span class="property">p</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> path;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-<body class="max-width mx-auto px3 ltr">
-    
-    <div class="content index py4 h-card">
-        
-          <header id="header">
-  <a class="u-url u-uid" href="/">
-  
-    
-      <img id="logo" alt class="u-logo" src="/images/logo.png" />
-    
-  
-    <div id="title">
-      <h1 class="p-name">Hexo</h1>
-    </div>
-  </a>
-  <div id="nav">
-    <ul>
-      <li class="icon">
-        <a href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-2x"></i></a>
-      </li>
-      <!--
-     --><li><a href="/">Home</a></li><!--
-   --><!--
-     --><li><a href="/about/">About</a></li><!--
-   --><!--
-     --><li><a href="/archives/">Writing</a></li><!--
-   --><!--
-     --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
-   -->
-    </ul>
-  </div>
-</header>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>现在就可以应用雪碧图了。<br><img src="/../images/2019/loadSprite.png" alt="loadSprite"></p>
+<div class="tip">lia自动生成的雪碧图还可以再压缩的哦</div>
 
-        
-        <section id="about" class="p-note">
-  
-  
-    <p>
-      Find me on
-      
-      
-      
-        
-        
-          <a class="icon u-url" target="_blank" rel="noopener me" href="http://github.com/probberechts/cactus-dark" aria-label="github" title="github">
-            <i class="fa-brands fa-github"></i><!--
-      ---></a><!--
-    ---><!--
-    --->, 
-        
-      
-        
-        
-          <a class="icon u-url" target="_blank" rel="noopener me" href="/" aria-label="twitter" title="twitter">
-            <i class="fa-brands fa-twitter"></i><!--
-      ---></a><!--
-    ---><!--
-    --->, 
-        
-      
-        
-        
-          <a class="icon u-url" target="_blank" rel="noopener me" href="/" aria-label="facebook" title="facebook">
-            <i class="fa-brands fa-facebook"></i><!--
-      ---></a><!--
-    ---><!--
-    --->, 
-        
-      
-        
-        
-          <a class="icon u-email" target="_blank" rel="noopener" href="mailto:name@email.com" aria-label="mail" title="mail">
-            <i class="fa-solid fa-envelope"></i><!--
-      ---></a>
-        <!--
-    --->, 
-        
-      
-        
-        
-          <a class="icon u-url" target="_blank" rel="noopener me" href="https://mastodon.social/@alice" aria-label="mastodon.social" title="mastodon.social">
-            <i class="fa-brands fa-mastodon"></i><!--
-      ---></a><!--
-    ---><!--
-    ---> and 
-        
-      
-        
-        
-          <a class="icon u-url" target="_blank" rel="noopener me" href="https://fosstodon.org/@alice" aria-label="fosstodon.org" title="fosstodon.org">
-            <i class="fa-brands fa-mastodon"></i><!--
-      ---></a><!--
-    ---><!--
-    --->.
-        
-      
-    </p>
-  
-</section>
+<p><img src="/../images/2019/spriteTiny.png" alt="spriteTiny"></p>
+<p>优化效果总结（以童话故事吊牌数据为例）：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>webp格式动图</th>
+<th>HTML</th>
+<th>HTML格式优化后</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>总流量</td>
+<td>2M</td>
+<td>258.2k</td>
+<td>139.3k</td>
+</tr>
+<tr>
+<td>图片请求次数</td>
+<td>1</td>
+<td>18</td>
+<td>1</td>
+</tr>
+</tbody></table>
+<p>webp格式动图主要缺点是太大，接近2M。<br>做成HTML吊牌后，利用第三方库实现动效，但是这种方式的缺点是设计直接输出的图多且零散，比如童话故事有9张图，第三方库会预加载图片，发起9次请求，由于CDN缓存机制导致预加载功能失效，会重复加载，一共发起18次图片资源请求。<br>HTML吊牌优化后，效果最佳。主要更改了第三方库的源码，多张图片合并成1张，图片资源大小和请求次数都大幅减小。</p>
+<div class="tip">本文修改的是lottie-web-5.5.0版本的lottie_svg.js源码</div>
 
-<section id="writing">
-  <span class="h1"><a href="/archives/">Writing</a></span>
-  
-  <ul class="post-list">
-    
-    
-      
-    
-    
-      <li class="post-item">
-        
-    <div class="meta">
-      
-        
-          <time datetime="2022-11-18T17:00:04.000Z" class="dt-published" itemprop="datePublished">2022-11-18</time>
-        
-      
-    </div>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/newbieYoung/lottie-web-sprite">lottie-web-sprite</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/52456720">精灵图在 Lottie Web 动画中的应用 - 知乎</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/cupools/lia">lia</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/44789005">一文读懂前端缓存 - 知乎</a></li>
+</ul>
+</div><a href="/%E5%8A%A8%E6%95%88/lottie-web%E5%BA%94%E7%94%A8%E4%BC%98%E5%8C%96/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/node/node%E8%87%AA%E5%8A%A8%E5%B8%83%E7%BD%B2/" class="post-title-link">node自动布署</a></h2><div class="post-info">2019-04-18<p id="busuanzi_container_page_pv" class="visit"><span id="busuanzi_value_page_pv"></span><span>次访问</span></p></div><div class="post-content"><p>前端静态资源布署，可以通过xShell或者SecureCRT这种软件来上传资源，用软件的ftp上传，或者手动输入一些命令来操作，比如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#上传</span><br><span class="line">rz</span><br><span class="line">#解压</span><br><span class="line">unzip</span><br></pre></td></tr></table></figure>
 
+<p>如果用node自动布署，就简便很多。</p>
+<p>使用node脚本，可将<code>npm run build</code>之后构建出来的dist文件夹压缩，然后自动上传到远端服务器，然后在远端服务器自动解压到固定的目录。</p>
+<h2 id="cli"><a href="#cli" class="headerlink" title="cli"></a>cli</h2><p>在package.json中增加bin命令<code>cli-deploy</code>,指向<code>./bin/deploy.js</code>,在script中增加<code>deploy</code>命令。后面完成<code>deploy.js</code>后就可以直接<code>npm run deploy</code>来发布了。<br>不了解node cli的话，可以看这篇文章<a target="_blank" rel="noopener" href="https://medium.com/netscape/a-guide-to-create-a-nodejs-command-line-package-c2166ad0452e">A guide to create a NodeJS command-line package – Netscape – Medium</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// package.json</span><br><span class="line">&quot;scripts&quot;: &#123;</span><br><span class="line">  &quot;dev&quot;: &quot;vue-cli-service serve&quot;,</span><br><span class="line">  &quot;build&quot;: &quot;vue-cli-service build&quot;,</span><br><span class="line">  &quot;lint&quot;: &quot;vue-cli-service lint&quot;,</span><br><span class="line">  &quot;deploy&quot;: &quot;vue-cli-service build &amp;&amp; cli-deploy&quot;</span><br><span class="line">&#125;,</span><br><span class="line">&quot;bin&quot;: &#123;</span><br><span class="line">  &quot;cli-deploy&quot;: &quot;./bin/deploy.js&quot;</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
 
-        <span>
-    
-        <a class="" href="/css/%E8%AF%A6%E8%A7%A3CSS%20Grid%E5%B8%83%E5%B1%80/">详解CSS Grid布局</a>
-    
+<p>也可以不使用bin，将scripts中的deploy命令改成<code>vue-cli-service build &amp;&amp; node ./bin/deploy.js</code></p>
+<h2 id="压缩"><a href="#压缩" class="headerlink" title="压缩"></a>压缩</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// zip.js</span></span><br><span class="line"><span class="keyword">const</span> glob = <span class="built_in">require</span>(<span class="string">&#x27;glob&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">&#x27;fs&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">&#x27;path&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> yazl = <span class="built_in">require</span>(<span class="string">&quot;yazl&quot;</span>)</span><br><span class="line"><span class="keyword">const</span> chalk = <span class="built_in">require</span>(<span class="string">&#x27;chalk&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">zip</span> = (<span class="params">&#123; sourcePath, destPath, filename &#125;</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve</span>) =&gt;</span> &#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> zipfile = <span class="keyword">new</span> yazl.<span class="title class_">ZipFile</span>()</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!fs.<span class="title function_">existsSync</span>(destPath)) &#123;</span><br><span class="line">    fs.<span class="title function_">mkdirSync</span>(destPath, <span class="number">0777</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> files = glob.<span class="title function_">sync</span>(<span class="string">&#x27;**/*.*&#x27;</span>, &#123;</span><br><span class="line">    <span class="attr">cwd</span>: sourcePath</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  files.<span class="title function_">forEach</span>(<span class="keyword">function</span>(<span class="params">file</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> filePath = path.<span class="title function_">join</span>(sourcePath, file)</span><br><span class="line">    zipfile.<span class="title function_">addFile</span>(filePath, file)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  zipfile.<span class="property">outputStream</span>.<span class="title function_">pipe</span>(fs.<span class="title function_">createWriteStream</span>(path.<span class="title function_">resolve</span>(destPath, filename))).<span class="title function_">on</span>(<span class="string">&#x27;close&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(chalk.<span class="title function_">cyan</span>(</span><br><span class="line">      <span class="string">`  <span class="subst">$&#123;filename&#125;</span> has build!`</span></span><br><span class="line">    ))</span><br><span class="line">    <span class="title function_">resolve</span>()</span><br><span class="line">  &#125;)</span><br><span class="line">  zipfile.<span class="title function_">end</span>()</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  zip</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bin/deploy.js</span></span><br><span class="line">#!<span class="regexp">/usr/</span>bin/env node</span><br><span class="line"><span class="keyword">const</span> &#123; zip &#125; = <span class="built_in">require</span>(<span class="string">&#x27;./zip&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> zipOptions = &#123;</span><br><span class="line">  <span class="attr">sourcePath</span>: path.<span class="title function_">join</span>(__dirname, <span class="string">&#x27;../dist&#x27;</span>), <span class="comment">// 需要要打包的目录</span></span><br><span class="line">  <span class="attr">destPath</span>: path.<span class="title function_">join</span>(__dirname, <span class="string">&#x27;../&#x27;</span>), <span class="comment">// 打包存放的目录</span></span><br><span class="line">  <span class="attr">filename</span>: <span class="string">&#x27;dist.zip&#x27;</span>, <span class="comment">// 打包后的名称</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_">zip</span>(zipOptions)</span><br></pre></td></tr></table></figure>
 
-</span>
-      </li>
-    
-      <li class="post-item">
-        
-    <div class="meta">
-      
-        
-          <time datetime="2022-08-11T16:52:55.000Z" class="dt-published" itemprop="datePublished">2022-08-11</time>
-        
-      
-    </div>
+<h2 id="上传"><a href="#上传" class="headerlink" title="上传"></a>上传</h2><p>上传这块做了比较多的调研，看了比较多的库，最后决定用scp2，不需要配置ssh免密登录，直接使用的时候指定信息就行。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bin/deploy.js</span></span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">&#x27;path&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> client = <span class="built_in">require</span>(<span class="string">&#x27;scp2&#x27;</span>)</span><br><span class="line">client.<span class="title function_">scp</span>(path.<span class="title function_">join</span>(__dirname, <span class="string">&#x27;../dist.zip&#x27;</span>), <span class="string">`<span class="subst">$&#123;user&#125;</span>:<span class="subst">$&#123;pass&#125;</span>@<span class="subst">$&#123;host&#125;</span>:<span class="subst">$&#123;reomteFloder&#125;</span>`</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 这里远端解压</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 
+<p>也可以不压缩，直接上传文件夹</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bin/deploy.js</span></span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">&#x27;path&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> client = <span class="built_in">require</span>(<span class="string">&#x27;scp2&#x27;</span>)</span><br><span class="line">client.<span class="title function_">scp</span>(path.<span class="title function_">join</span>(__dirname, <span class="string">&#x27;../dist/&#x27;</span>), <span class="string">`<span class="subst">$&#123;user&#125;</span>:<span class="subst">$&#123;pass&#125;</span>@<span class="subst">$&#123;host&#125;</span>:<span class="subst">$&#123;reomteFloder&#125;</span>/`</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 上传成功</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 
-        <span>
-    
-        <a class="" href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/Shutterstock%20Editor%E5%85%B3%E4%BA%8ECanvas%E5%92%8CWebGL%E5%9B%BE%E7%89%87%E6%BB%A4%E9%95%9C%E7%9A%84%E5%AE%9E%E7%8E%B0/">Shutterstock Editor关于Canvas和WebGL图片滤镜的实现</a>
-    
+<h2 id="解压"><a href="#解压" class="headerlink" title="解压"></a>解压</h2><p>选用simple-ssh连接远端，然后用ssh.exec在远端执行命令。simple-ssh只是把ssh2进一步封装了一下，让调用更简单。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bin/deploy.js</span></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">SSH</span> = <span class="built_in">require</span>(<span class="string">&#x27;simple-ssh&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> host = <span class="string">&#x27;xx.xx.xx.xx&#x27;</span> <span class="comment">// 远端主机ip</span></span><br><span class="line"><span class="keyword">const</span> user = <span class="string">&#x27;xxx&#x27;</span> <span class="comment">// 用户名</span></span><br><span class="line"><span class="keyword">const</span> pass = <span class="string">&#x27;xxx&#x27;</span> <span class="comment">// 密码</span></span><br><span class="line"><span class="keyword">const</span> reomteFloder = <span class="string">&#x27;/xxx/xxx/xx&#x27;</span> <span class="comment">// 远端解压目录</span></span><br><span class="line"><span class="keyword">const</span> ssh = <span class="keyword">new</span> <span class="title function_">SSH</span>(&#123;host, user, pass&#125;)</span><br><span class="line">ssh.<span class="title function_">exec</span>(<span class="string">`rm -rf <span class="subst">$&#123;reomteFloder&#125;</span>/dist`</span>) <span class="comment">// 解压前先清空dist目录，避免有哈希的文件积累</span></span><br><span class="line">  .<span class="title function_">exec</span>(<span class="string">`unzip -o <span class="subst">$&#123;reomteFloder&#125;</span>/dist.zip -d <span class="subst">$&#123;reomteFloder&#125;</span>/dist`</span>, &#123;</span><br><span class="line">    <span class="attr">out</span>: <span class="variable language_">console</span>.<span class="property">log</span>.<span class="title function_">bind</span>(<span class="variable language_">console</span>),</span><br><span class="line">  &#125;)</span><br><span class="line">  .<span class="title function_">start</span>()</span><br></pre></td></tr></table></figure>
 
+<div calss="tip">
+unzip参数说明：
+- -o 不必先询问用户，unzip执行后覆盖原有文件
+- -d <目录> 指定文件解压缩后所要存储的目录
+</div>
 
-</span>
-      </li>
-    
-      <li class="post-item">
-        
-    <div class="meta">
-      
-        
-          <time datetime="2022-05-19T16:48:29.000Z" class="dt-published" itemprop="datePublished">2022-05-19</time>
-        
-      
-    </div>
+<h2 id="pm2"><a href="#pm2" class="headerlink" title="pm2"></a>pm2</h2><p>有的项目需要用pm2重启，如果直接远程执行pm2命令，比如<code>pm2 status</code>, 会报错<code>pm2: command not found</code>。<br>解决办法：把<code>pm2 status</code>改成<code>&#39;bash -l -c &quot;pm2 status&quot;&#39;</code>。<br>参考了<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/33357227/bash-doesnt-load-node-on-remote-ssh-command">bash-doesnt-load-node-on-remote-ssh-command</a>和<a target="_blank" rel="noopener" href="http://feihu.me/blog/2014/env-problem-when-ssh-executing-command-on-remote/">env-problem-when-ssh-executing-command-on-remote</a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>至此，完成了自动压缩、上传、解压。<br><code>cli-deploy</code>可以部署；<br><code>npm run deploy</code>可以构建+部署。</p>
+<p>完整版本<code>deploy.js</code>如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/env node</span></span><br><span class="line"><span class="keyword">const</span> &#123; zip &#125; = <span class="built_in">require</span>(<span class="string">&#x27;./zip&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">&#x27;path&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">SSH</span> = <span class="built_in">require</span>(<span class="string">&#x27;simple-ssh&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> client = <span class="built_in">require</span>(<span class="string">&#x27;scp2&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> zipOptions = &#123;</span><br><span class="line">  <span class="attr">sourcePath</span>: path.<span class="title function_">join</span>(__dirname, <span class="string">&#x27;../dist&#x27;</span>), <span class="comment">// 需要要打包的目录</span></span><br><span class="line">  <span class="attr">destPath</span>: path.<span class="title function_">join</span>(__dirname, <span class="string">&#x27;../&#x27;</span>), <span class="comment">// 打包存放的目录</span></span><br><span class="line">  <span class="attr">filename</span>: <span class="string">&#x27;dist.zip&#x27;</span>, <span class="comment">// 打包后的名称</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> host = <span class="string">&#x27;xx.xx.xx.xx&#x27;</span> <span class="comment">// 远端主机ip</span></span><br><span class="line"><span class="keyword">const</span> user = <span class="string">&#x27;xxx&#x27;</span> <span class="comment">// 用户名</span></span><br><span class="line"><span class="keyword">const</span> pass = <span class="string">&#x27;xxx&#x27;</span> <span class="comment">// 密码</span></span><br><span class="line"><span class="keyword">const</span> reomteFloder = <span class="string">&#x27;/xxx/xxx/xx&#x27;</span> <span class="comment">// 远端解压目录</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ssh = <span class="keyword">new</span> <span class="title function_">SSH</span>(&#123;host, user, pass&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">upload</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  client.<span class="title function_">scp</span>(path.<span class="title function_">join</span>(__dirname, <span class="string">&#x27;../dist.zip&#x27;</span>), <span class="string">`<span class="subst">$&#123;user&#125;</span>:<span class="subst">$&#123;pass&#125;</span>@<span class="subst">$&#123;host&#125;</span>:<span class="subst">$&#123;reomteFloder&#125;</span>`</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    ssh.<span class="title function_">exec</span>(<span class="string">`unzip -o <span class="subst">$&#123;reomteFloder&#125;</span>/dist.zip -d <span class="subst">$&#123;reomteFloder&#125;</span>/dist`</span>, &#123;</span><br><span class="line">        <span class="attr">out</span>: <span class="variable language_">console</span>.<span class="property">log</span>.<span class="title function_">bind</span>(<span class="variable language_">console</span>),</span><br><span class="line">    &#125;)</span><br><span class="line">    .<span class="title function_">start</span>()</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">deploy</span> () &#123;</span><br><span class="line">  <span class="keyword">await</span> <span class="title function_">zip</span>(zipOptions)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Build complete&#x27;</span>)</span><br><span class="line">  <span class="title function_">upload</span>()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">deploy</span>()</span><br></pre></td></tr></table></figure>
+</div><a href="/node/node%E8%87%AA%E5%8A%A8%E5%B8%83%E7%BD%B2/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/%E5%8A%A8%E6%95%88/Web%E5%8A%A8%E7%94%BB%E4%B9%8BAE-Bodymovin/" class="post-title-link">Web动画之AE+Bodymovin</a></h2><div class="post-info">2019-03-28<p id="busuanzi_container_page_pv" class="visit"><span id="busuanzi_value_page_pv"></span><span>次访问</span></p></div><div class="post-content"><h2 id="AE-Bodymovin简介"><a href="#AE-Bodymovin简介" class="headerlink" title="AE+Bodymovin简介"></a>AE+Bodymovin简介</h2><p>设计通过AE设计动效，安装Bodymovin插件后，直接导出js或者json数据给前端。前端利用设计提供的动画数据即可实现动效。</p>
+<h3 id="设计"><a href="#设计" class="headerlink" title="设计"></a>设计</h3><p>设计首先需要下载Bodymovin插件。<br>具体的设计细节这里就不描述了，交给设计同事就好。<br>需要注意的是：<br>1、文件<br>如果使用了图片资源或者未转成形状图层的Adobe Illustrator文件图层, 将会同时生成一个images文件夹存放这些图片资源。(建议将AI图层转换为形状图层，这样他们会被导出为矢量数据，只需在AE中导入的AI图层上右键 &gt; 从矢量图层创建形状)</p>
+<blockquote>
+<p>注意，如果不同的带图片资源的动画导出到同一地址，images文件夹将会被覆盖。</p>
+</blockquote>
+<p>2、性能<br>Bodymovin的动画都是实时渲染的，最好控制下AE工程文件体积。避免这种情况：绘制了一个巨大的形状图层，但是只通过遮罩使用其中一小部分。<br>过多的节点同样会影响性能。<br>Bodymovin支持的AE特性：</p>
+<ul>
+<li>支持预合成、形状图层、固态层、图片、空对象以及文字图层。</li>
+<li>支持遮罩和反向遮罩。也许别的模式也会支持，但是会对性能造成巨大影响。</li>
+<li>支持时间重映射。</li>
+<li>支持形状图层的形状、矩形、椭圆和星形。</li>
+<li>支持滑块效果。</li>
+<li>支持部分表达式。更多介绍可以查看<a target="_blank" rel="noopener" href="https://github.com/airbnb/lottie-web/wiki/Expressions">这里</a>。</li>
+<li>不支持： 图像序列、视频和音频。</li>
+<li>不要伸缩图层！不知为何，伸缩图层会破坏导出的数据，所以不要做这个操作。</li>
+</ul>
+<h3 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h3><p>1、安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install lottie-web</span><br></pre></td></tr></table></figure>
+<p>或者直接从<a target="_blank" rel="noopener" href="https://cdnjs.com/libraries/bodymovin">官方CDN</a>获取。</p>
+<p>完整版支持渲染为svg\canvas\html三种格式，由于我们只需要svg格式（html格式性能不好，canvas格式性能够好，但是动画数据是js格式，有安全隐患，折中选择json格式数据的svg），所以只需要lottie_svg.min.js，经过gzip压缩的库文件只有48.3k。</p>
+<p>2、demo<br>请看<a target="_blank" rel="noopener" href="https://codepen.io/collection/nVYWZR/">demo</a>。<br>请看<a target="_blank" rel="noopener" href="https://github.com/airbnb/lottie-web?tdsourcetag=s_pctim_aiomsg">官方文档</a>。</p>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><p>设计输出资源的目录结构是这样的：<br>.<br>├── images<br>│ ├── img_0.png<br>│ ├── img_1.png<br>│ ├── img_2.png<br>│ ├── …<br>├── demo.html<br>├── lottie.js<br>└── data.json<br>有3个问题导致不能直接布署：<br>1、资源太大；<br>2、目录结构不方便上传CDN；<br>3、动画尺寸未设置，默认是100%。</p>
+<h3 id="资源大小问题"><a href="#资源大小问题" class="headerlink" title="资源大小问题"></a>资源大小问题</h3><p>由于不完全是矢量图的设计，所以有images图片资源，直接点击demo.html就可以看到效果。但是设计直接导出的资源比较大，主要有以下几点原因：</p>
+<p>1、lottie.js未压缩，直接内嵌在html里面，有243k,如果选择官网CDN的lottie_svg.min.js就只有48k，不过公司的CDN只能压缩到62k。<br>2、data.json也直接内嵌到html里面，但把json文件放到CDN上用gzip压缩后，只有2k。</p>
+<p>把demo.html里的lottie.js和data.json代码删除，用CDN加载lottie_svg.min.js和data.json。通过webpack压缩后的demo.html文件只有577字节。</p>
+<h3 id="目录结构问题"><a href="#目录结构问题" class="headerlink" title="目录结构问题"></a>目录结构问题</h3><p>为了方便发布到CDN，改变了目录结构<br>.<br>├── img_0.png<br>├── img_1.png<br>├── …<br>├── img_8.png<br>├── demo.html<br>└── data.json<br>需要把data.json里的图片资源路径改一下，assets里面的u代表图片资源路径。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// 原来是这样的</span><br><span class="line">&quot;assets&quot;: [&#123;</span><br><span class="line">  &quot;id&quot;: &quot;image_0&quot;,</span><br><span class="line">  &quot;w&quot;: 66,</span><br><span class="line">  &quot;h&quot;: 55,</span><br><span class="line">  &quot;u&quot;: &quot;images/&quot;,</span><br><span class="line">  &quot;p&quot;: &quot;img_0.png&quot;,</span><br><span class="line">  &quot;e&quot;: 0</span><br><span class="line">&#125;]</span><br><span class="line">// 改成下面这样</span><br><span class="line">&quot;assets&quot;: [&#123;</span><br><span class="line">  &quot;id&quot;: &quot;image_0&quot;,</span><br><span class="line">  &quot;w&quot;: 66,</span><br><span class="line">  &quot;h&quot;: 55,</span><br><span class="line">  &quot;u&quot;: &quot;&quot;,</span><br><span class="line">  &quot;p&quot;: &quot;img_0.png&quot;,</span><br><span class="line">  &quot;e&quot;: 0</span><br><span class="line">&#125;]</span><br></pre></td></tr></table></figure>
 
+<h3 id="动画尺寸问题"><a href="#动画尺寸问题" class="headerlink" title="动画尺寸问题"></a>动画尺寸问题</h3><p>修改<code>#lottie</code>的<code>width</code>和<code>height</code>。</p>
+<h3 id="完整示例"><a href="#完整示例" class="headerlink" title="完整示例"></a>完整示例</h3><p>本示例<code>lottie_svg.min.js</code>使用官方CDN，实际使用的是公司CDN资源。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://www.w3.org/1999/xhtml&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">    <span class="selector-tag">body</span>&#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">margin</span>: <span class="number">0px</span>;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">height</span>: <span class="number">100%</span>;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">overflow</span>: hidden;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">    <span class="selector-id">#lottie</span>&#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">width</span>:<span class="number">280px</span>;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">height</span>:<span class="number">300px</span>;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">display</span>:block;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">overflow</span>: hidden;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">transform</span>: <span class="built_in">translate3d</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>);</span></span><br><span class="line"><span class="language-css">      <span class="attribute">text-align</span>: center;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">opacity</span>: <span class="number">1</span>;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">  </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.5.1/lottie_svg.min.js&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;lottie&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  <span class="keyword">var</span> params = &#123;</span></span><br><span class="line"><span class="language-javascript">    <span class="attr">container</span>: <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;lottie&#x27;</span>),</span></span><br><span class="line"><span class="language-javascript">    <span class="attr">renderer</span>: <span class="string">&#x27;svg&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">    <span class="attr">loop</span>: <span class="literal">true</span>,</span></span><br><span class="line"><span class="language-javascript">    <span class="attr">autoplay</span>: <span class="literal">true</span>,</span></span><br><span class="line"><span class="language-javascript">    <span class="attr">path</span>: <span class="string">&#x27;data.json&#x27;</span></span></span><br><span class="line"><span class="language-javascript">  &#125;;</span></span><br><span class="line"><span class="language-javascript">  <span class="keyword">var</span> anim;</span></span><br><span class="line"><span class="language-javascript">  anim = lottie.<span class="title function_">loadAnimation</span>(params);</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="应用总结"><a href="#应用总结" class="headerlink" title="应用总结"></a>应用总结</h3><p>1、资源大小<br>输出的webp格式动图接近2M。<br>这种方式就小了很多，库文件lottie_svg.min.js有63k，data.json有2k，html不到1k，所有的图片资源96.1k,不过不知道为什么图片资源会加载2次(后面分析源码搞清楚了加载两次的原因，见lottie-web应用优化，造成了192.2k的图片资源流量。不过总体来说63+2+1+192.2&#x3D;258.2k，是远小于2M的，只有原来的12.6%的大小，相当于节约了87.4%的流量。</p>
+<p>2、开发效率高<br>设计输出动效资源，开发处理下上面列过的3个问题点就可以直接布署了，动效细节完美实现。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/airbnb/lottie-web">lottie-web</a></li>
+</ul>
+</div><a href="/%E5%8A%A8%E6%95%88/Web%E5%8A%A8%E7%94%BB%E4%B9%8BAE-Bodymovin/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/%E5%8A%A8%E6%95%88/SVG%E7%BA%BF%E6%9D%A1%E5%8A%A8%E7%94%BB/" class="post-title-link">SVG线条动画</a></h2><div class="post-info">2019-03-25<p id="busuanzi_container_page_pv" class="visit"><span id="busuanzi_value_page_pv"></span><span>次访问</span></p></div><div class="post-content"><p>SVG线条动画原理<br>现在有一个svg，如何让它动起来呢？主要用到两个参数：</p>
+<ul>
+<li>stroke-dasharray：控制描边的点划线的图案范式。dasharray是一个长度和百分比的数列，数与数之间用逗号或者空白隔开，指定短划线和缺口的长度。如果提供了奇数个值，则这个值的数列重复一次，从而变成偶数个值。</li>
+<li>stroke-dashoffset：指定dash模式到路径开始的距离。如果使用了一个 &lt;百分比&gt; 值， 那么这个值就代表了当前viewport的一个百分比。值可以取为负值。</li>
+</ul>
+<p><img src="/../images/2019/stroke-dasharray.png" alt="stroke-dasharray"></p>
+<h3 id="原理一"><a href="#原理一" class="headerlink" title="原理一"></a>原理一</h3><p>利用<code>stroke-dasharray</code>，假如svg路径长度是100，设置<code>stroke-dasharray: 0, 100</code>，表示路径上的实线长度为0，空隙为100，所以一开始整个路径都是空隙，什么也看不见，然后过渡到<code>stroke-dasharray: 100, 100</code>，由于整个路径的长度是100，实线从0变成100，看起来就像实线动起来了。</p>
+<h3 id="原理二"><a href="#原理二" class="headerlink" title="原理二"></a>原理二</h3><p>利用<code>stroke-dashoffset</code>，假如svg路径长度是100，设置<code>stroke-dasharray: 100, 100;stroke-dashoffset: 100，</code>表示100实线和100空隙，线条偏移100，于是100的实线被移出路径，路径上只剩100空隙，什么也看不见，然后慢慢修改偏移量，把实线一点点挪出来，就看到实线动起来了。</p>
+<h3 id="获取路径长度"><a href="#获取路径长度" class="headerlink" title="获取路径长度"></a>获取路径长度</h3><p>上面原理都是假设路径长度100，实际需要使用js的<code>document.getElementById(&#39;path&#39;).getTotalLength()</code>获取路径长度。<br><img src="/../images/2019/svg-animation.webp" alt="svg-animation"></p>
+<h2 id="demo"><a href="#demo" class="headerlink" title="demo"></a>demo</h2><p>st1使用stroke-dashoffset，st2使用stroke-dasharray。请查看<a target="_blank" rel="noopener" href="https://codepen.io/lovelyun/pen/QoRrRz">demo</a>。</p>
+</div><a href="/%E5%8A%A8%E6%95%88/SVG%E7%BA%BF%E6%9D%A1%E5%8A%A8%E7%94%BB/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/js/JavaScript%E5%BC%95%E6%93%8E%E5%9F%BA%E7%A1%80%E4%B9%8B%E5%86%85%E8%81%94%E7%BC%93%E5%AD%98/" class="post-title-link">JavaScript引擎基础之内联缓存</a></h2><div class="post-info">2019-03-25<p id="busuanzi_container_page_pv" class="visit"><span id="busuanzi_value_page_pv"></span><span>次访问</span></p></div><div class="post-content"><p>形状背后的主要推动力是内联缓存（Inline Caches）或ICs的概念。ICs是让JavaScript快速运行的关键因素！JavaScript引擎使用ICs来记住去哪里寻找对象的属性，从而减少昂贵的查找次数。</p>
+<p>下面这个函数getX接受一个对象并返回属性x：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">getX</span>(<span class="params">o</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> o.<span class="property">x</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-        <span>
-    
-        <a class="" href="/js/javascript%E5%BC%82%E6%AD%A5error/">javascript异步error</a>
-    
+<p>如果我们在JSC中运行这个函数，它会生成以下字节码:<img src="/../images/2019/ic-1.svg" alt="ic-1"></p>
+<p>第一条命令get_by_id从第一个变量arg1中加载属性x，并把结果存到loc0中，第二条命令返回我们在loc0中存的内容。<br>JSC还将内联缓存嵌入get_by_id命令，该命令由两个未初始化的槽组成。<img src="/../images/2019/ic-2.svg" alt="ic-2"></p>
+<p>现在我们假设把对象{ x: ‘a’ }传入getX，正如我们上篇文章中所了解的，这个对象有一个带有属性x的形状，这个形状存储属性x的偏移量和值。当你第一次执行getX,get_by_id命令寻找x属性，然后发现值存在偏移为0的地方。<img src="/../images/2019/ic-3.svg" alt="ic-3"></p>
+<p>嵌入到get_by_id指令中的IC将记住找到的属性的形状和偏移：<img src="/../images/2019/ic-4.svg" alt="ic-4"></p>
+<p>后续运行种，IC只需要比较形状，如果一样，就直接从记忆偏移量处读取值，而且，如果JavaScript引擎遇到的对象的形状之前IC记录过，引擎就不会获取属性值，开销很大的属性寻找被直接跳过，这比每次都寻找属性明显快多了。</p>
+<h2 id="高效存储数组"><a href="#高效存储数组" class="headerlink" title="高效存储数组"></a>高效存储数组</h2><p>数组是常见的存储类型，这些属性的值被称为数组元素，JavaScript引擎在默认情况下让数组索引属性可写、可枚举和可配置，并将数组元素与其他命名属性分开存储。</p>
+<p>思考下面这个数组：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> array = [</span><br><span class="line">  <span class="string">&#x27;#jsconfeu&#x27;</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p>JavaScript引擎存储数组长度length为1，然后指向含有offset和length属性的形状。<img src="/../images/2019/array-shape.svg" alt="array-shape"></p>
+<p>看起来和我们之前看到的一样，但是数组的value值存到哪里去了呢？<img src="/../images/2019/array-elements.svg" alt="array-elements"></p>
+<p>每个数组都有一个单独的元素支持存储，其中包含所有数组索引的属性值。JavaScript引擎不需要为数组元素存储任何属性属性，因为通常情况下数组都是可写、可枚举和可配置的。</p>
+<p>异常情况下会发生什么呢？比如更改数组元素的属性值会怎样?</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 请永远不要这么做</span></span><br><span class="line"><span class="keyword">const</span> array = <span class="title class_">Object</span>.<span class="title function_">defineProperty</span>(</span><br><span class="line">  [],</span><br><span class="line">  <span class="string">&#x27;0&#x27;</span>,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">value</span>: <span class="string">&#x27;Oh noes!!1&#x27;</span>,</span><br><span class="line">    <span class="attr">writable</span>: <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">enumerable</span>: <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">configurable</span>: <span class="literal">false</span>,</span><br><span class="line">  &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 
+<p>上面的代码片段定义了一个名为“0”的属性(恰好是一个数组索引)，但是将其值设置为非默认值。<br>在这种情况下，JavaScript引擎将整个支持存储的元素表示为字典，将数组索引映射到属性值。<img src="/../images/2019/array-dictionary-elements.svg" alt="array-dictionary-elements"></p>
+<p>即使只有1个数组元素有非默认属性，整个数组的后备存储器进入这种缓慢而低效的模式。避免在数组索引上使用Object.defineProperty（我不知道你为什么要这么做。这似乎是一件奇怪的、无用的事情）。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>我们已经了解了JavaScript引擎如何存储对象和数组，形状和ICs又是如何优化对象和数组的常见操作。基于这些知识，我们发现了一些实用的JavaScript编码技巧，可以帮助提高性能:</p>
+<ul>
+<li>始终以相同的方式初始化对象，这样它们就不会有不同的形状。</li>
+<li>不要打乱数组元素的默认值，这样可以有效地存储和操作它们。</li>
+</ul>
+</div><a href="/js/JavaScript%E5%BC%95%E6%93%8E%E5%9F%BA%E7%A1%80%E4%B9%8B%E5%86%85%E8%81%94%E7%BC%93%E5%AD%98/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/js/JavaScript%E5%BC%95%E6%93%8E%E5%9F%BA%E7%A1%80%E4%B9%8B%E5%BD%A2%E7%8A%B6/" class="post-title-link">JavaScript引擎基础之形状</a></h2><div class="post-info">2019-03-11<p id="busuanzi_container_page_pv" class="visit"><span id="busuanzi_value_page_pv"></span><span>次访问</span></p><a href="https://mathiasbynens.be/notes/shapes-ics" target="_blank" title="https://mathiasbynens.be/notes/shapes-ics" class="post-from">原文地址</a></div><div class="post-content"><p>本文描述了所有JavaScript引擎共有的一些关键基础，不仅仅是作者所研究的V8引擎。作为JavaScript开发者，深入理解JavaScript引擎的工作方式，会帮助你推断代码的性能。</p>
+<h2 id="JavaScript引擎管道"><a href="#JavaScript引擎管道" class="headerlink" title="JavaScript引擎管道"></a>JavaScript引擎管道</h2><p>这一切都从您编写的JavaScript代码开始，JavaScript引擎解析源码，将其转换成抽象语法树（Abstract Syntax Tree，简称AST），基于AST,解释器将其变成字节码。此时，引擎实际上正在运行JavaScript代码。<img src="/../images/2019/js-engine-pipeline.svg" alt="js-engine-pipeline"></p>
+<blockquote>
+<ul>
+<li>JavaScript source code: JavaScript源码</li>
+<li>parser: 解析器</li>
+<li>Abstract Syntax Tree： 抽象语法树，简称AST</li>
+<li>interpreter: 解释器</li>
+<li>bytecode: 字节码</li>
+<li>optimize: 优化</li>
+<li>optimizing compiler: 优化编译器</li>
+<li>optimized code: 优化后的代码</li>
+<li>deoptimize: 反优化</li>
+<li>profiling data: 分析数据</li>
+</ul>
+</blockquote>
+<p>为了让它运行的更快，字节码可以和分析数据一起送到优化编译器，优化编译器根据它的分析数据做出某些假设，然后生成高度优化的机器码。如果在某一时刻其中一个假设被证明是错的，那么优化编译器就会取消优化并返回解释器。</p>
+<h2 id="JavaScript引擎的解释-编译器管道（Interpreter-compiler）"><a href="#JavaScript引擎的解释-编译器管道（Interpreter-compiler）" class="headerlink" title="JavaScript引擎的解释&#x2F;编译器管道（Interpreter&#x2F;compiler）"></a>JavaScript引擎的解释&#x2F;编译器管道（Interpreter&#x2F;compiler）</h2><p>现在，让我们放大这个管道中实际运行JavaScript代码的部分。比如代码在哪里得到解释和优化，以及主流JavaScript引擎之间的一些差异。<br>通常，有一个包含解释器和优化编译器的管道，解释器快速生成未经过优化的字节码，而优化编译器需要更长的时间，但最终生成高度优化的机器码。</p>
+<p>优化编译器：<img src="/../images/2019/interpreter-optimizing-compiler.svg" alt="interpreter-optimizing-compiler"><br>这个通用管道几乎和V8(Chrome和Node中使用的JavaScript引擎)的工作原理一样。</p>
+<p>V8的优化编译器：<img src="/../images/2019/interpreter-optimizing-compiler-v8.svg" alt="interpreter-optimizing-compiler-v8"></p>
+<blockquote>
+<p>Ignition: 点火器<br>TurboFan: 风扇</p>
+</blockquote>
+<p>V8里的解释器叫点火器，负责生成和执行字节码。当它运行字节码时，会收集分析数据（后面将会用来加快执行速度），当某个函数变热，比如经常执行，它的字节码和分析数据就会传到风扇（我们的优化编译器），然后基于分析数据来生成高度优化的机器码。</p>
+<p>SpiderMonkey（Firefox和SpiderNode中使用的Mozilla JavaScript引擎），会有一点不同。它有两个而不是一个优化编译器。解释器优化到基线编译器里面，基线编译器会生成一些优化的代码。结合运行代码时收集的分析数据，IonMonkey编译器可以生成高度优化的代码。如果假设的优化失败了，IonMonkey返回到基线代码。</p>
+<p>SpiderMonkey的优化编译器：<img src="/../images/2019/interpreter-optimizing-compiler-spidermonkey.svg" alt="interpreter-optimizing-compiler-spidermonkey"></p>
+<blockquote>
+<p>Baseline: 基线</p>
+</blockquote>
+<p>Chakra(在Edge和Node-ChakraCore中使用的微软的JavaScript引擎)使用了类似的两个优化编译器。解释器优化成SimpleJIT (JIT代表即时编译器)，生成优化的代码。与分析数据相结合，FullJIT生成更优化的代码。<br>Chakra的优化编译器：<img src="/../images/2019/interpreter-optimizing-compiler-chakra.svg" alt="interpreter-optimizing-compiler-chakra"><br>JavaScriptCore(缩写为JSC，苹果的JavaScript引擎，用于Safari和React Native)，使用三种不同的优化编译器将其发挥到极致。底层解释器LLInt优化到基线编译器，然后基线编译器优化到DFG(Data Flow Graph)编译器，DFG又优化到FTL(Faster Than Light)编译器。<br>JavaScriptCore的优化编译器：<img src="/../images/2019/interpreter-optimizing-compiler-jsc.svg" alt="interpreter-optimizing-compiler-jsc"><br>为什么有些引擎比其他引擎有更多的优化编译器?<br>一切都是关于权衡的。解释器可以快速生成字节码，但是字节码通常不是很高效。另一方面，优化编译器需要更长的时间，但最终会生成更高效的机器码。<br>这是快速让代码运行（解释器）和慢一点让代码运行，但最终让代码以最优性能的方式运行（优化编译器）之间的权衡。<br>一些引擎选择添加具有不同时间或效率特性的多个优化编译器，以额外的复杂性为代价对这些权衡进行更细致的控制。另一个权衡与内存使用有关。有关这方面的详细信息，请参阅我们的后续文章。</p>
+<p>上面我们主要描述了不同的JavaScript引擎的解释器和优化编译器管道的差异，但是除了这些差异，在高层面上看，所有JavaScript引擎都具有相同的体系结构:有一个解析器和某种解释器&#x2F;编译器管道。</p>
+<h2 id="JavaScript的对象模型"><a href="#JavaScript的对象模型" class="headerlink" title="JavaScript的对象模型"></a>JavaScript的对象模型</h2><p>让我们通过放大某些方面的实现来看看JavaScript引擎还有什么共同之处。比如，JavaScript引擎如何实现JavaScript对象模型，以及它们使用哪些技巧来加速访问JavaScript对象上的属性，事实上，所有主流引擎都实现了非常类似的功能。<br>ECMAScript规范定义对象是字符串键映射到属性值的字典。<img src="/../images/2019/object-model.svg" alt="object-model"><br>除了[[Value]]本身外，规范还定义了这些属性：</p>
+<ul>
+<li>[[Writable]]：决定是否可以将属性重写</li>
+<li>[[Enumerable]]：决定属性是否出现在for-in循环中（是否可枚举）</li>
+<li>[[Configurable]]：决定是否可以将属性删除<br>双方括号[[]]看起来很时髦，但这只是规范表示不直接暴露给JavaScript的属性的方式。但您仍然可以在JavaScript中使用Object.getOwnPropertyDescriptor获得任何给定对象的这些值。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> object = &#123; <span class="attr">foo</span>: <span class="number">42</span> &#125;;</span><br><span class="line"><span class="title class_">Object</span>.<span class="title function_">getOwnPropertyDescriptor</span>(object, <span class="string">&#x27;foo&#x27;</span>);</span><br><span class="line"><span class="comment">// → &#123; value: 42, writable: true, enumerable: true, configurable: true &#125;</span></span><br></pre></td></tr></table></figure>
 
-</span>
-      </li>
-    
-      <li class="post-item">
-        
-    <div class="meta">
-      
-        
-          <time datetime="2022-02-22T11:35:22.000Z" class="dt-published" itemprop="datePublished">2022-02-22</time>
-        
-      
-    </div>
+<p>这就是JavaScript如何定义对象的，那数组呢？<br>您可以将数组看作对象的特殊情况，一个区别是数组对数组索引有特殊的处理。数组索引是ECMAScript规范中的一个特殊术语。在JavaScript中数组长度限制在2³²−1以内，数组索引是该限制内任何有效的索引，比如，任何0到2³²−2之间的整数。</p>
+<p>另一个不同之处在于数组还有一个神奇的长度属性。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> array = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>];</span><br><span class="line">array.<span class="property">length</span>; <span class="comment">// → 2</span></span><br><span class="line">array[<span class="number">2</span>] = <span class="string">&#x27;c&#x27;</span>;</span><br><span class="line">array.<span class="property">length</span>; <span class="comment">// → 3</span></span><br></pre></td></tr></table></figure>
 
+<p>上面的例子中，数组在创建的时候有一个值为2的length，然后我们给第2项赋值，length就自动更新了。</p>
+<p>JavaScript定义数组类似于对象。例如，包括数组索引在内的所有键都显式地表示为字符串。数组中的第一个元素存储在键“0”下。<img src="/../images/2019/array-1.svg" alt="array-1"></p>
+<p>length属性只是另一个不可枚举和不可删除的属性，一旦元素被添加到数组中，JavaScript将自动更新length属性的[[Value]]值。总之，数组的表现和对象非常相似。<img src="/../images/2019/array-2.svg" alt="array-2"></p>
+<h2 id="优化属性访问"><a href="#优化属性访问" class="headerlink" title="优化属性访问"></a>优化属性访问</h2><p>现在我们知道在JavaScript中对象是怎么定义的了，让我们深入了解JavaScript引擎如何高效地处理对象。<br>JavaScript中访问属性是目前最常见的操作。对于JavaScript引擎来说，快速访问属性是至关重要的。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> object = &#123;</span><br><span class="line"> <span class="attr">foo</span>: <span class="string">&#x27;bar&#x27;</span>,</span><br><span class="line"> <span class="attr">baz</span>: <span class="string">&#x27;qux&#x27;</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 这里我们访问了`object`的`foo`属性</span></span><br><span class="line"><span class="title function_">doSomething</span>(object.<span class="property">foo</span>);</span><br></pre></td></tr></table></figure>
 
-        <span>
-    
-        <a class="" href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/win10%E7%BC%96%E8%AF%91opencvjs/">win10编译opencvjs</a>
-    
+<h2 id="形状"><a href="#形状" class="headerlink" title="形状"></a>形状</h2><p>在JavaScript中，很多对象有相同的key是很常见的，这样的对象有相同的形状。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> object1 = &#123; <span class="attr">x</span>: <span class="number">1</span>, <span class="attr">y</span>: <span class="number">2</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> object2 = &#123; <span class="attr">x</span>: <span class="number">3</span>, <span class="attr">y</span>: <span class="number">4</span> &#125;;</span><br><span class="line"><span class="comment">// `object1`和`object2`有相同的形状</span></span><br></pre></td></tr></table></figure>
 
+<p>形状相同的对象获取相同的属性值也很常见：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">logX</span>(<span class="params">object</span>) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(object.<span class="property">x</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> object1 = &#123; <span class="attr">x</span>: <span class="number">1</span>, <span class="attr">y</span>: <span class="number">2</span> &#125;;</span><br><span class="line"><span class="keyword">const</span> object2 = &#123; <span class="attr">x</span>: <span class="number">3</span>, <span class="attr">y</span>: <span class="number">4</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="title function_">logX</span>(object1);</span><br><span class="line"><span class="title function_">logX</span>(object2);</span><br></pre></td></tr></table></figure>
 
-</span>
-      </li>
-    
-      <li class="post-item">
-        
-    <div class="meta">
-      
-        
-          <time datetime="2022-01-26T11:31:08.000Z" class="dt-published" itemprop="datePublished">2022-01-26</time>
-        
-      
-    </div>
+<p>考虑到这一点，JavaScript引擎可以根据对象的形状优化对象属性访问。下面是它的工作原理。<br>让我们假设有一个对象，有x和y属性，它使用了我们前面讨论过的字典数据结构：它包含key的字符串，它们指向各自的值。<img src="/../images/2019/object-model1.svg" alt="object-model1"><br>如果你访问一个属性，比如object.y，JavaScript引擎在JSObject中查找键y,然后加载相应的属性值，最后返回[[value]]。<br>但是这些属性值在内存中是存在哪里呢？我们可以把他们存为JSObject的一部分吗？如果我们假设以后会看到更多具有这种形状的对象，那么将包含键值对的完整字典存储在JSObject本身是很浪费的，因为所有具有相同形状的对象都重复使用属性名。这是大量重复和不必要的内存使用。作为一种优化，引擎单独存储对象的形状。<img src="/../images/2019/shape-1.svg" alt="shape-1"><br>这个形状Shape包含所有的键和值，除了[[value]],在Shape中用值的偏移量offset代替JSobject中的value，这样JavaScript就知道去哪里找到value，每个具有相同形状的JSObject都指向这个形状实例，现在，每个JSObject只需要存储这个对象特有的值。<img src="/../images/2019/shape-2.svg" alt="shape-2"></p>
+<p>这个好处在有大量对象的时候变得明显，不管有多少对象，只要它们形状相同，我们只需要存储一次形状和属性。</p>
+<p>所有JavaScript引擎都使用形状作为优化手段，但它们并不都称它们为形状:</p>
+<ul>
+<li>学术论文称它们为隐藏类（Hidden Classes）</li>
+<li>V8称它们为映射（Maps）</li>
+<li>JavaScriptCore称它们为结构（Structures）</li>
+<li>SpiderMonkey称它们为形状（Shapes）</li>
+<li>在本文中，我们将继续使用形状这个术语。</li>
+</ul>
+<h2 id="转换链和树"><a href="#转换链和树" class="headerlink" title="转换链和树"></a>转换链和树</h2><p>如果你有一个具有特定形状的对象，但是你给它添加了一个属性，会发生什么?JavaScript引擎如何找到新形状?</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> object = &#123;&#125;;</span><br><span class="line">object.<span class="property">x</span> = <span class="number">5</span>;</span><br><span class="line">object.<span class="property">y</span> = <span class="number">6</span>;</span><br></pre></td></tr></table></figure>
 
+<p>这些形状在JavaScript引擎中形成所谓的转换链。这里有一个例子:<img src="/../images/2019/shape-chain1.svg" alt="shape-chain1"></p>
+<p>这个对象一开始没有任何属性，所以它指向一个空的形状，下一个状态中，这个对象增加了x为5的属性，所以JavaScript引擎将其指向一个新的形状，这个形状有x属性，值5在第一个偏移量0处添加到JSObject，再下一个状态增加y为6的属性，所以JavaScript引擎将其指向又一个新的形状，这个形状包含x和y属性，并将值6追加到JSObject(偏移量为1)。</p>
+<blockquote>
+<p>属性添加的顺序影响形状,例如{ x: 4, y: 5 }的形状和{ y: 5, x: 4 }不同</p>
+</blockquote>
+<p>我们甚至不需要为每个形状存储完整的属性表，每个形状只需要知道它引入的新属性。<br>在本例中，我们不必将关于x的信息存储在最后一个形状中，因为它可以在前面的链找到。为了实现这一功能，每个形状都链接着上一个形状。<img src="/../images/2019/shape-chain-2.svg" alt="shape-chain-2"></p>
+<p>如果你JavaScript代码中写o.x，JavaScript引擎通过遍历转换链查找属性x，直到找到引入属性x的形状。<br>但是如果没有办法创建一个转换链呢?例如，如果您有两个空对象，并且为每个空对象添加了不同的属性，该怎么办?</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> object1 = &#123;&#125;;</span><br><span class="line">object1.<span class="property">x</span> = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">const</span> object2 = &#123;&#125;;</span><br><span class="line">object2.<span class="property">y</span> = <span class="number">6</span>;</span><br></pre></td></tr></table></figure>
 
-        <span>
-    
-        <a class="" href="/js/%E5%89%8D%E7%AB%AF%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8/">前端包管理器</a>
-    
+<p>在这种情况下，我们必须用分支，而不是链，我们最终得到一个转换树:<img src="/../images/2019/shape-tree.svg" alt="shape-tree"></p>
+<p>这里我们创建了空对象a，然后给a增加x属性，最终我们得到只有一个value的JSObject和2个形状：一个空形状，一个只有属性x的形状。<br>第二个例子一开始也只有一个空对象b，然后增加属性y。最终我们得到两个转换链和三个形状。</p>
+<p>这意味着我们总是从空的形状开始？不一定。<br>引擎对已经包含属性的对象应用了一些优化。假设我们从空对象开始添加x，或者有一个已经包含x的对象：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> object1 = &#123;&#125;;</span><br><span class="line">object1.<span class="property">x</span> = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">const</span> object2 = &#123; <span class="attr">x</span>: <span class="number">6</span> &#125;;</span><br></pre></td></tr></table></figure>
 
+<p>在第一个例子中，我们一开始是空的形状，然后链接到有x属性的形状，就像我们上文看到的那样；在object2的例子中，直接生成有x的对象，而不是从一个空对象开始并进行转换。<img src="/../images/2019/empty-shape-bypass.svg" alt="empty-shape-bypass"></p>
+<p>包含属性x的对象从包含x的形状开始，有效地跳过了空形状。这就是V8和SpiderMonkey所做的。这种优化缩短了转换链，使从字面构造对象更加有效。</p>
+<p>下面的例子是有x,y和z的3D坐标对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> point = &#123;&#125;;</span><br><span class="line">point.<span class="property">x</span> = <span class="number">4</span>;</span><br><span class="line">point.<span class="property">y</span> = <span class="number">5</span>;</span><br><span class="line">point.<span class="property">z</span> = <span class="number">6</span>;</span><br></pre></td></tr></table></figure>
 
-</span>
-      </li>
-    
-  </ul>
-  
-</section>
+<p>如前所述，这将在内存中创建有3个形状的对象(不包括空形状)。读取对象上的x，比如你在代码中写point.x，JavaScript引擎需要遵循链接列表：它从底部的形状开始，然后逐渐上升到顶部引入x的形状。<img src="/../images/2019/shapetable-1.svg" alt="shapetable-1"></p>
+<p>如果我们经常这样做，将会非常慢，尤其是当对象有很多属性的时候。找到该属性的时间是O(n)，也就是说，对象的属性数量是线性的。为了加快搜索属性的速度，JavaScript引擎添加了叫形状表的数据结构。这个形状表是一个字典，将属性键映射到引入属性的各个形状。<img src="/../images/2019/shapetable-2.svg" alt="shapetable-2"></p>
+<p>等一下，现在我们回到了字典查找……这是我们开始添加形状之前的位置!那么我们为什么还要为形状而烦恼呢？<br>这就是形状可以用内联缓存优化的原因(内联缓存见后续文章)。</p>
+</div><a href="/js/JavaScript%E5%BC%95%E6%93%8E%E5%9F%BA%E7%A1%80%E4%B9%8B%E5%BD%A2%E7%8A%B6/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/%E5%8A%A8%E6%95%88/FLIP%E4%BD%A0%E7%9A%84%E5%8A%A8%E7%94%BB/" class="post-title-link">FLIP你的动画</a></h2><div class="post-info">2019-03-04<p id="busuanzi_container_page_pv" class="visit"><span id="busuanzi_value_page_pv"></span><span>次访问</span></p></div><div class="post-content"><p>网页中的动效应该运行在60fps，达到这个帧率并不容易，它去取决于你做了多大的尝试，这里我将用FLIP来帮助你。</p>
+<p>我已经写了一个<a target="_blank" rel="noopener" href="https://github.com/googlearchive/flipjs">FLIP库</a>，在这里你可以看到文档和demos。</p>
+<p>FLIP本质上是一个原则，而不是框架或库。这是一种思考动画的方式，尝试让浏览器渲染动画的开销尽可能小，如果一切顺利，应该能达到60fps的动画。</p>
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>一般动画直接开始后，在每帧可能做开销大的计算，而这里我们让动画从头开始，动态的重新计算动效属性，然后让浏览器简单的执行渲染。<br>FLIP代表First,Last,Invert.Play。</p>
+<ul>
+<li>First: 元素涉及到动效的初值状态</li>
+<li>Last: 元素的最终状态</li>
+<li>Invert: 指出从动画开始到结束元素要如何变化，比如<code>width</code>、<code>height</code>、<code>opacity</code>。然后用<code>transform</code>、<code>opacity</code>来反向设置。如果元素从开始到结束下移了90px，你就要应用<code>transformY(-90px)</code>，让元素看起来和开始时一样，虽然实际上不是。</li>
+<li>Play: 开始变化任何你改变的属性，然后去掉逆变换。因为元素处于最终位置，所以反向设置中的<code>transform</code>、<code>opacity</code>，将使它们从模拟的第一个位置轻松变换到最后一个位置。</li>
+</ul>
+<p><img src="/../images/2019/flip-layout-6.png" alt="flip-layout-6"><br><img src="/../images/2019/flip-layout-7.gif" alt="flip-layout-7"></p>
+<h2 id="代码分解"><a href="#代码分解" class="headerlink" title="代码分解"></a>代码分解</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取初始位置</span></span><br><span class="line"><span class="keyword">var</span> first = el.<span class="title function_">getBoundingClientRect</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置到最终位置</span></span><br><span class="line">el.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;totes-at-the-end&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 再次获取位置信息. 注意这会引起重排.</span></span><br><span class="line"><span class="keyword">var</span> last = el.<span class="title function_">getBoundingClientRect</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 需要的话也可以操作其他可计算的样式。</span></span><br><span class="line"><span class="comment">// 但要确保尽量使用只触发重绘的属性，比如transform、opacity</span></span><br><span class="line"><span class="keyword">var</span> invert = first.<span class="property">top</span> - last.<span class="property">top</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Invert.</span></span><br><span class="line">el.<span class="property">style</span>.<span class="property">transform</span> = <span class="string">`translateY(<span class="subst">$&#123;invert&#125;</span>px)`</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等待下一帧，这样我们就知道所有的样式更改都已生效</span></span><br><span class="line"><span class="title function_">requestAnimationFrame</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 开始动画过程</span></span><br><span class="line">  el.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;animate-on-transforms&#x27;</span>);</span><br><span class="line"></span><br><span class="line">  el.<span class="property">style</span>.<span class="property">transform</span> = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用transitionend捕获动画结束</span></span><br><span class="line">el.<span class="title function_">addEventListener</span>(<span class="string">&#x27;transitionend&#x27;</span>, tidyUpAnimations);</span><br></pre></td></tr></table></figure>
 
+<p>然而，也可以用即将来临的Web Animations API，这个会更简单，只是需要Web Animations API polyfill，不过这个补丁很轻量，并且确实很实用。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取初始位置</span></span><br><span class="line"><span class="keyword">var</span> first = el.<span class="title function_">getBoundingClientRect</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 移动到最终位置</span></span><br><span class="line">el.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;totes-at-the-end&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取最终位置</span></span><br><span class="line"><span class="keyword">var</span> last = el.<span class="title function_">getBoundingClientRect</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Invert.</span></span><br><span class="line"><span class="keyword">var</span> invert = first.<span class="property">top</span> - last.<span class="property">top</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 从inverted位置移动到最终last位置.</span></span><br><span class="line"><span class="keyword">var</span> player = el.<span class="title function_">animate</span>([</span><br><span class="line">  &#123; <span class="attr">transform</span>: <span class="string">`translateY(<span class="subst">$&#123;invert&#125;</span>px)`</span> &#125;,</span><br><span class="line">  &#123; <span class="attr">transform</span>: <span class="string">&#x27;translateY(0)&#x27;</span> &#125;</span><br><span class="line">], &#123;</span><br><span class="line">  <span class="attr">duration</span>: <span class="number">300</span>,</span><br><span class="line">  <span class="attr">easing</span>: <span class="string">&#x27;cubic-bezier(0,0,0.32,1)&#x27;</span>,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在动画结束时做任何需要的整理</span></span><br><span class="line">player.<span class="title function_">addEventListener</span>(<span class="string">&#x27;finish&#x27;</span>, tidyUpAnimations);</span><br></pre></td></tr></table></figure>
+<h2 id="FLIP的用途"><a href="#FLIP的用途" class="headerlink" title="FLIP的用途"></a>FLIP的用途</h2><p>当你在响应到用户输入后用一些动画来响应，这绝对是非常棒的。比如，在Chrome开发峰会上，我展开用户点击的卡片，通常情况下，元素开始和结束的位置、大小都不知道，因为网页是响应式的，元素位置大小都不固定，但FLIP就很有用，它能明确的计算元素，在运行时给出正确的值。</p>
+<p>你能够做这种相对昂贵的预计算是因为利用了用户感知。用户和你的网页有交互之后，你有趁他们不注意的100ms时间来做这些。在这100ms内，用户会觉得网站是立刻响应了的，而你只需要在动画过程中保持60fps。</p>
+<p>我们可以利用这个感知期(100ms)，通过javascript做<code>getBoundingClientRect</code>操作（或者你非要用不优雅的<code>getComputedStyle</code>），这样我们使动画细腻流畅，利于重绘。</p>
+<p>可以用<code>transform</code>和<code>opacity</code>重写动画是最好的，如果你在js或CSS中没有用这些属性，那你可以开始优化了，它们会在你改变布局属性（比如<code>width</code>、<code>height</code>、<code>left</code>、<code>top</code>）时，用开销小的属性重写后达到最好的优化效果。</p>
+<p>有时你为了用FLIP需要重新构思你的动画，在多数情况下，我把动画元素单独提取出来，这样我就可以不失真的制作动画了，并且尽可能多的用FLIP。你可能会觉得这样应用过度了，但我觉得不是，因为：</p>
+<p>1、大家想这样。我的一个同事兼好友最近做了一个关于人们想从新闻app上得到什么的调查，最多的回答（这让他很吃惊）不是离线支持、同步、通知，或类似的东西，而是浏览平滑——没有晃动、没有卡顿、没有颤抖。</p>
+<p>2、程序员就是这么做的。当然，这是一种主观的衡量标准，但我已经听过很多次，程序员花了好几天的时间才把过渡做得恰到好处。通过运维服务，我们我网站加载速度都很快，用户会根据他们的操作体验来评价我们的网站，而这些细节将使我们与众不同。</p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><p>使用FLIP时要注意以下几点：<br>1、不要超过100ms的窗口期。<br>记住一定不要超过100ms，如果超过了，你的应用会表现得没反应。通过DevTools关注它，了解是否超出了100ms。</p>
+<p>2、认真设计动画。<br>想象下，你在运行一个动画，做一些位移和透明度得改变，然后你决定运行另外一个动画，它需要大量得预计算，这会打断之前运行中的动画，这种情况很糟糕。这里的关键是保证你的预计算工作是在空闲时间或上面说过的100ms窗口期内完成的，这两个动画不会互相阻断。</p>
+<p>3、内容会失真。<br>当你使用<code>scale</code>和<code>transform</code>，一些元素会失真。上面说过，我会调整一点结构，来不失真的使用FLIP，不过这可能有争议。</p>
+<p>总结<br>我喜欢用FLIP来考虑动画的实现，因为它让JS和CSS配合的很好，用JS来计算，但用CSS处理动画过程，你不需要用CSS来实现动画，虽然你可以只用简单的Web Animations API或JS，或什么其他的简单的方式。主要的一点是，你正在降低每帧的复杂性和成本(通常意味着<code>transform</code>和<code>opacity</code>)，以尽量为用户提供最好的体验。</p>
+<p>所以，使用FLIP吧。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://aerotwist.com/blog/flip-your-animations/">Aerotwist - FLIP Your Animations</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.w3cplus.com/javascript/animating-layouts-with-the-flip-technique.html">FLIP技术给Web布局带来的变化_JavaScript, FLIP, Animation, Web动画 教程_w3cplus</a></li>
+</ul>
+</div><a href="/%E5%8A%A8%E6%95%88/FLIP%E4%BD%A0%E7%9A%84%E5%8A%A8%E7%94%BB/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/js/Debouncing%E5%92%8CThrottling/" class="post-title-link">Debouncing和Throttling</a></h2><div class="post-info">2019-02-27<p id="busuanzi_container_page_pv" class="visit"><span id="busuanzi_value_page_pv"></span><span>次访问</span></p><a href="https://css-tricks.com/debouncing-throttling-explained-examples/" target="_blank" title="https://css-tricks.com/debouncing-throttling-explained-examples/" class="post-from">原文地址</a></div><div class="post-content"><p><code>Debounce</code> 和 <code>throttle</code>是两种相似但不同的技术，用来控制函数在一定时间内执行的次数，简单说是用来限频。</p>
+<p>当我们的函数操作<code>DOM</code>事件时，对函数用使用<code>Debounce</code> 或 <code>throttle</code>非常有用，因为我们在<code>DOM</code>事件和函数执行之间加了我们的控制层。</p>
+<p>当我们通过触控板、滚轮、拖动滚动条来滚动时，会很轻易的每秒触发30次滚动事件，但是在智能手机上测试缓慢的滚动时，每秒可触发多达100次滚动事件，你的滚动回调为这样高频的执行做好准备了吗？</p>
+<p>2011年，Twitter网站突现了一个问题:页面在向下滚动时变得卡顿。John Resig发表了一篇关于这个问题的博文，来解释直接将昂贵的函数绑定到滚动事件上多么糟糕。John建议在滚动回调函数外包裹一个每250ms执行一次的循环，这样滚动回调不与滚动事件耦合，简单的避免了用户体验差的问题。</p>
+<p>现在处理类似的高频事件的方式稍微复杂点。下面介绍<code>Debounce</code>, <code>Throttle</code>, 和 <code>requestAnimationFrame</code>。</p>
+<h2 id="Debounce"><a href="#Debounce" class="headerlink" title="Debounce"></a>Debounce</h2><p><code>Debounce</code>可以把连续的多个调用分组到一个调用中。<img src="/../images/2019/debounce.webp" alt="debounce"></p>
+<p>想象下你在电梯里，门开始关闭，突然有人要进来，电梯没有改变楼层，门又开了，每次要关门时，如果有人要进来，都会再次开门，电梯在推迟移动到其他楼层，但在优化资源。</p>
+<h3 id="Leading-edge（或immediate）"><a href="#Leading-edge（或immediate）" class="headerlink" title="Leading edge（或immediate）"></a>Leading edge（或immediate）</h3><p>在事件发生间隔变的足够长之前，Debounce会一直等待，推迟回调的执行，为什么不立刻触发回调的执行，看起来就像没有用Debounce处理过，只是在快速连续的触发事件停止之前不要再次执行，就像下面这样：<img src="/../images/2019/debounce-leading.webp" alt="debounce-leading"></p>
+<p>在underscore.js中, 这个参数叫immediate，而不是leading。</p>
+<h3 id="Debounce实现"><a href="#Debounce实现" class="headerlink" title="Debounce实现"></a>Debounce实现</h3><p>第一次看到Debounce的js实现是2009年John Hann的博文《<a target="_blank" rel="noopener" href="http://unscriptable.com/2009/03/20/debouncing-javascript-methods/">Debouncing Javascript Methods</a>》，此后不久，Ben Alman创建了一个jQuery插件(不再维护)，一年后，Jeremy Ashkenas将其添加到underscore.js中。后来，它被添加到Lodash中。这3种实现在内部略有不同，但它们的接口几乎相同。有一段时间underscore.js采用了Lodash的debounce&#x2F;throttle实现，直到我2013年发现了<code>_.debounce</code>函数的一个bug，这两种实现逐渐不同。</p>
+<p>Lodash在<code>_.debounce</code>和<code>_.throttle</code>中添加了更多的功能。原来的<code>immediate</code>参数被<code>leading</code>和<code>trailing</code>替代，你可以选择1个，或两个都选，默认只用<code>trailing</code>。</p>
+<p>本文没有介绍的<code>maxWait</code>参数（目前仅在<code>Lodash</code>中）是非常有用的，实际上，在<code>lodash</code>源码中可以看到，Throttle函数的定义<code>_.debounce</code>中有<code>maxWait</code>。</p>
+<h3 id="Debounce示例"><a href="#Debounce示例" class="headerlink" title="Debounce示例"></a>Debounce示例</h3><p>1、resize<br>在拖动大小控制器来<code>resize</code>浏览器窗口时，可以触发很多次<code>resize</code>事件。<br>完整示例请查看原文<a target="_blank" rel="noopener" href="https://css-tricks.com/debouncing-throttling-explained-examples/">Debouncing and Throttling Explained Through Examples | CSS-Tricks</a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Based on http://www.paulirish.com/2009/throttled-smartresize-jquery-event-handler/</span></span><br><span class="line">$(<span class="variable language_">document</span>).<span class="title function_">ready</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> $win = $(<span class="variable language_">window</span>);</span><br><span class="line">  <span class="keyword">var</span> $left_panel = $(<span class="string">&#x27;.left-panel&#x27;</span>);</span><br><span class="line">  <span class="keyword">var</span> $right_panel = $(<span class="string">&#x27;.right-panel&#x27;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">display_info</span>(<span class="params">$div</span>) &#123;</span><br><span class="line">    $div.<span class="title function_">append</span>($win.<span class="title function_">width</span>() + <span class="string">&#x27; x &#x27;</span> + $win.<span class="title function_">height</span>() +  <span class="string">&#x27;&lt;br&gt;&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  $(<span class="variable language_">window</span>).<span class="title function_">on</span>(<span class="string">&#x27;resize&#x27;</span>, <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="title function_">display_info</span>($left_panel);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  $(<span class="variable language_">window</span>).<span class="title function_">on</span>(<span class="string">&#x27;resize&#x27;</span>, _.<span class="title function_">debounce</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="title function_">display_info</span>($right_panel);</span><br><span class="line">  &#125;, <span class="number">400</span>));</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
+<p><code>resize</code>事件中我们用了默认参数<code>trailing</code>，因为我们只关心浏览器停止改变窗口大小后的最终值。</p>
+<p>2、按键输入关联的ajax请求<br>为什么我们要在用户还是输入的时候每50ms向服务器发ajax请求呢？<code>_.debounce</code>可以帮助我们避免这种冗余的造作，只在用户停止输入的时候发送请求。</p>
+<p>此时，使用<code>leading</code>参数没有意思，我们要等最后一个字符输入完毕。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="variable language_">document</span>).<span class="title function_">ready</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> $statusKey = $(<span class="string">&#x27;.status-key&#x27;</span>);</span><br><span class="line">  <span class="keyword">var</span> $statusAjax = $(<span class="string">&#x27;.status-ajax&#x27;</span>);</span><br><span class="line">  <span class="keyword">var</span> intervalId;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 仅为示例模拟的假ajax</span></span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">make_ajax_request</span>(<span class="params">e</span>)&#123;</span><br><span class="line">    <span class="keyword">var</span> that = <span class="variable language_">this</span>;</span><br><span class="line">    $statusAjax.<span class="title function_">html</span>(<span class="string">&#x27;等待时间足够了，现在进行数据请求&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    intervalId = <span class="built_in">setTimeout</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">       $statusKey.<span class="title function_">html</span>(<span class="string">&#x27;在这里输入，当你停止输入的时候我会发现&#x27;</span>);</span><br><span class="line">       $statusAjax.<span class="title function_">html</span>(<span class="string">&#x27;&#x27;</span>);</span><br><span class="line">       $(that).<span class="title function_">val</span>(<span class="string">&#x27;&#x27;</span>); <span class="comment">// 清空输入值</span></span><br><span class="line">    &#125;,<span class="number">2000</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 当事件被触发时显示信息</span></span><br><span class="line">  $(<span class="string">&#x27;.autocomplete&#x27;</span>)</span><br><span class="line">  .<span class="title function_">on</span>(<span class="string">&#x27;keydown&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>)&#123;</span><br><span class="line">    $statusKey.<span class="title function_">html</span>(<span class="string">&#x27;等待后续输入... &#x27;</span>);</span><br><span class="line">    <span class="built_in">clearInterval</span>(intervalId);</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 显示数据请求什么时候会发生（停止输入后）</span></span><br><span class="line">  <span class="comment">// 为了示例更明显，设置了超长的1.3s等待时长。实际情况下最好等待50ms到200ms</span></span><br><span class="line">  $(<span class="string">&#x27;.autocomplete&#x27;</span>).<span class="title function_">on</span>(<span class="string">&#x27;keydown&#x27;</span>, _.<span class="title function_">debounce</span>(make_ajax_request, <span class="number">1300</span>));</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
-        
-        <footer id="footer">
-  <div class="footer-left">
-    Copyright &copy;
-    
-    
-    2016-2024
-    Lovelyun
-  </div>
-  <div class="footer-right">
-    <nav>
-      <ul>
-        <!--
-       --><li><a href="/">Home</a></li><!--
-     --><!--
-       --><li><a href="/about/">About</a></li><!--
-     --><!--
-       --><li><a href="/archives/">Writing</a></li><!--
-     --><!--
-       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
-     -->
-      </ul>
-    </nav>
-  </div>
-</footer>
+<p>类似的情形还可能是等到用户停止输入再校验其输入内容，然后显示类似“您的密码位数太短”的提示语。</p>
+<h3 id="如何使用debounce和throttle以及其中的坑"><a href="#如何使用debounce和throttle以及其中的坑" class="headerlink" title="如何使用debounce和throttle以及其中的坑"></a>如何使用debounce和throttle以及其中的坑</h3><p>自己写一个<code>debounce</code>&#x2F;<code>throttle</code>功能是很容易的，或者随便从哪个博客里复制一个。我的建议是直接用<code>underscore</code>或<code>Lodash</code>，如果你只需要<code>_.debounce</code>和<code>_.throttle</code>方法，你可以用<code>Lodash</code>的自定义构建输出一个2KB的压缩包，构建命令很简单：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm i -g lodash-cli</span><br><span class="line">lodash include = debounce, throttle</span><br></pre></td></tr></table></figure>
 
-    </div>
-    <!-- styles -->
+<p>也就是说，一般会通过<code>webpack/browserify/rollup</code>使用<code>lodash/throttle和lodash/debounce</code>或<code>lodash.throttle和lodash.debounce</code>的包。</p>
+<p>一个常见的坑是不止1次的调用<code>_.debounce</code>函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 错误的写法</span></span><br><span class="line">$(<span class="variable language_">window</span>).<span class="title function_">on</span>(<span class="string">&#x27;scroll&#x27;</span>, <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">   _.<span class="title function_">debounce</span>(doSomething, <span class="number">300</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 正确的写法</span></span><br><span class="line">$(<span class="variable language_">window</span>).<span class="title function_">on</span>(<span class="string">&#x27;scroll&#x27;</span>, _.<span class="title function_">debounce</span>(doSomething, <span class="number">200</span>));</span><br></pre></td></tr></table></figure>
 
+<p>如果你有需要，在<code>Lodash</code>和<code>underscore.js</code>中，为需要<code>debounce</code>的函数创建一个变量将允许我们调用私有方法<code>debounced_version.cancel()</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> debounced_version = _.<span class="title function_">debounce</span>(doSomething, <span class="number">200</span>);</span><br><span class="line">$(<span class="variable language_">window</span>).<span class="title function_">on</span>(<span class="string">&#x27;scroll&#x27;</span>, debounced_version);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果有需要</span></span><br><span class="line">debounced_version.<span class="title function_">cancel</span>();</span><br></pre></td></tr></table></figure>
 
+<h2 id="Throttle"><a href="#Throttle" class="headerlink" title="Throttle"></a>Throttle</h2><p>使用了_.throttle,我们不允许函数每X毫秒执行超过1次。</p>
+<p><code>throttle</code>和<code>debounce</code>的主要区别是，<code>throttle</code>保证函数有规律的执行，至少每X毫秒执行1次。<br>和<code>debounce</code>一样，<code>throttle</code>也包含在Ben的插件、<code>underscore.js</code>和<code>lodash</code>中。</p>
+<h3 id="Throttle示例"><a href="#Throttle示例" class="headerlink" title="Throttle示例"></a>Throttle示例</h3><p>1、无限滚动<br>一个常见的例子：用户向下滑动你的无限滚动页面，你需要检查用户距离页面底部有多远，如果快滑到底部了，你就要通过<code>ajax</code>请求更多的数据来填充页面。<br>此时<code>_.debounce</code>没用了，它只能在用户停止滑动时触发，而我们需要在用户滑到底之前请求数据，<code>_.throttle</code>可以让我们不停的检查距离底部的距离。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这是一个很简单的例子。</span></span><br><span class="line"><span class="comment">// 或许你想用类似下面这样的插件</span></span><br><span class="line"><span class="comment">// https://github.com/infinite-scroll/infinite-scroll/blob/master/jquery.infinitescroll.js</span></span><br><span class="line">$(<span class="variable language_">document</span>).<span class="title function_">ready</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 每200ms检查一下滚动位置</span></span><br><span class="line">  $(<span class="variable language_">document</span>).<span class="title function_">on</span>(<span class="string">&#x27;scroll&#x27;</span>, _.<span class="title function_">throttle</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="title function_">check_if_needs_more_content</span>();</span><br><span class="line">  &#125;, <span class="number">200</span>));</span><br><span class="line"></span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">check_if_needs_more_content</span>(<span class="params"></span>) &#123;</span><br><span class="line">    pixelsFromWindowBottomToBottom = <span class="number">0</span> + $(<span class="variable language_">document</span>).<span class="title function_">height</span>() - $(<span class="variable language_">window</span>).<span class="title function_">scrollTop</span>() -$(<span class="variable language_">window</span>).<span class="title function_">height</span>();</span><br><span class="line">    <span class="comment">// console.log($(document).height());</span></span><br><span class="line">    <span class="comment">// console.log($(window).scrollTop());</span></span><br><span class="line">    <span class="comment">// console.log($(window).height());</span></span><br><span class="line">    <span class="comment">// console.log(pixelsFromWindowBottomToBottom);</span></span><br><span class="line">    <span class="keyword">if</span> (pixelsFromWindowBottomToBottom &lt; <span class="number">200</span>)&#123;</span><br><span class="line">      <span class="comment">// 这里会有一个数据请求</span></span><br><span class="line">      $(<span class="string">&#x27;body&#x27;</span>).<span class="title function_">append</span>($(<span class="string">&#x27;.item&#x27;</span>).<span class="title function_">clone</span>());</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
-  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+<h2 id="requestAnimationFrame-rAF"><a href="#requestAnimationFrame-rAF" class="headerlink" title="requestAnimationFrame (rAF)"></a>requestAnimationFrame (rAF)</h2><p><code>requestAnimationFrame</code>是另外一种限频方式，可以看成<code>_.throttle</code>(dosomething, 16)，但是会精确很多，因为它是为了更好的精确度的浏览器原生API。</p>
+<p>考虑下列优缺点后，我们可以酌情用<code>rAF</code> API替代<code>throttle</code>。</p>
+<p>优点：<br>1、目标是60fps (16ms每帧)，但内部将决定如何安排渲染的最佳时间；<br>2、非常简单且标准的API，将来不会改变，便于维护。</p>
+<p>缺点：<br>1、我们需要开始或取消rAF，不像<code>.debounce</code>或<code>.throttle</code>自己在内部处理；<br>2、如果浏览器页面不是激活状态，rAF将不会执行，虽然对于滚动、鼠标、键盘事件这并不重要；<br>3、虽然所有的现代浏览器支持rAF，但是IE9、Opera Mini、和老的安卓并不支持，现在还需要打补丁；<br>4、node.js不支持rAF，所以不能用在服务端的文件系统事件。</p>
+<p>一般来说，如果js函数需要重新计算元素位置，比如直接渲染或动效，我会用<code>requestAnimationFrame</code>。发起数据请求，增加或移除控制动效的css class，我会用<code>_.debounce</code>或<code>_.throttle</code>，这样可以更低的执行频率，比如200ms，而不是16ms。<br>你或许觉得<code>rAF</code>应该在<code>underscore</code>或<code>lodash</code>中实现，但他们都没有，因为它用途少并容易直接使用。</p>
+<h3 id="rAF示例"><a href="#rAF示例" class="headerlink" title="rAF示例"></a>rAF示例</h3><p>Paul Lewis写的的《<a target="_blank" rel="noopener" href="https://www.html5rocks.com/en/tutorials/speed/animations/">Leaner, Meaner, Faster Animations with requestAnimationFrame</a>》一步一步的介绍了这个例子的逻辑，受他的启发，这里我只会介绍<code>requestAnimation</code>用在滚动上的例子。</p>
+<p>我把_.throttle限频16ms和rAF放在一起对比，实现类似的功能，但极有可能rAF在复杂的场景会表现的更好。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 参考https://www.html5rocks.com/en/tutorials/speed/animations/#debouncing-scroll-events</span></span><br><span class="line"><span class="keyword">var</span> latestKnownScrollY = <span class="number">0</span>,</span><br><span class="line">    ticking = <span class="literal">false</span>,</span><br><span class="line">    item = <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.item&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">update</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="comment">// 重置tick，使我们能够捕获下一个onScroll</span></span><br><span class="line">  ticking = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">  item[<span class="number">0</span>].<span class="property">style</span>.<span class="property">width</span> = latestKnownScrollY + <span class="number">100</span> + <span class="string">&#x27;px&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">onScroll</span>(<span class="params"></span>) &#123;</span><br><span class="line">  latestKnownScrollY = <span class="variable language_">window</span>.<span class="property">scrollY</span>; <span class="comment">// 不支持IE8</span></span><br><span class="line">  <span class="title function_">requestTick</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">requestTick</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">if</span>(!ticking) &#123;</span><br><span class="line">    <span class="title function_">requestAnimationFrame</span>(update);</span><br><span class="line">  &#125;</span><br><span class="line">  ticking = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;scroll&#x27;</span>, onScroll, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// THROTTLE</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">throttled_version</span>(<span class="params"></span>) &#123;</span><br><span class="line">  item[<span class="number">1</span>].<span class="property">style</span>.<span class="property">width</span> = <span class="variable language_">window</span>.<span class="property">scrollY</span> + <span class="number">100</span> + <span class="string">&#x27;px&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;scroll&#x27;</span>, _.<span class="title function_">throttle</span>(throttled_version, <span class="number">16</span>), <span class="literal">false</span>);</span><br></pre></td></tr></table></figure>
 
+<p>rAF的一个更好的例子我在<code>headroom.js</code>库中看到过，它把逻辑解耦并封装。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>使用<code>debounce</code>, <code>throttle</code> 和 <code>requestAnimationFrame</code>来优化事件处理，它们略有不同，但都很有用，并相互补充。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>debounce</code></td>
+<td>把突然爆发的大量事件（比如连续快速的按键输入）组合成1个事件</td>
+</tr>
+<tr>
+<td><code>throttle</code></td>
+<td>保证每X毫秒执行1次的持续的事件流。比如每200ms检查下滚动位置来触发CSS动效</td>
+</tr>
+<tr>
+<td><code>requestAnimationFrame</code></td>
+<td>代替<code>throttle</code>。当你在屏幕上重新计算并渲染元素，想保证变化或动效的流畅时使用。注意：不支持IE9</td>
+</tr>
+</tbody></table>
+</div><a href="/js/Debouncing%E5%92%8CThrottling/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/css/%E9%A1%B5%E9%9D%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%87%8F%E5%B0%91%E5%9B%9E%E6%B5%81%E7%9A%8410%E7%A7%8D%E6%96%B9%E6%B3%95/" class="post-title-link">页面性能优化之减少回流的10种方法</a></h2><div class="post-info">2019-02-22<p id="busuanzi_container_page_pv" class="visit"><span id="busuanzi_value_page_pv"></span><span>次访问</span></p><a href="https://www.sitepoint.com/10-ways-minimize-reflows-improve-performance/" target="_blank" title="https://www.sitepoint.com/10-ways-minimize-reflows-improve-performance/" class="post-from">原文地址</a></div><div class="post-content"><p>尽管web页面达到2MB的性能仍然是一个热门话题,页面越平滑，用户体验越好，转化率越高!<br>也就是说，我对添加肤浅的CSS3动画或不考虑后果地操纵多个DOM元素感到内疚。在应用视觉效果时，浏览器中使用了两个术语:</p>
+<h2 id="重绘Repaints"><a href="#重绘Repaints" class="headerlink" title="重绘Repaints"></a>重绘Repaints</h2><p>当变化影响元素可见性而不是布局的时候会发生一次重绘，比如：<code>opacity</code>, <code>background-color</code>, <code>visibility</code>, 和 <code>outline</code>，重绘的代价很高，因为浏览器必须检查DOM中所有其他节点的可见性——一个或多个节点可能在更改的元素下面变得可见。</p>
+<h2 id="重排Reflows"><a href="#重排Reflows" class="headerlink" title="重排Reflows"></a>重排Reflows</h2><p>重排对性能的影响巨大，需要重新计算所有元素的位置和尺寸，这会导致部分或整个文档的重新渲染，改变单个元素能影响所有的子节点、父节点和兄弟节点。</p>
+<p>重绘和重排时，用户和web页面都不能做其它事情，在极端情况下，css会让js执行变慢，比如滚动不稳定、界面响应不灵敏。</p>
+<h2 id="触发重排途径"><a href="#触发重排途径" class="headerlink" title="触发重排途径"></a>触发重排途径</h2><h3 id="添加、删除或改变元素的可见性"><a href="#添加、删除或改变元素的可见性" class="headerlink" title="添加、删除或改变元素的可见性"></a>添加、删除或改变元素的可见性</h3><p>首先是显而易见的:使用JavaScript更改DOM将导致回流。</p>
+<h3 id="添加、删除或改变css样式"><a href="#添加、删除或改变css样式" class="headerlink" title="添加、删除或改变css样式"></a>添加、删除或改变css样式</h3><p>直接应用CSS样式或更改类名都可能会改变布局。比如更改元素的宽度会影响同一DOM树及其周围的所有元素。</p>
+<h3 id="CSS3-animations-和-transitions"><a href="#CSS3-animations-和-transitions" class="headerlink" title="CSS3 animations 和 transitions"></a>CSS3 animations 和 transitions</h3><p>动画的每一帧都会引起回流。</p>
+<h3 id="用offsetWidth-和-offsetHeight"><a href="#用offsetWidth-和-offsetHeight" class="headerlink" title="用offsetWidth 和 offsetHeight"></a>用offsetWidth 和 offsetHeight</h3><p>读取元素的<code>offsetWidth</code> 和 <code>offsetHeight</code>属性会触发回流来计算属性值。</p>
+<h3 id="用户行为"><a href="#用户行为" class="headerlink" title="用户行为"></a>用户行为</h3><p>一些用户行为会触发回流，比如：hover、在输入框中输入文本、调整窗口大小、更改字体大小、切换样式表或字体。</p>
+<p>回流的影响各不相同，比如相同的操作一些浏览器表现的更好，一些元素的渲染开销会更大。幸运的是，你可以使用一些通用技巧来提升性能.</p>
+<h2 id="通用技巧"><a href="#通用技巧" class="headerlink" title="通用技巧"></a>通用技巧</h2><h3 id="使用最佳布局方案"><a href="#使用最佳布局方案" class="headerlink" title="使用最佳布局方案"></a>使用最佳布局方案</h3><p>不要使用内联样式和table布局！<br>内联样式会在下载HTML时影响布局，并触发额外的reflow。<br>table布局开销很大，因为解析器需要多次传递去计算单元格维度，使用table时应用fixed定位有一定的优化效果，因为列的宽度是基于标题行的内容。<br>主页面布局应用flexbox也会有性能影响，因为在HTML下载的时候，flex items的位置和尺寸可能会变化。</p>
+<h3 id="最小化CSS规则的数量"><a href="#最小化CSS规则的数量" class="headerlink" title="最小化CSS规则的数量"></a>最小化CSS规则的数量</h3><p>css规则越少，重排越快，要尽量避免复杂的css选择器。<br>如果您使用的是Bootstrap这样的框架，那么这一点尤其成问题——很少有站点使用了框架提供的所有样式。像Unused CSS、uCSS、grunt-uncss和gulp-uncss这样的工具可以显著减少样式定义和文件大小。</p>
+<h3 id="最小化DOM层级"><a href="#最小化DOM层级" class="headerlink" title="最小化DOM层级"></a>最小化DOM层级</h3><p>稍微复杂一点——减小DOM树大小和每个分支的元素数量。文档越小越浅，回流越快。如果不需要支持古老的浏览器，可以删除不必要的包裹元素。</p>
+<h3 id="更改class的DOM层级要低"><a href="#更改class的DOM层级要低" class="headerlink" title="更改class的DOM层级要低"></a>更改class的DOM层级要低</h3><p>改变class的DOM层级尽可能的低（比如：没有多个深度嵌套的元素），这能减小重排的范围，只重排必要的元素，本质上，只有在对嵌套子节点的影响很小的情况下，才将类更改应用于父节点，比如包装器。</p>
+<h3 id="从文档流中移除复杂的动效"><a href="#从文档流中移除复杂的动效" class="headerlink" title="从文档流中移除复杂的动效"></a>从文档流中移除复杂的动效</h3><p>通过使用<code>position: absolute; </code>或者 <code>position: fixed;</code>来使有动效的元素脱离文档流，这可以在不影响文档流中的其它元素的情况下更新尺寸和位置。</p>
+<h3 id="更新隐藏的元素"><a href="#更新隐藏的元素" class="headerlink" title="更新隐藏的元素"></a>更新隐藏的元素</h3><p>通过display: none;来隐藏的元素在改变时不会触发重绘和重排，可以的话，在元素可见之前进行更改。</p>
+<h3 id="批量更新元素"><a href="#批量更新元素" class="headerlink" title="批量更新元素"></a>批量更新元素</h3><p>所有的DOM操作在同一次动作中进行能提高性能。<br>下面这个简单的例子会引起3次重排：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myelement = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;myelement&#x27;</span>);</span><br><span class="line">myelement.<span class="property">width</span> = <span class="string">&#x27;100px&#x27;</span>;</span><br><span class="line">myelement.<span class="property">height</span> = <span class="string">&#x27;200px&#x27;</span>;</span><br><span class="line">myelement.<span class="property">style</span>.<span class="property">margin</span> = <span class="string">&#x27;10px&#x27;</span>;</span><br></pre></td></tr></table></figure>
 
-    <!-- jquery -->
+<p>我们可以把上面的操作减少到1次重排，这也更便于维护：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myelement = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;myelement&#x27;</span>);</span><br><span class="line">myelement.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;newstyles&#x27;</span>);</span><br></pre></td></tr></table></figure>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.newstyles</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">200px</span>;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">10px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p>你也可以最小化接触DOM的时间，假设你要创建这个项目列表:</p>
+<ul>
+<li>item1</li>
+<li>item2</li>
+<li>item3</li>
+</ul>
+<p>每次添加1个元素会触发7次重排-1次添加<ul>，3次添加<li>，3次添加li里面的文本。但是，可以使用DOM片段实现1次reflow，并先在内存中构建节点：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span></span><br><span class="line">  i, li,</span><br><span class="line">  frag = <span class="variable language_">document</span>.<span class="title function_">createDocumentFragment</span>(),</span><br><span class="line">  ul = frag.<span class="title function_">appendChild</span>(<span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;ul&#x27;</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">3</span>; i++) &#123;</span><br><span class="line">  li = ul.<span class="title function_">appendChild</span>(<span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;li&#x27;</span>));</span><br><span class="line">  li.<span class="property">textContent</span> = <span class="string">&#x27;item &#x27;</span> + i;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(frag);</span><br></pre></td></tr></table></figure>
 
+<h3 id="限制受影响的元素"><a href="#限制受影响的元素" class="headerlink" title="限制受影响的元素"></a>限制受影响的元素</h3><p>避免大量元素受影响的情况。<br>比如：一个选项卡内容控件，单击一个选项卡将激活不同的内容块。如果每个内容块的高度不同，则会影响周围的元素。<br>可以为容器设置固定高度或从文档流中删除控件来提高性能。</p>
+<h3 id="意识到平滑影响性能"><a href="#意识到平滑影响性能" class="headerlink" title="意识到平滑影响性能"></a>意识到平滑影响性能</h3><p>每帧移动1px看起来平滑，但是低端机会卡顿，每帧移动4px，需要1&#x2F;4的重排，且可能只会稍微不那么平滑。</p>
+<h3 id="用浏览器工具分析渲染问题"><a href="#用浏览器工具分析渲染问题" class="headerlink" title="用浏览器工具分析渲染问题"></a>用浏览器工具分析渲染问题</h3><p>所有主流浏览器都提供工具来强调重排如何影响性能。<br><img src="/../images/2019/timeline.png" alt="timeline"></p>
+</div><a href="/css/%E9%A1%B5%E9%9D%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%87%8F%E5%B0%91%E5%9B%9E%E6%B5%81%E7%9A%8410%E7%A7%8D%E6%96%B9%E6%B3%95/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/doc/hexo%E5%8D%9A%E5%AE%A2/" class="post-title-link">hexo博客</a></h2><div class="post-info">2018-11-26<p id="busuanzi_container_page_pv" class="visit"><span id="busuanzi_value_page_pv"></span><span>次访问</span></p></div><div class="post-content"><h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><h3 id="写博客"><a href="#写博客" class="headerlink" title="写博客"></a>写博客</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new 博客标题</span><br></pre></td></tr></table></figure>
 
+<h3 id="本地服务"><a href="#本地服务" class="headerlink" title="本地服务"></a>本地服务</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo serve</span><br></pre></td></tr></table></figure>
 
-<!-- clipboard -->
+<p><img src="/../images/2018/serve.png" alt="serve"></p>
+<h3 id="构建并发布"><a href="#构建并发布" class="headerlink" title="构建并发布"></a><del>构建并发布</del></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo g -d // hexo generate --deploy的简写</span><br></pre></td></tr></table></figure>
 
+<h3 id="版本控制与持续集成"><a href="#版本控制与持续集成" class="headerlink" title="版本控制与持续集成"></a>版本控制与持续集成</h3><p>使用了上面的构建并发布流程后，你一定会觉得这个过程很麻烦，而且源文件不方便管理，虽然可以开一个分支放源文件，但还是很麻烦对不对？下面来看一个更好的处理办法，新的push出现时自动构建并发布：<br>1、Content Repo：Hexo生成出来的静态网站放到GitHub Pages时用到的repo;<br>2、Source Repo：hexo源文件的repo；<br>3、使用CI工具（比如<a target="_blank" rel="noopener" href="https://www.appveyor.com/">AppVeyor官网</a>）来完成下面的功能：<br>当有新的change push到Source Repo时，自动执行CI脚本，生成最新的静态网站发布到Content Repo。</p>
+<blockquote>
+<p>使用AppVeyor来建立CI的方法参考本文第二个参考链接。</p>
+</blockquote>
+<h2 id="个性化"><a href="#个性化" class="headerlink" title="个性化"></a>个性化</h2><h3 id="文章链接"><a href="#文章链接" class="headerlink" title="文章链接"></a>文章链接</h3><p>更改<code>_config.yml</code>中的下列配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">permalink: :category/:title/</span><br></pre></td></tr></table></figure>
 
-<script src="/js/main.js"></script>
+<h3 id="图片资源处理"><a href="#图片资源处理" class="headerlink" title="图片资源处理"></a>图片资源处理</h3><p>放在 source&#x2F;images 文件夹中。然后通过 <code>![](/images/image.jpg)</code> 的方法访问它们。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![hexo serve](/img/serve.png) // 上面hexo serve的图片写法</span><br></pre></td></tr></table></figure>
 
-<!-- search -->
-
-<!-- Baidu Analytics -->
-
-<!-- Cloudflare Analytics -->
-
-<!-- Disqus Comments -->
-
-<!-- utterances Comments -->
-
-</body>
-</html>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/">文档 | Hexo</a></li>
+<li><a target="_blank" rel="noopener" href="https://formulahendry.github.io/2016/12/04/hexo-ci/">Hexo的版本控制与持续集成 | formulahendry</a></li>
+</ul>
+</div><a href="/doc/hexo%E5%8D%9A%E5%AE%A2/" class="read-more">...more</a></article></li></ul><div class="right-container"><div class="widget"><div class="category"><h4>分类归档</h4><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/ai/">ai</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/css/">css</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/doc/">doc</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/js/">js</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8A%A8%E6%95%88/">动效</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/">图像处理</a><span class="category-list-count">13</span></li></ul></div></div><div class="widget"><div class="tagcloud"><h4>标签云</h4></div></div><div class="widget"><div class="recent"><h4>最近文章</h4><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/css/%E8%AF%A6%E8%A7%A3CSS%20Grid%E5%B8%83%E5%B1%80/">详解CSS Grid布局</a></li><li class="post-list-item"><a class="post-list-link" href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/Shutterstock%20Editor%E5%85%B3%E4%BA%8ECanvas%E5%92%8CWebGL%E5%9B%BE%E7%89%87%E6%BB%A4%E9%95%9C%E7%9A%84%E5%AE%9E%E7%8E%B0/">Shutterstock Editor关于Canvas和WebGL图片滤镜的实现</a></li><li class="post-list-item"><a class="post-list-link" href="/js/javascript%E5%BC%82%E6%AD%A5error/">javascript异步error</a></li><li class="post-list-item"><a class="post-list-link" href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/win10%E7%BC%96%E8%AF%91opencvjs/">win10编译opencvjs</a></li><li class="post-list-item"><a class="post-list-link" href="/js/%E5%89%8D%E7%AB%AF%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8/">前端包管理器</a></li></ul></div></div></div></section></div><div class="right-menu"></div><div class="modal search-modal"><div class="input-field"><input type="text" id="search_input"><label for="search-input">搜索</label></div><div id="search_result" class="search-result"></div></div><div class="blog-overlay"></div><footer class="row"><div class="footer-con"><div class="paginator"><a href="/page/3/" class="prev">PREV</a><a href="/page/5/" class="next">NEXT</a></div><div class="copyright"><p>© 2016 - 2024 <a href="https://github.com/lovelyun" target="_blank">Lovelyun</a></p></div><div class="totop"><i></i></div></div></footer><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script src="https://apps.bdimg.com/libs/jquery/1.8.2/jquery.min.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/articleCatalog.js"></script><script src="https://bubuzou.oss-cn-shenzhen.aliyuncs.com/blog/202010/main.js"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

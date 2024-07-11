@@ -39,12 +39,12 @@ http://example.com/doc/hexo%E5%8D%9A%E5%AE%A2/
 http://example.com/js/javascript%E5%BC%82%E6%AD%A5error/
 http://example.com/js/js%E6%A8%A1%E5%9D%97%E5%8C%96/
 http://example.com/ai/AI%E5%85%A5%E9%97%A8%E4%B9%8B%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/
-http://example.com/%E5%8A%A8%E6%95%88/FLIP%E4%BD%A0%E7%9A%84%E5%8A%A8%E7%94%BB/
 http://example.com/js/Debouncing%E5%92%8CThrottling/
+http://example.com/%E5%8A%A8%E6%95%88/FLIP%E4%BD%A0%E7%9A%84%E5%8A%A8%E7%94%BB/
 http://example.com/
 http://example.com/categories/ai/
-http://example.com/categories/%E5%8A%A8%E6%95%88/
 http://example.com/categories/js/
+http://example.com/categories/%E5%8A%A8%E6%95%88/
 http://example.com/categories/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/
 http://example.com/categories/git/
 http://example.com/categories/doc/
