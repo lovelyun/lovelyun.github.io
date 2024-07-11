@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言在 Web 开发中，当我们处理文件时（创建，上传，下载），经常会遇到二进制数据。另一个典型的应用场景是图像处理。在 JavaScript 中有很多种二进制数据格式，比如ArrayBuffer，Uint8Array，DataView，Blob，File 等等，不过 JavaScript 中的二进制数据是以非标准方式实现的。 下面我们来了解下这些数据格式及相互转换。本文涉及到File,Blob,T">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端那些文件格式">
+<meta property="og:url" content="http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言在 Web 开发中，当我们处理文件时（创建，上传，下载），经常会遇到二进制数据。另一个典型的应用场景是图像处理。在 JavaScript 中有很多种二进制数据格式，比如ArrayBuffer，Uint8Array，DataView，Blob，File 等等，不过 JavaScript 中的二进制数据是以非标准方式实现的。 下面我们来了解下这些数据格式及相互转换。本文涉及到File,Blob,T">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/2021/file.png">
+<meta property="og:image" content="http://example.com/images/2021/file_prototype.png">
+<meta property="og:image" content="http://example.com/images/2021/blob.svg">
+<meta property="og:image" content="http://example.com/images/2021/image_blob.png">
+<meta property="og:image" content="http://example.com/images/2021/arrayBuffer.png">
+<meta property="og:image" content="http://example.com/images/2021/transtorm.svg">
+<meta property="article:published_time" content="2021-11-08T17:35:10.000Z">
+<meta property="article:modified_time" content="2024-07-11T06:53:14.379Z">
+<meta property="article:author" content="Lovelyun">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/2021/file.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>前端那些文件格式</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.2.0"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/js/%E5%89%8D%E7%AB%AF%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/WebGL%E5%8F%8A%E5%85%B6%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E5%85%A5%E9%97%A8/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&text=前端那些文件格式"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&title=前端那些文件格式"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&is_video=false&description=前端那些文件格式"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=前端那些文件格式&body=Check out this article: http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&title=前端那些文件格式"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&title=前端那些文件格式"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&title=前端那些文件格式"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&title=前端那些文件格式"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&name=前端那些文件格式&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&t=前端那些文件格式"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#File"><span class="toc-number">2.</span> <span class="toc-text">File</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#FileReader"><span class="toc-number">2.1.</span> <span class="toc-text">FileReader</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Blob"><span class="toc-number">3.</span> <span class="toc-text">Blob</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E7%89%87-to-Blob"><span class="toc-number">3.1.</span> <span class="toc-text">图片 to Blob</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Blob-to-Base64"><span class="toc-number">3.2.</span> <span class="toc-text">Blob to Base64</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ArrayBuffer"><span class="toc-number">4.</span> <span class="toc-text">ArrayBuffer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        前端那些文件格式
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Lovelyun</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2021-11-08T17:35:10.000Z" class="dt-published" itemprop="datePublished">2021-11-08</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/js/">js</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Web 开发中，当我们处理文件时（创建，上传，下载），经常会遇到二进制数据。另一个典型的应用场景是图像处理。<br>在 JavaScript 中有很多种二进制数据格式，比如ArrayBuffer，Uint8Array，DataView，Blob，File 等等，不过 JavaScript 中的二进制数据是以非标准方式实现的。</p>
+<p>下面我们来了解下这些数据格式及相互转换。<br>本文涉及到File,Blob,TypedArray,data url(Base64),blob url等等。</p>
+<h2 id="File"><a href="#File" class="headerlink" title="File"></a>File</h2><p>首先，我们还是拿前文的例子来看，显示用户选择的图片。</p>
+<p>我们创建一个页面。提供选择图片功能。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">title</span>&gt;</span>test<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">id</span>=<span class="string">&quot;fileInput&quot;</span> <span class="attr">name</span>=<span class="string">&quot;选择图片&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;wrap-image&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">canvas</span> <span class="attr">id</span>=<span class="string">&quot;canvas&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">canvas</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>选择图片后，需要将图片显示到canvas中，我们在上面的script标签中加入下面的代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fileInput = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;fileInput&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> canvas = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;canvas&#x27;</span>)</span><br><span class="line">fileInput.<span class="title function_">addEventListener</span>(<span class="string">&#x27;change&#x27;</span>, <span class="function">(<span class="params">e</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> img = <span class="keyword">new</span> <span class="title class_">Image</span></span><br><span class="line">    <span class="keyword">const</span> file = e.<span class="property">target</span>.<span class="property">files</span>[<span class="number">0</span>]</span><br><span class="line">    img.<span class="property">src</span> = <span class="variable constant_">URL</span>.<span class="title function_">createObjectURL</span>(file)</span><br><span class="line">    img.<span class="property">onload</span> = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        canvas.<span class="property">width</span> = img.<span class="property">width</span></span><br><span class="line">        canvas.<span class="property">height</span> = img.<span class="property">height</span></span><br><span class="line">        <span class="keyword">const</span> context = canvas.<span class="title function_">getContext</span>(<span class="string">&#x27;2d&#x27;</span>)</span><br><span class="line">        context.<span class="title function_">drawImage</span>(img, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;, <span class="literal">false</span>)</span><br></pre></td></tr></table></figure>
+
+<p>选择一张图片后，change事件中获取到选择的文件e.target.files[0]：</p>
+<p><img src="/../images/2021/file.png" alt="file"></p>
+<p>File 对象是特殊类型的 Blob，可以用在任意的 Blob 类型的 context 中。<br>比如 FileReader, URL.createObjectURL(), createImageBitmap(), 及 XMLHttpRequest.send() 都能处理 Blob 和 File。<br>File 接口也继承了 Blob 接口的属性。上图的Prototype展开可以看到继承自Blob:</p>
+<p><img src="/../images/2021/file_prototype.png" alt="file_prototype"></p>
+<p>上面是最常见的file获取方式————从<input type="file">中获取。<br>此外，我们还可以用构造器：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="title class_">File</span>(fileParts, fileName, [options])</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>fileParts —— Blob&#x2F;BufferSource&#x2F;String 类型值的数组</li>
+<li>fileName —— 文件名字符串</li>
+<li>options —— 可选对象：<ul>
+<li>lastModified —— 最后一次修改的时间戳（整数日期）</li>
+</ul>
+</li>
+</ul>
+<h3 id="FileReader"><a href="#FileReader" class="headerlink" title="FileReader"></a>FileReader</h3><p>FileReader 的用途是从 Blob（因此也从 File）对象中读取数据。<br>它使用事件来传递数据，因为从磁盘读取数据可能比较费时间。</p>
+<p>可以读取为3种格式：</p>
+<table>
+<thead>
+<tr>
+<th align="left">读取方法</th>
+<th align="left">目标格式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">readAsArrayBuffer(blob)</td>
+<td align="left">读取为二进制格式的 ArrayBuffer</td>
+</tr>
+<tr>
+<td align="left">readAsText(blob, [encoding])</td>
+<td align="left">读取为给定编码（默认为 utf-8 编码）的字符串</td>
+</tr>
+<tr>
+<td align="left">readAsDataURL(blob)</td>
+<td align="left">读取为 base64编码 的 data url</td>
+</tr>
+</tbody></table>
+<p>比如将 Blob 读取为 base64：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> reader = <span class="keyword">new</span> <span class="title class_">FileReader</span>()</span><br><span class="line">reader.<span class="title function_">readAsDataURL</span>(file) <span class="comment">// 将 Blob 读取为 base64</span></span><br></pre></td></tr></table></figure>
+
+<p>使用时选择哪一种，要看如何使用数据。</p>
+<p>读取过程中有下列事件：</p>
+<p>1、loadstart: 开始加载<br>2、progress: 在读取过程中出现<br>3、load: 读取完成，没有 error<br>4、abort: 调用了 abort()取消操作<br>5、error: 出现 error<br>6、loadend: 读取完成，无论成功还是失败</p>
+<p>使用最广泛的是load和error，比如下面的例子：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">onchange</span>=<span class="string">&quot;readFile(this)&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript"><span class="keyword">const</span> <span class="title function_">readFile</span> = (<span class="params">input</span>) =&gt; &#123;</span></span><br><span class="line"><span class="language-javascript">  <span class="keyword">const</span> file = input.<span class="property">files</span>[<span class="number">0</span>]</span></span><br><span class="line"><span class="language-javascript">  <span class="keyword">const</span> reader = <span class="keyword">new</span> <span class="title class_">FileReader</span>()</span></span><br><span class="line"><span class="language-javascript">  reader.<span class="title function_">readAsText</span>(file)</span></span><br><span class="line"><span class="language-javascript">  reader.<span class="property">onload</span> = <span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">console</span>.<span class="title function_">log</span>(reader.<span class="property">result</span>) <span class="comment">// 结果</span></span></span><br><span class="line"><span class="language-javascript">  &#125;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  reader.<span class="property">onerror</span> = <span class="function">() =&gt;</span> &#123;</span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">console</span>.<span class="title function_">log</span>(reader.<span class="property">error</span>) <span class="comment">// error</span></span></span><br><span class="line"><span class="language-javascript">  &#125;</span></span><br><span class="line"><span class="language-javascript">&#125;</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>不过大多数情况下，我们不需要读取Blob，通过网络发送一个File很容易，像 XMLHttpRequest 或 fetch 等 API 本身就接受 File 对象。或者用URL.createObjectURL(file) 创建一个短的 url，并将其赋给 <a> 或 <img>。这样，文件便可以下载文件或者将其呈现为图像，作为 canvas 等的一部分。</p>
+<h2 id="Blob"><a href="#Blob" class="headerlink" title="Blob"></a>Blob</h2><p>用URL.createObjectURL创建了一个url：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">img.<span class="property">src</span> = <span class="variable constant_">URL</span>.<span class="title function_">createObjectURL</span>(file)</span><br></pre></td></tr></table></figure>
+
+<p>这里，URL.createObjectURL 取一个 Blob，并为其创建一个唯一的 URL，形式为 blob:<origin>&#x2F;<uuid>。<br>本例中创建的url如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">blob</span>:<span class="literal">null</span>/a05be8a9-78b4-<span class="number">4470</span>-bdfe-5fca427781c2</span><br></pre></td></tr></table></figure>
+
+<p>浏览器内部为每个通过 URL.createObjectURL 生成的URL存储了一个 URL → Blob 映射。可以通过URL访问 Blob。</p>
+<p>但 Blob 本身只保存在内存中的。浏览器无法释放它。<br>关闭页面时会自动释放内存中的Blob，也可以手动释放，通过URL.revokeObjectURL(url) 从内部映射中移除引用，Blob 被删除，并释放内存。</p>
+<p>映射被删除后该 URL 也就不再起作用了，也就无法通过URL再访问Blob。</p>
+<p>现在，我们了解了Blob作为URL的应用，那Blob到底是什么呢？</p>
+<p>Blob 由一个可选的字符串 type（通常是 MIME 类型）和 blobParts 组成，blobParts是 一系列其他 Blob 对象，字符串和 BufferSource。</p>
+<p><img src="/../images/2021/blob.svg" alt="blob"></p>
+<p>我们可以通过构造函数创建一个Blob：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="title class_">Blob</span>(blobParts, options)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>blobParts是 Blob&#x2F;BufferSource&#x2F;String 类型的值的数组。</li>
+<li>options 可选对象：<ul>
+<li>type： Blob 类型，通常是 MIME 类型，例如 image&#x2F;png，</li>
+<li>endings：是否转换换行符，使 Blob 对应于当前操作系统的换行符（\r\n 或 \n）。默认为 “transparent”（啥也不做），不过也可以是 “native”（转换）。<br>比如从字符串创建 Blob：</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 注意：第一个参数必须是一个数组 [...]</span></span><br><span class="line"><span class="keyword">const</span> blob = <span class="keyword">new</span> <span class="title class_">Blob</span>([<span class="string">&#x27;&lt;html&gt;…&lt;/html&gt;&#x27;</span>], &#123;<span class="attr">type</span>: <span class="string">&#x27;text/html&#x27;</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="图片-to-Blob"><a href="#图片-to-Blob" class="headerlink" title="图片 to Blob"></a>图片 to Blob</h3><p>图像操作是通过canvas来实现的：<br>1、使用 canvas.drawImage 在 canvas 上绘制图像（绘制后可以做一些图像处理，比如旋转、裁剪等等）；<br>2、调用 canvas 的 toBlob(callback, format, quality)方法 创建一个 Blob。</p>
+<p>比如，在上面的context.drawImage(img, 0, 0);后，我们把canvas转成Blob:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">canvas.<span class="title function_">toBlob</span>(<span class="function">(<span class="params">blob</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;blob&#x27;</span>, blob)</span><br><span class="line">&#125;, <span class="string">&#x27;image/png&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/image_blob.png" alt="image_blob"></p>
+<p>或者，更喜欢同步的写法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">img.<span class="property">onload</span> = <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">  ...</span><br><span class="line">  context.<span class="title function_">drawImage</span>(img, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">  <span class="keyword">const</span> blob = <span class="keyword">await</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> canvas.<span class="title function_">toBlob</span>(resolve, <span class="string">&#x27;image/png&#x27;</span>))</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;blob&#x27;</span>, blob)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Blob-to-Base64"><a href="#Blob-to-Base64" class="headerlink" title="Blob to Base64"></a>Blob to Base64</h3><p>URL.createObjectURL 的一个替代方法是，将 Blob 转换为 base64。<br>base64编码将二进制数据表示为一个由 0 到 64 的 ASCII 码组成的字符串，非常安全且可读。<br>我们可以在 data-url 中使用base64编码，data-url就像下面这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">data</span>:[&lt;mediatype&gt;][;base64],&lt;data&gt;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以像常规url一样使用data-url 。<br>比如一张支持alpha透明度的webp的图片:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;data:image/webp;base64,UklGRkoAAABXRUJQVlA4WAoAAAAQAAAAAAAAAAAAQUxQSAwAAAARBxAR/Q9ERP8DAABWUDggGAAAABQBAJ0BKgEAAQAAAP4AAA3AAP7mtQAAAA==&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们可以用 FileReader 将 Blob 转换为 base64:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// img.src = URL.createObjectURL(file)</span></span><br><span class="line"><span class="keyword">const</span> reader = <span class="keyword">new</span> <span class="title class_">FileReader</span>()</span><br><span class="line">reader.<span class="title function_">readAsDataURL</span>(file) <span class="comment">// 将 Blob 转换为 base64 并调用 onload</span></span><br><span class="line"></span><br><span class="line">reader.<span class="property">onload</span> = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  img.<span class="property">src</span> = reader.<span class="property">result</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在我们可以从Blob创建2种url，一种是blob url，一种是data url，下面我们对比下这2种方式：</p>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left">blob url</th>
+<th align="left">data url</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">创建方式</td>
+<td align="left">URL.createObjectURL</td>
+<td align="left">FileReader</td>
+</tr>
+<tr>
+<td align="left">内存</td>
+<td align="left">需手动撤销（revoke）</td>
+<td align="left">无需操作</td>
+</tr>
+<tr>
+<td align="left">访问</td>
+<td align="left">直接访问 Blob，无需“编码&#x2F;解码”</td>
+<td align="left">对大的 Blob 进行编码时，性能和内存会有损耗</td>
+</tr>
+</tbody></table>
+<p>所以要使用哪种url，需要具体情况再分析。</p>
+<h2 id="ArrayBuffer"><a href="#ArrayBuffer" class="headerlink" title="ArrayBuffer"></a>ArrayBuffer</h2><p>基本的二进制对象 ArrayBuffer是对固定长度的连续内存空间的引用，是一个内存区域，一个原始的二进制数据。</p>
+<p>我们可以这样创建一个长度为 16 的 buffer：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> buffer = <span class="keyword">new</span> <span class="title class_">ArrayBuffer</span>(<span class="number">16</span>); <span class="comment">// 创建一个长度为 16 的 buffer</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：ArrayBuffer 和 Array 没有任何关系</p>
+</blockquote>
+<p>我们可以通过 FileReader 的 readAsArrayBuffer 读取 Blob 的二进制数据：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> reader = <span class="keyword">new</span> <span class="title class_">FileReader</span>()</span><br><span class="line">reader.<span class="title function_">readAsArrayBuffer</span>(file)</span><br><span class="line">reader.<span class="property">onload</span> = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> buffer = reader.<span class="property">result</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/arrayBuffer.png" alt="arrayBuffer"></p>
+<p>或者用Blob的arrayBuffer方法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> buffer = <span class="keyword">await</span> file.<span class="title function_">arrayBuffer</span>()</span><br></pre></td></tr></table></figure>
+
+<p>上面我们看到了Int8Array、Uint8Array、Int16Array，它们的通用术语是TypedArray，此外，还有其他的TypedArray。</p>
+<table>
+<thead>
+<tr>
+<th align="left">TypedArray</th>
+<th align="left">用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Uint8Array，Uint16Array，Uint32Array</td>
+<td align="left">用于 8、16 和 32 位的无符号整数</td>
+</tr>
+<tr>
+<td align="left">Uint8ClampedArray</td>
+<td align="left">用于 8 位整数，对于大于 255 的任何数字，它将保存为 255，对于任何负数，它将保存为 0</td>
+</tr>
+<tr>
+<td align="left">Int8Array，Int16Array，Int32Array</td>
+<td align="left">用于有符号整数（可以为负数）</td>
+</tr>
+<tr>
+<td align="left">Float32Array，Float64Array</td>
+<td align="left">用于 32 位和 64 位的有符号浮点数</td>
+</tr>
+</tbody></table>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>现在回顾一下：<br>1、<code>&lt;input type=&quot;file&quot;&gt;</code>是最常见的File获取方式;<br>2、File对象是特殊类型的 Blob;<br>3、Blob可以生成blob url;<br>4、FileReader可以读取Blob为3种格式，二进制格式的 ArrayBuffer，给定编码的字符串，base64编码的 data url;<br>5、blob url和data url都可以作为url使用;<br>6、Blob对象的arrayBuffer方法可以读取Blob的ArrayBuffer;<br>7、canvas.toBlob(callback, format, quality)可以把canvas读取为Blob;</p>
+<p>下图可以很直观的看到它们之间的相关转换关系：</p>
+<p><img src="/../images/2021/transtorm.svg" alt="transtorm"></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#File"><span class="toc-number">2.</span> <span class="toc-text">File</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#FileReader"><span class="toc-number">2.1.</span> <span class="toc-text">FileReader</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Blob"><span class="toc-number">3.</span> <span class="toc-text">Blob</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E7%89%87-to-Blob"><span class="toc-number">3.1.</span> <span class="toc-text">图片 to Blob</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Blob-to-Base64"><span class="toc-number">3.2.</span> <span class="toc-text">Blob to Base64</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ArrayBuffer"><span class="toc-number">4.</span> <span class="toc-text">ArrayBuffer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&text=前端那些文件格式"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&title=前端那些文件格式"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&is_video=false&description=前端那些文件格式"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=前端那些文件格式&body=Check out this article: http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&title=前端那些文件格式"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&title=前端那些文件格式"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&title=前端那些文件格式"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&title=前端那些文件格式"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&name=前端那些文件格式&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/js/%E5%89%8D%E7%AB%AF%E9%82%A3%E4%BA%9B%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/&t=前端那些文件格式"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Lovelyun
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

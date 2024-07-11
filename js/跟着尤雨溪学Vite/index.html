@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言本文是翻译的尤雨溪在油管上发布的Learn Vite with Evan You视频。下面开始正文部分。 正文尤雨溪在这里欢迎大家，今天的视频我们会讲讲Vite。 Vite是一个我从去年开始开发的新构建工具，并且我们认为它会成为下一代的前端工具，所以，这个视频我们会谈谈，什么是Vite，为什么是Vite，而且我们还会展示怎么开始用它，以及Vite没有提供的一些很棒的特性。接下来就开始吧。 首先">
+<meta property="og:type" content="article">
+<meta property="og:title" content="跟着尤雨溪学Vite">
+<meta property="og:url" content="http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言本文是翻译的尤雨溪在油管上发布的Learn Vite with Evan You视频。下面开始正文部分。 正文尤雨溪在这里欢迎大家，今天的视频我们会讲讲Vite。 Vite是一个我从去年开始开发的新构建工具，并且我们认为它会成为下一代的前端工具，所以，这个视频我们会谈谈，什么是Vite，为什么是Vite，而且我们还会展示怎么开始用它，以及Vite没有提供的一些很棒的特性。接下来就开始吧。 首先">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/2022/init.png">
+<meta property="og:image" content="http://example.com/images/2022/index.png">
+<meta property="og:image" content="http://example.com/images/2022/package.png">
+<meta property="og:image" content="http://example.com/images/2022/install.png">
+<meta property="og:image" content="http://example.com/images/2022/serve.png">
+<meta property="og:image" content="http://example.com/images/2022/ts.png">
+<meta property="og:image" content="http://example.com/images/2022/css.png">
+<meta property="article:published_time" content="2022-01-21T11:26:12.000Z">
+<meta property="article:modified_time" content="2024-07-11T06:53:14.379Z">
+<meta property="article:author" content="Lovelyun">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/2022/init.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>跟着尤雨溪学Vite</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.2.0"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/js/%E5%89%8D%E7%AB%AF%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/js/js%E6%A8%A1%E5%9D%97%E5%8C%96/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&text=跟着尤雨溪学Vite"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&title=跟着尤雨溪学Vite"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&is_video=false&description=跟着尤雨溪学Vite"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=跟着尤雨溪学Vite&body=Check out this article: http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&title=跟着尤雨溪学Vite"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&title=跟着尤雨溪学Vite"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&title=跟着尤雨溪学Vite"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&title=跟着尤雨溪学Vite"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&name=跟着尤雨溪学Vite&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&t=跟着尤雨溪学Vite"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A3%E6%96%87"><span class="toc-number">2.</span> <span class="toc-text">正文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        跟着尤雨溪学Vite
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Lovelyun</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-01-21T11:26:12.000Z" class="dt-published" itemprop="datePublished">2022-01-21</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/js/">js</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文是翻译的尤雨溪在油管上发布的<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=DkGV5F4XnfQ&ab_channel=VueMastery">Learn Vite with Evan You</a>视频。<br>下面开始正文部分。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>尤雨溪在这里欢迎大家，今天的视频我们会讲讲Vite。</p>
+<p>Vite是一个我从去年开始开发的新构建工具，并且我们认为它会成为下一代的前端工具，所以，这个视频我们会谈谈，什么是Vite，为什么是Vite，而且我们还会展示怎么开始用它，以及Vite没有提供的一些很棒的特性。接下来就开始吧。</p>
+<p>首先，什么是Vite?</p>
+<p>如果你去官网，会看到Vite是个法语单词，意思是“快”，有些人把它读成<code>/vait/</code>，但它实际上是表示“快”的法语单词，所以我们读<code>/vit/</code>。</p>
+<p>Vite是一个构建工具，用在开发环境，也可以为生产环境打包。如果你用过Vue CLI，你可以认为它们差不多。</p>
+<p>Vite要解决的问题是更新速度，如果你在一个很大的项目中用过Vue CLI，你可能要等半分钟，甚至一分钟，本地环境才会更新，随着项目变大，更新就变慢，只修改了一个文件，你就不得不等好几秒，等着屏幕上的东西更新。</p>
+<p>变慢主要是因为我们要打包，我们为什么需要打包呢？<br>因为过去浏览器不支持ES Modules，无法加载模块化的代码，所以早期我们发明了模块化规范，比如AMD和CommonJS，我们写完代码后，用一些工具，比如webpack、Parcel、Browserfy，把代码打包成一个浏览器上可以运行的文件。</p>
+<p>幸运的是，如今大部分的现代浏览器都能支持ES Modules，这意味着开发阶段的大量工作我们不用做了，浏览器会帮我们处理，所以用Vite的前提是我们把代码写成ES Modules，编译文件时找到import申明，并对每个模块发一个HTTP请求到开发服务器，由于大部分工作浏览器做了，所以我们需要做点额外的工作。</p>
+<p>另一方面，如果你有很多依赖，Vite会很智能的先用esbuild打包来减少请求。</p>
+<p>Esbuild是Evan Wallace用Go写的一个工具，把代码编译成浏览器可执行的程序，所以要快几个数量级，然后Javascript有了同样的工具。</p>
+<p>因为上面这些原因，Vite可以提供一个极快的开发体验。所以，这是为什么是Vite。</p>
+<p>对于快字，我认为Vite有多快你用一下就知道了，那么，我们现在就用用看。</p>
+<p>首先确保你装了Node.js和npm，然后就可以简单的运行命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm init @vitejs/app</span><br></pre></td></tr></table></figure>
+
+<p>回车后会问你项目名，这里我就叫它hello-vite吧，然后会让你选一个框架，Vite对框架没有限制，所以即使你用react或者preact，你也可以用Vite，不过，作为第一个demo，我根本不想用框架，所以我们就选vanilla模板，Vite也可以支持Typescript，不过现在我们只选择vanilla，接下来我们进入hello-vite目录，开始前要先用npm安装依赖。</p>
+<p><img src="/../images/2022/init.png" alt="init"></p>
+<p>这时我们先看看我们的项目，有一个index.html，里面有一个script标签，type属性是module，src指向main.js，这个语法需要浏览器支持ESM。<br><img src="/../images/2022/index.png" alt="index"></p>
+<p>接下来我们看看package.json，你可以看到，Vite是唯一的依赖，此外，还有一些npm scripts，有dev,build和serve的scripts，所以，让我们直接<code>npm install</code>吧。<br><img src="/../images/2022/package.png" alt="package"></p>
+<p>我要开始运行npm install了，你可以看到安装过程非常的快，一共安装了13个包，就是这么简洁。而且我认为Vite没有本地缓存，从注册中心安装，花了不到1秒。<br><img src="/../images/2022/install.png" alt="install"></p>
+<p>接下来我运行npm run dev启动服务，同样很快，本地服务就跑起来了，接着打开页面，就看到了Hello Vite，这就是一个普通的本地开发服务器。<br><img src="/../images/2022/serve.png" alt="serve"></p>
+<p>我们再看回代码，index.html和main.js都没什么变化，如果我们把main.js改成main.ts，重启服务，一样能跑起来，在Vite项目中，你可以直接引进ts文件，Vite会自动转译，仅此而已，这意味着Vite不会做类型检查。<br><img src="/../images/2022/ts.png" alt="ts"></p>
+<p>我们这样做的第一个原因是，我们用esbuild来编译ts文件，esbuild是用Go写的，比起用javascript写的ts自身的编译要快30倍，所以当我们用esbuild来编译，由于没有类型检查，如果你import一个type，确保是从另一个文件中import的，这是一个坑。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import type &#123; &#125; from &#x27;./&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>但这对于非常大的typescript项目中开发体验得到极大改善来说，只是一个很小很小的代价。</p>
+<p>另一个原因是如果对你的编辑器，比如VS Code，做了TS相关的合适设置，可能你的IDE就会对ts文件做类型检查，ts已经在你的IDE中运行了。所以Vite就说：“好吧，就把这部分给IDE和打包程序吧”，在开发阶段Vite对ts的类型检查是不确定的，因为这部分交给其他工具了。关于typescript的就这么多。</p>
+<p>接下来我们花1分钟讲下CSS。<br>可以看到我们能直接import CSS，接着我准备把这里的color改成red，你可以看到页面立刻就更新了，注意看浏览器地址栏，我们再把color改成green，地址栏没有重新加载，接着我打开控制台的Elements栏，这时我们再次改变color，你可以看到，页面没有重载，这里热更新了，加载的CSS局部更新。<br><img src="/../images/2022/css.png" alt="css"></p>
+<p>过去我们通过npm来<code>import</code>、<code>install</code>、使用依赖，比如我想用lodash，从lodash-es中<code>import debounce</code>，浏览器并不能处理，因为它不知道什么是npm，不知道怎么处理依赖，但是Vite知道怎么处理。</p>
+<p>接下来我要<code>install lodsah-es</code>，然后<code>npm run dev</code>重启服务，你可以看到IDE已经判断出我们安装了lodash-es，所以它现在有类型定义，我加个<code>console.log(debounce)</code>，打开浏览器控制台，可以看到我们能够从lodsah-es中拿到debounce函数，这点很棒，Vite能够为你处理npm依赖。</p>
+<p>还有一点很棒，如果我们去network中查看下debounce，可以发现Vite把lodash-es的众多模块组合成了一个文件，所以它比一般情况下加载地更快，如果你通过ES Modules加载loadsh-es，那就是另外一个表现了，嗯，npm依赖地加载就这么多。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上就是视频的主要内容了，视频是2021年9月15日发布，从Vite名字的由来，讲到为什么需要Vite，能解决什么问题，需要付出什么代价，然后带大家初步体验Vite的使用，体验启动及热更新速度，处理typescript和npm依赖。</p>
+<p>想了解更多，建议看看<a target="_blank" rel="noopener" href="https://cn.vitejs.dev/">官网</a>。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A3%E6%96%87"><span class="toc-number">2.</span> <span class="toc-text">正文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&text=跟着尤雨溪学Vite"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&title=跟着尤雨溪学Vite"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&is_video=false&description=跟着尤雨溪学Vite"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=跟着尤雨溪学Vite&body=Check out this article: http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&title=跟着尤雨溪学Vite"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&title=跟着尤雨溪学Vite"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&title=跟着尤雨溪学Vite"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&title=跟着尤雨溪学Vite"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&name=跟着尤雨溪学Vite&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/&t=跟着尤雨溪学Vite"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Lovelyun
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

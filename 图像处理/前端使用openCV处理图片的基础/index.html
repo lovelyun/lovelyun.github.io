@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言前文我们讲了openCV如何在前端应用。本文主要根据官方文档的Core Operations部分，带大家了解OpenCV图片处理时需要的一些基础知识，比如mat数据类型的操作，绘制形状等等。 获取图片属性1234567let src &#x3D; cv.imread(&#x27;imageUpload&#x27;);console.log(&#x27;image width: &#x27; + src.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端使用openCV处理图片的基础">
+<meta property="og:url" content="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言前文我们讲了openCV如何在前端应用。本文主要根据官方文档的Core Operations部分，带大家了解OpenCV图片处理时需要的一些基础知识，比如mat数据类型的操作，绘制形状等等。 获取图片属性1234567let src &#x3D; cv.imread(&#x27;imageUpload&#x27;);console.log(&#x27;image width: &#x27; + src.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/2021/effect-original.avif">
+<meta property="article:published_time" content="2021-10-15T15:29:15.000Z">
+<meta property="article:modified_time" content="2024-07-11T06:53:14.379Z">
+<meta property="article:author" content="Lovelyun">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/2021/effect-original.avif">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>前端使用openCV处理图片的基础</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.2.0"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/openCVjs%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E4%B9%8B%E6%89%8B%E5%8A%A8%E7%9F%AB%E6%AD%A3/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E4%B9%8B%E5%9B%BE%E7%89%87%E5%A4%84%E7%90%86/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&text=前端使用openCV处理图片的基础"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&title=前端使用openCV处理图片的基础"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&is_video=false&description=前端使用openCV处理图片的基础"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=前端使用openCV处理图片的基础&body=Check out this article: http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&title=前端使用openCV处理图片的基础"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&title=前端使用openCV处理图片的基础"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&title=前端使用openCV处理图片的基础"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&title=前端使用openCV处理图片的基础"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&name=前端使用openCV处理图片的基础&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&t=前端使用openCV处理图片的基础"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%9B%BE%E7%89%87%E5%B1%9E%E6%80%A7"><span class="toc-number">2.</span> <span class="toc-text">获取图片属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Mat"><span class="toc-number">2.1.</span> <span class="toc-text">Mat</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E9%80%A0Mat"><span class="toc-number">3.</span> <span class="toc-text">构造Mat</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E5%88%B6Mat"><span class="toc-number">3.1.</span> <span class="toc-text">复制Mat</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BD%AC%E6%8D%A2Mat%E7%B1%BB%E5%9E%8B"><span class="toc-number">3.2.</span> <span class="toc-text">转换Mat类型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BB%E5%86%99%E5%83%8F%E7%B4%A0"><span class="toc-number">4.</span> <span class="toc-text">读写像素</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#data"><span class="toc-number">4.1.</span> <span class="toc-text">data</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#at"><span class="toc-number">4.2.</span> <span class="toc-text">at</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ptr"><span class="toc-number">4.3.</span> <span class="toc-text">ptr</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%9C%E8%89%B2%E9%80%9A%E9%81%93%E6%93%8D%E4%BD%9C"><span class="toc-number">4.4.</span> <span class="toc-text">颜色通道操作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9D%90%E6%A0%87%E7%82%B9Point"><span class="toc-number">5.</span> <span class="toc-text">坐标点Point</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%83%8F%E7%B4%A0%E7%82%B9Scalar"><span class="toc-number">6.</span> <span class="toc-text">像素点Scalar</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%BA%E5%AF%B8Size"><span class="toc-number">7.</span> <span class="toc-text">尺寸Size</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%86"><span class="toc-number">8.</span> <span class="toc-text">圆</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E5%BD%A2"><span class="toc-number">9.</span> <span class="toc-text">方形</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        前端使用openCV处理图片的基础
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Lovelyun</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2021-10-15T15:29:15.000Z" class="dt-published" itemprop="datePublished">2021-10-15</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/">图像处理</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a target="_blank" rel="noopener" href="https://lovelyun.github.io/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/openCV/">前文</a>我们讲了openCV如何在前端应用。<br>本文主要根据官方文档的<a target="_blank" rel="noopener" href="https://docs.opencv.org/4.5.4/d1/d78/tutorial_js_table_of_contents_core.html">Core Operations</a>部分，带大家了解OpenCV图片处理时需要的一些基础知识，比如mat数据类型的操作，绘制形状等等。</p>
+<h2 id="获取图片属性"><a href="#获取图片属性" class="headerlink" title="获取图片属性"></a>获取图片属性</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;image width: &#x27;</span> + src.<span class="property">cols</span> + <span class="string">&#x27;\n&#x27;</span> +</span><br><span class="line">            <span class="string">&#x27;image height: &#x27;</span> + src.<span class="property">rows</span> + <span class="string">&#x27;\n&#x27;</span> +</span><br><span class="line">            <span class="string">&#x27;image size: &#x27;</span> + src.<span class="title function_">size</span>().<span class="property">width</span> + <span class="string">&#x27;*&#x27;</span> + src.<span class="title function_">size</span>().<span class="property">height</span> + <span class="string">&#x27;\n&#x27;</span> +</span><br><span class="line">            <span class="string">&#x27;image depth: &#x27;</span> + src.<span class="title function_">depth</span>() + <span class="string">&#x27;\n&#x27;</span> +</span><br><span class="line">            <span class="string">&#x27;image channels &#x27;</span> + src.<span class="title function_">channels</span>() + <span class="string">&#x27;\n&#x27;</span> +</span><br><span class="line">            <span class="string">&#x27;image type: &#x27;</span> + src.<span class="title function_">type</span>() + <span class="string">&#x27;\n&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/effect-original.avif" alt="effect-original"></p>
+<p>比如上面这张图的属性打印出来就是：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">image <span class="attr">width</span>: <span class="number">600</span></span><br><span class="line">image <span class="attr">height</span>: <span class="number">473</span></span><br><span class="line">image <span class="attr">size</span>: <span class="number">600</span>*<span class="number">473</span></span><br><span class="line">image <span class="attr">depth</span>: <span class="number">0</span></span><br><span class="line">image channels <span class="number">4</span></span><br><span class="line">image <span class="attr">type</span>: <span class="number">24</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Mat"><a href="#Mat" class="headerlink" title="Mat"></a>Mat</h3><h2 id="构造Mat"><a href="#构造Mat" class="headerlink" title="构造Mat"></a>构造Mat</h2><p>创建Mat实例时，可以传入size, type或者rows, cols, type，一般用默认构造方式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> mat = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br></pre></td></tr></table></figure>
+<p>或者用数组来构建：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 比如: let mat = cv.matFromArray(2, 2, cv.CV_8UC1, [1, 2, 3, 4]);</span></span><br><span class="line"><span class="keyword">let</span> mat = cv.<span class="title function_">matFromArray</span>(rows, cols, type, array);</span><br></pre></td></tr></table></figure>
+
+<p>或者用imgData：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> ctx = canvas.<span class="title function_">getContext</span>(<span class="string">&quot;2d&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> imgData = ctx.<span class="title function_">getImageData</span>(<span class="number">0</span>, <span class="number">0</span>, canvas.<span class="property">width</span>, canvas.<span class="property">height</span>);</span><br><span class="line"><span class="keyword">let</span> mat = cv.<span class="title function_">matFromImageData</span>(imgData);</span><br></pre></td></tr></table></figure>
+
+<p>另外，还有3个静态函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 创建一个全是0的Mat</span></span><br><span class="line"><span class="keyword">let</span> mat = cv.<span class="property">Mat</span>.<span class="title function_">zeros</span>(rows, cols, type);</span><br><span class="line"><span class="comment">// 2. 创建一个全是1的Mat</span></span><br><span class="line"><span class="keyword">let</span> mat = cv.<span class="property">Mat</span>.<span class="title function_">ones</span>(rows, cols, type);</span><br><span class="line"><span class="comment">// 3. 创建一个单位矩阵的Mat</span></span><br><span class="line"><span class="keyword">let</span> mat = cv.<span class="property">Mat</span>.<span class="title function_">eye</span>(rows, cols, type);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Mat实例一定记得要及时删除</p>
+</blockquote>
+<h3 id="复制Mat"><a href="#复制Mat" class="headerlink" title="复制Mat"></a>复制Mat</h3><p>有2种复制方法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. Clone</span></span><br><span class="line"><span class="keyword">let</span> dst = src.<span class="title function_">clone</span>();</span><br><span class="line"><span class="comment">// 2. CopyTo</span></span><br><span class="line">src.<span class="title function_">copyTo</span>(dst, mask);</span><br></pre></td></tr></table></figure>
+
+<h3 id="转换Mat类型"><a href="#转换Mat类型" class="headerlink" title="转换Mat类型"></a>转换Mat类型</h3><p>src.convertTo(dst, rtype)<br>rtype代表期望的输出矩阵类型，或者说是深度，因为通道的数量与输入相同;如果rtype为负，输出矩阵的类型将与输入矩阵的相同。</p>
+<h2 id="读写像素"><a href="#读写像素" class="headerlink" title="读写像素"></a>读写像素</h2><h3 id="data"><a href="#data" class="headerlink" title="data"></a>data</h3><p>首先，需要了解不同的Data属性在不同语言中的type之间的关系：</p>
+<table>
+<thead>
+<tr>
+<th align="left">Data属性</th>
+<th align="left">C++ Type</th>
+<th align="left">JavaScript Typed Array</th>
+<th align="left">Mat Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">data</td>
+<td align="left">uchar</td>
+<td align="left">Uint8Array</td>
+<td align="left">CV_8U</td>
+</tr>
+<tr>
+<td align="left">data8S</td>
+<td align="left">char</td>
+<td align="left">Int8Array</td>
+<td align="left">CV_8S</td>
+</tr>
+<tr>
+<td align="left">data16U</td>
+<td align="left">ushort</td>
+<td align="left">Uint16Array</td>
+<td align="left">CV_16U</td>
+</tr>
+<tr>
+<td align="left">data16S</td>
+<td align="left">short</td>
+<td align="left">Int16Array</td>
+<td align="left">CV_16S</td>
+</tr>
+<tr>
+<td align="left">data32S</td>
+<td align="left">int</td>
+<td align="left">Int32Array</td>
+<td align="left">CV_32S</td>
+</tr>
+<tr>
+<td align="left">data32F</td>
+<td align="left">float</td>
+<td align="left">Float32Array</td>
+<td align="left">CV_32F</td>
+</tr>
+<tr>
+<td align="left">data64F</td>
+<td align="left">double</td>
+<td align="left">Float64Array</td>
+<td align="left">CV_64F</td>
+</tr>
+</tbody></table>
+<p>通过data获取像素：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> row = <span class="number">3</span>, col = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&quot;canvasInput&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> (src.<span class="title function_">isContinuous</span>()) &#123;</span><br><span class="line">    <span class="keyword">let</span> index = row * src.<span class="property">cols</span> * src.<span class="title function_">channels</span>() + col * src.<span class="title function_">channels</span>()</span><br><span class="line">    <span class="keyword">let</span> R = src.<span class="property">data</span>[index];</span><br><span class="line">    <span class="keyword">let</span> G = src.<span class="property">data</span>[index + <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">let</span> B = src.<span class="property">data</span>[index + <span class="number">2</span>];</span><br><span class="line">    <span class="keyword">let</span> A = src.<span class="property">data</span>[index + <span class="number">3</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>data操作只对连续的Mat有效，使用前应该用isContinuous函数检查。</p>
+</blockquote>
+<h3 id="at"><a href="#at" class="headerlink" title="at"></a>at</h3><table>
+<thead>
+<tr>
+<th align="left">Mat Type</th>
+<th align="left">At 操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">CV_8U</td>
+<td align="left">ucharAt</td>
+</tr>
+<tr>
+<td align="left">CV_8S</td>
+<td align="left">charAt</td>
+</tr>
+<tr>
+<td align="left">CV_16U</td>
+<td align="left">ushortAt</td>
+</tr>
+<tr>
+<td align="left">CV_16S</td>
+<td align="left">shortAt</td>
+</tr>
+<tr>
+<td align="left">CV_32S</td>
+<td align="left">intAt</td>
+</tr>
+<tr>
+<td align="left">CV_32F</td>
+<td align="left">floatAt</td>
+</tr>
+<tr>
+<td align="left">CV_64F</td>
+<td align="left">doubleAt</td>
+</tr>
+</tbody></table>
+<p>通过at获取像素：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> row = <span class="number">3</span>, col = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&quot;canvasInput&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> colIndex = col * src.<span class="title function_">channels</span>()</span><br><span class="line"><span class="keyword">let</span> R = src.<span class="title function_">ucharAt</span>(row, colIndex);</span><br><span class="line"><span class="keyword">let</span> G = src.<span class="title function_">ucharAt</span>(row, colIndex + <span class="number">1</span>);</span><br><span class="line"><span class="keyword">let</span> B = src.<span class="title function_">ucharAt</span>(row, colIndex + <span class="number">2</span>);</span><br><span class="line"><span class="keyword">let</span> A = src.<span class="title function_">ucharAt</span>(row, colIndex + <span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>at操作只能读，不能写。</p>
+</blockquote>
+<h3 id="ptr"><a href="#ptr" class="headerlink" title="ptr"></a>ptr</h3><table>
+<thead>
+<tr>
+<th align="left">Mat Type</th>
+<th align="left">Ptr 操作</th>
+<th align="left">JavaScript Typed Array</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">CV_8U</td>
+<td align="left">ucharPtr</td>
+<td align="left">Uint8Array</td>
+</tr>
+<tr>
+<td align="left">CV_8S</td>
+<td align="left">charPtr</td>
+<td align="left">Int8Array</td>
+</tr>
+<tr>
+<td align="left">CV_16U</td>
+<td align="left">ushortPtr</td>
+<td align="left">Uint16Array</td>
+</tr>
+<tr>
+<td align="left">CV_16S</td>
+<td align="left">shortPtr</td>
+<td align="left">Int16Array</td>
+</tr>
+<tr>
+<td align="left">CV_32S</td>
+<td align="left">intPtr</td>
+<td align="left">Int32Array</td>
+</tr>
+<tr>
+<td align="left">CV_32F</td>
+<td align="left">floatPtr</td>
+<td align="left">Float32Array</td>
+</tr>
+<tr>
+<td align="left">CV_64F</td>
+<td align="left">doublePtr</td>
+<td align="left">Float64Array</td>
+</tr>
+</tbody></table>
+<p>mat.ucharPtr(k)获取mat的第k行，mat.ucharPtr(i, j)获取mat的第i行第j列。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> row = <span class="number">3</span>, col = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&quot;canvasInput&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> pixel = src.<span class="title function_">ucharPtr</span>(row, col);</span><br><span class="line"><span class="keyword">let</span> R = pixel[<span class="number">0</span>];</span><br><span class="line"><span class="keyword">let</span> G = pixel[<span class="number">1</span>];</span><br><span class="line"><span class="keyword">let</span> B = pixel[<span class="number">2</span>];</span><br><span class="line"><span class="keyword">let</span> A = pixel[<span class="number">3</span>];</span><br></pre></td></tr></table></figure>
+
+<h3 id="颜色通道操作"><a href="#颜色通道操作" class="headerlink" title="颜色通道操作"></a>颜色通道操作</h3><p>有时我们需要单独操作图片的R&#x2F;G&#x2F;B通道，这时就需要对颜色通道进行分割，处理完毕后再合并。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&quot;canvasInput&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> rgbaPlanes = <span class="keyword">new</span> cv.<span class="title class_">MatVector</span>();</span><br><span class="line"><span class="comment">// 分割</span></span><br><span class="line">cv.<span class="title function_">split</span>(src, rgbaPlanes);</span><br><span class="line"><span class="comment">// 获取R通道</span></span><br><span class="line"><span class="keyword">let</span> R = rgbaPlanes.<span class="title function_">get</span>(<span class="number">0</span>);</span><br><span class="line"><span class="comment">// 合并</span></span><br><span class="line">cv.<span class="title function_">merge</span>(rgbaPlanes, src);</span><br><span class="line">src.<span class="title function_">delete</span>(); rgbaPlanes.<span class="title function_">delete</span>(); R.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+
+<h2 id="坐标点Point"><a href="#坐标点Point" class="headerlink" title="坐标点Point"></a>坐标点Point</h2><p>有2种方式创建一个点：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> point = <span class="keyword">new</span> cv.<span class="title class_">Point</span>(x, y);</span><br><span class="line"><span class="keyword">let</span> point = &#123;<span class="attr">x</span>: x, <span class="attr">y</span>: y&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="像素点Scalar"><a href="#像素点Scalar" class="headerlink" title="像素点Scalar"></a>像素点Scalar</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> scalar = <span class="keyword">new</span> cv.<span class="title class_">Scalar</span>(R, G, B, <span class="title class_">Alpha</span>);</span><br><span class="line"><span class="keyword">let</span> scalar = [R, G, B, <span class="title class_">Alpha</span>];</span><br></pre></td></tr></table></figure>
+
+<h2 id="尺寸Size"><a href="#尺寸Size" class="headerlink" title="尺寸Size"></a>尺寸Size</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> size = <span class="keyword">new</span> cv.<span class="title class_">Size</span>(width, height);</span><br><span class="line"><span class="keyword">let</span> size = &#123;width : width, height : height&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="圆"><a href="#圆" class="headerlink" title="圆"></a>圆</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> circle = <span class="keyword">new</span> cv.<span class="title class_">Circle</span>(center, radius);</span><br><span class="line"><span class="keyword">let</span> circle = &#123;center : center, radius : radius&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="方形"><a href="#方形" class="headerlink" title="方形"></a>方形</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> rect = <span class="keyword">new</span> cv.<span class="title class_">Rect</span>(x, y, width, height);</span><br><span class="line"><span class="keyword">let</span> rect = &#123;x : x, y : y, width : width, height : height&#125;;</span><br></pre></td></tr></table></figure>
+<p>带旋转角度的方形：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> rotatedRect = <span class="keyword">new</span> cv.<span class="title class_">RotatedRect</span>(center, size, angle);</span><br><span class="line"><span class="keyword">let</span> rotatedRect = &#123;center : center, size : size, angle : angle&#125;;</span><br></pre></td></tr></table></figure>
+<p>通过下面的方法获取方形的4个顶点：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> vertices = cv.<span class="property">RotatedRect</span>.<span class="title function_">points</span>(rotatedRect);</span><br><span class="line"><span class="keyword">let</span> point1 = vertices[<span class="number">0</span>];</span><br><span class="line"><span class="keyword">let</span> point2 = vertices[<span class="number">1</span>];</span><br><span class="line"><span class="keyword">let</span> point3 = vertices[<span class="number">2</span>];</span><br><span class="line"><span class="keyword">let</span> point4 = vertices[<span class="number">3</span>];</span><br></pre></td></tr></table></figure>
+<p>通过下面的方法获取方形的边界：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> boundingRect = cv.<span class="property">RotatedRect</span>.<span class="title function_">boundingRect</span>(rotatedRect);</span><br></pre></td></tr></table></figure>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%9B%BE%E7%89%87%E5%B1%9E%E6%80%A7"><span class="toc-number">2.</span> <span class="toc-text">获取图片属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Mat"><span class="toc-number">2.1.</span> <span class="toc-text">Mat</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E9%80%A0Mat"><span class="toc-number">3.</span> <span class="toc-text">构造Mat</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E5%88%B6Mat"><span class="toc-number">3.1.</span> <span class="toc-text">复制Mat</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BD%AC%E6%8D%A2Mat%E7%B1%BB%E5%9E%8B"><span class="toc-number">3.2.</span> <span class="toc-text">转换Mat类型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BB%E5%86%99%E5%83%8F%E7%B4%A0"><span class="toc-number">4.</span> <span class="toc-text">读写像素</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#data"><span class="toc-number">4.1.</span> <span class="toc-text">data</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#at"><span class="toc-number">4.2.</span> <span class="toc-text">at</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ptr"><span class="toc-number">4.3.</span> <span class="toc-text">ptr</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%9C%E8%89%B2%E9%80%9A%E9%81%93%E6%93%8D%E4%BD%9C"><span class="toc-number">4.4.</span> <span class="toc-text">颜色通道操作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9D%90%E6%A0%87%E7%82%B9Point"><span class="toc-number">5.</span> <span class="toc-text">坐标点Point</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%83%8F%E7%B4%A0%E7%82%B9Scalar"><span class="toc-number">6.</span> <span class="toc-text">像素点Scalar</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%BA%E5%AF%B8Size"><span class="toc-number">7.</span> <span class="toc-text">尺寸Size</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%86"><span class="toc-number">8.</span> <span class="toc-text">圆</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E5%BD%A2"><span class="toc-number">9.</span> <span class="toc-text">方形</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&text=前端使用openCV处理图片的基础"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&title=前端使用openCV处理图片的基础"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&is_video=false&description=前端使用openCV处理图片的基础"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=前端使用openCV处理图片的基础&body=Check out this article: http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&title=前端使用openCV处理图片的基础"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&title=前端使用openCV处理图片的基础"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&title=前端使用openCV处理图片的基础"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&title=前端使用openCV处理图片的基础"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&name=前端使用openCV处理图片的基础&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/&t=前端使用openCV处理图片的基础"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Lovelyun
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
