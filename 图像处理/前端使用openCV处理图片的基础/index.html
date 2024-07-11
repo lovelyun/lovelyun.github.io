@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言前文我们讲了openCV如何在前端应用。本文主要根据官方文档的Core Operations部分，带大家了解OpenCV图片处理时需要的一些基础知识，比如mat数据类型的操作，绘制形状等等。 获取图片属性1234567let src &#x3D; cv.imread(&#x27;imageUpload&#x27;);console.log(&#x27;image width: &#x27; + src.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端使用openCV处理图片的基础">
+<meta property="og:url" content="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言前文我们讲了openCV如何在前端应用。本文主要根据官方文档的Core Operations部分，带大家了解OpenCV图片处理时需要的一些基础知识，比如mat数据类型的操作，绘制形状等等。 获取图片属性1234567let src &#x3D; cv.imread(&#x27;imageUpload&#x27;);console.log(&#x27;image width: &#x27; + src.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/2021/effect-original.avif">
+<meta property="article:published_time" content="2021-10-15T15:29:15.000Z">
+<meta property="article:modified_time" content="2024-07-11T06:40:28.984Z">
+<meta property="article:author" content="Lovelyun">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/2021/effect-original.avif">
+
+
+<link rel="canonical" href="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/","path":"图像处理/前端使用openCV处理图片的基础/","title":"前端使用openCV处理图片的基础"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>前端使用openCV处理图片的基础 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E5%9B%BE%E7%89%87%E5%B1%9E%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">获取图片属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mat"><span class="nav-number">2.1.</span> <span class="nav-text">Mat</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0Mat"><span class="nav-number">3.</span> <span class="nav-text">构造Mat</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6Mat"><span class="nav-number">3.1.</span> <span class="nav-text">复制Mat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AC%E6%8D%A2Mat%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.2.</span> <span class="nav-text">转换Mat类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E5%83%8F%E7%B4%A0"><span class="nav-number">4.</span> <span class="nav-text">读写像素</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#data"><span class="nav-number">4.1.</span> <span class="nav-text">data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#at"><span class="nav-number">4.2.</span> <span class="nav-text">at</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ptr"><span class="nav-number">4.3.</span> <span class="nav-text">ptr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%9C%E8%89%B2%E9%80%9A%E9%81%93%E6%93%8D%E4%BD%9C"><span class="nav-number">4.4.</span> <span class="nav-text">颜色通道操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9D%90%E6%A0%87%E7%82%B9Point"><span class="nav-number">5.</span> <span class="nav-text">坐标点Point</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%83%8F%E7%B4%A0%E7%82%B9Scalar"><span class="nav-number">6.</span> <span class="nav-text">像素点Scalar</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%BA%E5%AF%B8Size"><span class="nav-number">7.</span> <span class="nav-text">尺寸Size</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%86"><span class="nav-number">8.</span> <span class="nav-text">圆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E5%BD%A2"><span class="nav-number">9.</span> <span class="nav-text">方形</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lovelyun</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E5%A4%84%E7%90%86%E5%9B%BE%E7%89%87%E7%9A%84%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lovelyun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="前端使用openCV处理图片的基础 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          前端使用openCV处理图片的基础
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-10-15 15:29:15" itemprop="dateCreated datePublished" datetime="2021-10-15T15:29:15+00:00">2021-10-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-07-11 06:40:28" itemprop="dateModified" datetime="2024-07-11T06:40:28+00:00">2024-07-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">图像处理</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a target="_blank" rel="noopener" href="https://lovelyun.github.io/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/openCV/">前文</a>我们讲了openCV如何在前端应用。<br>本文主要根据官方文档的<a target="_blank" rel="noopener" href="https://docs.opencv.org/4.5.4/d1/d78/tutorial_js_table_of_contents_core.html">Core Operations</a>部分，带大家了解OpenCV图片处理时需要的一些基础知识，比如mat数据类型的操作，绘制形状等等。</p>
+<h2 id="获取图片属性"><a href="#获取图片属性" class="headerlink" title="获取图片属性"></a>获取图片属性</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&#x27;imageUpload&#x27;</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;image width: &#x27;</span> + src.<span class="property">cols</span> + <span class="string">&#x27;\n&#x27;</span> +</span><br><span class="line">            <span class="string">&#x27;image height: &#x27;</span> + src.<span class="property">rows</span> + <span class="string">&#x27;\n&#x27;</span> +</span><br><span class="line">            <span class="string">&#x27;image size: &#x27;</span> + src.<span class="title function_">size</span>().<span class="property">width</span> + <span class="string">&#x27;*&#x27;</span> + src.<span class="title function_">size</span>().<span class="property">height</span> + <span class="string">&#x27;\n&#x27;</span> +</span><br><span class="line">            <span class="string">&#x27;image depth: &#x27;</span> + src.<span class="title function_">depth</span>() + <span class="string">&#x27;\n&#x27;</span> +</span><br><span class="line">            <span class="string">&#x27;image channels &#x27;</span> + src.<span class="title function_">channels</span>() + <span class="string">&#x27;\n&#x27;</span> +</span><br><span class="line">            <span class="string">&#x27;image type: &#x27;</span> + src.<span class="title function_">type</span>() + <span class="string">&#x27;\n&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/2021/effect-original.avif" alt="effect-original"></p>
+<p>比如上面这张图的属性打印出来就是：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">image <span class="attr">width</span>: <span class="number">600</span></span><br><span class="line">image <span class="attr">height</span>: <span class="number">473</span></span><br><span class="line">image <span class="attr">size</span>: <span class="number">600</span>*<span class="number">473</span></span><br><span class="line">image <span class="attr">depth</span>: <span class="number">0</span></span><br><span class="line">image channels <span class="number">4</span></span><br><span class="line">image <span class="attr">type</span>: <span class="number">24</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Mat"><a href="#Mat" class="headerlink" title="Mat"></a>Mat</h3><h2 id="构造Mat"><a href="#构造Mat" class="headerlink" title="构造Mat"></a>构造Mat</h2><p>创建Mat实例时，可以传入size, type或者rows, cols, type，一般用默认构造方式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> mat = <span class="keyword">new</span> cv.<span class="title class_">Mat</span>();</span><br></pre></td></tr></table></figure>
+<p>或者用数组来构建：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 比如: let mat = cv.matFromArray(2, 2, cv.CV_8UC1, [1, 2, 3, 4]);</span></span><br><span class="line"><span class="keyword">let</span> mat = cv.<span class="title function_">matFromArray</span>(rows, cols, type, array);</span><br></pre></td></tr></table></figure>
+
+<p>或者用imgData：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> ctx = canvas.<span class="title function_">getContext</span>(<span class="string">&quot;2d&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> imgData = ctx.<span class="title function_">getImageData</span>(<span class="number">0</span>, <span class="number">0</span>, canvas.<span class="property">width</span>, canvas.<span class="property">height</span>);</span><br><span class="line"><span class="keyword">let</span> mat = cv.<span class="title function_">matFromImageData</span>(imgData);</span><br></pre></td></tr></table></figure>
+
+<p>另外，还有3个静态函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 创建一个全是0的Mat</span></span><br><span class="line"><span class="keyword">let</span> mat = cv.<span class="property">Mat</span>.<span class="title function_">zeros</span>(rows, cols, type);</span><br><span class="line"><span class="comment">// 2. 创建一个全是1的Mat</span></span><br><span class="line"><span class="keyword">let</span> mat = cv.<span class="property">Mat</span>.<span class="title function_">ones</span>(rows, cols, type);</span><br><span class="line"><span class="comment">// 3. 创建一个单位矩阵的Mat</span></span><br><span class="line"><span class="keyword">let</span> mat = cv.<span class="property">Mat</span>.<span class="title function_">eye</span>(rows, cols, type);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Mat实例一定记得要及时删除</p>
+</blockquote>
+<h3 id="复制Mat"><a href="#复制Mat" class="headerlink" title="复制Mat"></a>复制Mat</h3><p>有2种复制方法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. Clone</span></span><br><span class="line"><span class="keyword">let</span> dst = src.<span class="title function_">clone</span>();</span><br><span class="line"><span class="comment">// 2. CopyTo</span></span><br><span class="line">src.<span class="title function_">copyTo</span>(dst, mask);</span><br></pre></td></tr></table></figure>
+
+<h3 id="转换Mat类型"><a href="#转换Mat类型" class="headerlink" title="转换Mat类型"></a>转换Mat类型</h3><p>src.convertTo(dst, rtype)<br>rtype代表期望的输出矩阵类型，或者说是深度，因为通道的数量与输入相同;如果rtype为负，输出矩阵的类型将与输入矩阵的相同。</p>
+<h2 id="读写像素"><a href="#读写像素" class="headerlink" title="读写像素"></a>读写像素</h2><h3 id="data"><a href="#data" class="headerlink" title="data"></a>data</h3><p>首先，需要了解不同的Data属性在不同语言中的type之间的关系：</p>
+<table>
+<thead>
+<tr>
+<th align="left">Data属性</th>
+<th align="left">C++ Type</th>
+<th align="left">JavaScript Typed Array</th>
+<th align="left">Mat Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">data</td>
+<td align="left">uchar</td>
+<td align="left">Uint8Array</td>
+<td align="left">CV_8U</td>
+</tr>
+<tr>
+<td align="left">data8S</td>
+<td align="left">char</td>
+<td align="left">Int8Array</td>
+<td align="left">CV_8S</td>
+</tr>
+<tr>
+<td align="left">data16U</td>
+<td align="left">ushort</td>
+<td align="left">Uint16Array</td>
+<td align="left">CV_16U</td>
+</tr>
+<tr>
+<td align="left">data16S</td>
+<td align="left">short</td>
+<td align="left">Int16Array</td>
+<td align="left">CV_16S</td>
+</tr>
+<tr>
+<td align="left">data32S</td>
+<td align="left">int</td>
+<td align="left">Int32Array</td>
+<td align="left">CV_32S</td>
+</tr>
+<tr>
+<td align="left">data32F</td>
+<td align="left">float</td>
+<td align="left">Float32Array</td>
+<td align="left">CV_32F</td>
+</tr>
+<tr>
+<td align="left">data64F</td>
+<td align="left">double</td>
+<td align="left">Float64Array</td>
+<td align="left">CV_64F</td>
+</tr>
+</tbody></table>
+<p>通过data获取像素：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> row = <span class="number">3</span>, col = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&quot;canvasInput&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> (src.<span class="title function_">isContinuous</span>()) &#123;</span><br><span class="line">    <span class="keyword">let</span> index = row * src.<span class="property">cols</span> * src.<span class="title function_">channels</span>() + col * src.<span class="title function_">channels</span>()</span><br><span class="line">    <span class="keyword">let</span> R = src.<span class="property">data</span>[index];</span><br><span class="line">    <span class="keyword">let</span> G = src.<span class="property">data</span>[index + <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">let</span> B = src.<span class="property">data</span>[index + <span class="number">2</span>];</span><br><span class="line">    <span class="keyword">let</span> A = src.<span class="property">data</span>[index + <span class="number">3</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>data操作只对连续的Mat有效，使用前应该用isContinuous函数检查。</p>
+</blockquote>
+<h3 id="at"><a href="#at" class="headerlink" title="at"></a>at</h3><table>
+<thead>
+<tr>
+<th align="left">Mat Type</th>
+<th align="left">At 操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">CV_8U</td>
+<td align="left">ucharAt</td>
+</tr>
+<tr>
+<td align="left">CV_8S</td>
+<td align="left">charAt</td>
+</tr>
+<tr>
+<td align="left">CV_16U</td>
+<td align="left">ushortAt</td>
+</tr>
+<tr>
+<td align="left">CV_16S</td>
+<td align="left">shortAt</td>
+</tr>
+<tr>
+<td align="left">CV_32S</td>
+<td align="left">intAt</td>
+</tr>
+<tr>
+<td align="left">CV_32F</td>
+<td align="left">floatAt</td>
+</tr>
+<tr>
+<td align="left">CV_64F</td>
+<td align="left">doubleAt</td>
+</tr>
+</tbody></table>
+<p>通过at获取像素：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> row = <span class="number">3</span>, col = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&quot;canvasInput&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> colIndex = col * src.<span class="title function_">channels</span>()</span><br><span class="line"><span class="keyword">let</span> R = src.<span class="title function_">ucharAt</span>(row, colIndex);</span><br><span class="line"><span class="keyword">let</span> G = src.<span class="title function_">ucharAt</span>(row, colIndex + <span class="number">1</span>);</span><br><span class="line"><span class="keyword">let</span> B = src.<span class="title function_">ucharAt</span>(row, colIndex + <span class="number">2</span>);</span><br><span class="line"><span class="keyword">let</span> A = src.<span class="title function_">ucharAt</span>(row, colIndex + <span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>at操作只能读，不能写。</p>
+</blockquote>
+<h3 id="ptr"><a href="#ptr" class="headerlink" title="ptr"></a>ptr</h3><table>
+<thead>
+<tr>
+<th align="left">Mat Type</th>
+<th align="left">Ptr 操作</th>
+<th align="left">JavaScript Typed Array</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">CV_8U</td>
+<td align="left">ucharPtr</td>
+<td align="left">Uint8Array</td>
+</tr>
+<tr>
+<td align="left">CV_8S</td>
+<td align="left">charPtr</td>
+<td align="left">Int8Array</td>
+</tr>
+<tr>
+<td align="left">CV_16U</td>
+<td align="left">ushortPtr</td>
+<td align="left">Uint16Array</td>
+</tr>
+<tr>
+<td align="left">CV_16S</td>
+<td align="left">shortPtr</td>
+<td align="left">Int16Array</td>
+</tr>
+<tr>
+<td align="left">CV_32S</td>
+<td align="left">intPtr</td>
+<td align="left">Int32Array</td>
+</tr>
+<tr>
+<td align="left">CV_32F</td>
+<td align="left">floatPtr</td>
+<td align="left">Float32Array</td>
+</tr>
+<tr>
+<td align="left">CV_64F</td>
+<td align="left">doublePtr</td>
+<td align="left">Float64Array</td>
+</tr>
+</tbody></table>
+<p>mat.ucharPtr(k)获取mat的第k行，mat.ucharPtr(i, j)获取mat的第i行第j列。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> row = <span class="number">3</span>, col = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&quot;canvasInput&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> pixel = src.<span class="title function_">ucharPtr</span>(row, col);</span><br><span class="line"><span class="keyword">let</span> R = pixel[<span class="number">0</span>];</span><br><span class="line"><span class="keyword">let</span> G = pixel[<span class="number">1</span>];</span><br><span class="line"><span class="keyword">let</span> B = pixel[<span class="number">2</span>];</span><br><span class="line"><span class="keyword">let</span> A = pixel[<span class="number">3</span>];</span><br></pre></td></tr></table></figure>
+
+<h3 id="颜色通道操作"><a href="#颜色通道操作" class="headerlink" title="颜色通道操作"></a>颜色通道操作</h3><p>有时我们需要单独操作图片的R&#x2F;G&#x2F;B通道，这时就需要对颜色通道进行分割，处理完毕后再合并。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> src = cv.<span class="title function_">imread</span>(<span class="string">&quot;canvasInput&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> rgbaPlanes = <span class="keyword">new</span> cv.<span class="title class_">MatVector</span>();</span><br><span class="line"><span class="comment">// 分割</span></span><br><span class="line">cv.<span class="title function_">split</span>(src, rgbaPlanes);</span><br><span class="line"><span class="comment">// 获取R通道</span></span><br><span class="line"><span class="keyword">let</span> R = rgbaPlanes.<span class="title function_">get</span>(<span class="number">0</span>);</span><br><span class="line"><span class="comment">// 合并</span></span><br><span class="line">cv.<span class="title function_">merge</span>(rgbaPlanes, src);</span><br><span class="line">src.<span class="title function_">delete</span>(); rgbaPlanes.<span class="title function_">delete</span>(); R.<span class="title function_">delete</span>();</span><br></pre></td></tr></table></figure>
+
+<h2 id="坐标点Point"><a href="#坐标点Point" class="headerlink" title="坐标点Point"></a>坐标点Point</h2><p>有2种方式创建一个点：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> point = <span class="keyword">new</span> cv.<span class="title class_">Point</span>(x, y);</span><br><span class="line"><span class="keyword">let</span> point = &#123;<span class="attr">x</span>: x, <span class="attr">y</span>: y&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="像素点Scalar"><a href="#像素点Scalar" class="headerlink" title="像素点Scalar"></a>像素点Scalar</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> scalar = <span class="keyword">new</span> cv.<span class="title class_">Scalar</span>(R, G, B, <span class="title class_">Alpha</span>);</span><br><span class="line"><span class="keyword">let</span> scalar = [R, G, B, <span class="title class_">Alpha</span>];</span><br></pre></td></tr></table></figure>
+
+<h2 id="尺寸Size"><a href="#尺寸Size" class="headerlink" title="尺寸Size"></a>尺寸Size</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> size = <span class="keyword">new</span> cv.<span class="title class_">Size</span>(width, height);</span><br><span class="line"><span class="keyword">let</span> size = &#123;width : width, height : height&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="圆"><a href="#圆" class="headerlink" title="圆"></a>圆</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> circle = <span class="keyword">new</span> cv.<span class="title class_">Circle</span>(center, radius);</span><br><span class="line"><span class="keyword">let</span> circle = &#123;center : center, radius : radius&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="方形"><a href="#方形" class="headerlink" title="方形"></a>方形</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> rect = <span class="keyword">new</span> cv.<span class="title class_">Rect</span>(x, y, width, height);</span><br><span class="line"><span class="keyword">let</span> rect = &#123;x : x, y : y, width : width, height : height&#125;;</span><br></pre></td></tr></table></figure>
+<p>带旋转角度的方形：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> rotatedRect = <span class="keyword">new</span> cv.<span class="title class_">RotatedRect</span>(center, size, angle);</span><br><span class="line"><span class="keyword">let</span> rotatedRect = &#123;center : center, size : size, angle : angle&#125;;</span><br></pre></td></tr></table></figure>
+<p>通过下面的方法获取方形的4个顶点：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> vertices = cv.<span class="property">RotatedRect</span>.<span class="title function_">points</span>(rotatedRect);</span><br><span class="line"><span class="keyword">let</span> point1 = vertices[<span class="number">0</span>];</span><br><span class="line"><span class="keyword">let</span> point2 = vertices[<span class="number">1</span>];</span><br><span class="line"><span class="keyword">let</span> point3 = vertices[<span class="number">2</span>];</span><br><span class="line"><span class="keyword">let</span> point4 = vertices[<span class="number">3</span>];</span><br></pre></td></tr></table></figure>
+<p>通过下面的方法获取方形的边界：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> boundingRect = cv.<span class="property">RotatedRect</span>.<span class="title function_">boundingRect</span>(rotatedRect);</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/%E5%89%8D%E7%AB%AF%E4%BD%BF%E7%94%A8openCV%E4%B9%8B%E5%9B%BE%E7%89%87%E5%A4%84%E7%90%86/" rel="prev" title="前端使用openCV之图片处理">
+                  <i class="fa fa-angle-left"></i> 前端使用openCV之图片处理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/openCVjs%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E4%B9%8B%E6%89%8B%E5%8A%A8%E7%9F%AB%E6%AD%A3/" rel="next" title="openCVjs图像处理之手动矫正">
+                  openCVjs图像处理之手动矫正 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Lovelyun</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

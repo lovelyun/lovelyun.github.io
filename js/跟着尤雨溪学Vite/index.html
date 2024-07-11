@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言本文是翻译的尤雨溪在油管上发布的Learn Vite with Evan You视频。下面开始正文部分。 正文尤雨溪在这里欢迎大家，今天的视频我们会讲讲Vite。 Vite是一个我从去年开始开发的新构建工具，并且我们认为它会成为下一代的前端工具，所以，这个视频我们会谈谈，什么是Vite，为什么是Vite，而且我们还会展示怎么开始用它，以及Vite没有提供的一些很棒的特性。接下来就开始吧。 首先">
+<meta property="og:type" content="article">
+<meta property="og:title" content="跟着尤雨溪学Vite">
+<meta property="og:url" content="http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言本文是翻译的尤雨溪在油管上发布的Learn Vite with Evan You视频。下面开始正文部分。 正文尤雨溪在这里欢迎大家，今天的视频我们会讲讲Vite。 Vite是一个我从去年开始开发的新构建工具，并且我们认为它会成为下一代的前端工具，所以，这个视频我们会谈谈，什么是Vite，为什么是Vite，而且我们还会展示怎么开始用它，以及Vite没有提供的一些很棒的特性。接下来就开始吧。 首先">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/2022/init.png">
+<meta property="og:image" content="http://example.com/images/2022/index.png">
+<meta property="og:image" content="http://example.com/images/2022/package.png">
+<meta property="og:image" content="http://example.com/images/2022/install.png">
+<meta property="og:image" content="http://example.com/images/2022/serve.png">
+<meta property="og:image" content="http://example.com/images/2022/ts.png">
+<meta property="og:image" content="http://example.com/images/2022/css.png">
+<meta property="article:published_time" content="2022-01-21T11:26:12.000Z">
+<meta property="article:modified_time" content="2024-07-11T06:40:28.999Z">
+<meta property="article:author" content="Lovelyun">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/2022/init.png">
+
+
+<link rel="canonical" href="http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/","path":"js/跟着尤雨溪学Vite/","title":"跟着尤雨溪学Vite"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>跟着尤雨溪学Vite | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lovelyun</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/js/%E8%B7%9F%E7%9D%80%E5%B0%A4%E9%9B%A8%E6%BA%AA%E5%AD%A6Vite/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lovelyun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="跟着尤雨溪学Vite | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          跟着尤雨溪学Vite
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-01-21 11:26:12" itemprop="dateCreated datePublished" datetime="2022-01-21T11:26:12+00:00">2022-01-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-07-11 06:40:28" itemprop="dateModified" datetime="2024-07-11T06:40:28+00:00">2024-07-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/js/" itemprop="url" rel="index"><span itemprop="name">js</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文是翻译的尤雨溪在油管上发布的<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=DkGV5F4XnfQ&ab_channel=VueMastery">Learn Vite with Evan You</a>视频。<br>下面开始正文部分。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>尤雨溪在这里欢迎大家，今天的视频我们会讲讲Vite。</p>
+<p>Vite是一个我从去年开始开发的新构建工具，并且我们认为它会成为下一代的前端工具，所以，这个视频我们会谈谈，什么是Vite，为什么是Vite，而且我们还会展示怎么开始用它，以及Vite没有提供的一些很棒的特性。接下来就开始吧。</p>
+<p>首先，什么是Vite?</p>
+<p>如果你去官网，会看到Vite是个法语单词，意思是“快”，有些人把它读成<code>/vait/</code>，但它实际上是表示“快”的法语单词，所以我们读<code>/vit/</code>。</p>
+<p>Vite是一个构建工具，用在开发环境，也可以为生产环境打包。如果你用过Vue CLI，你可以认为它们差不多。</p>
+<p>Vite要解决的问题是更新速度，如果你在一个很大的项目中用过Vue CLI，你可能要等半分钟，甚至一分钟，本地环境才会更新，随着项目变大，更新就变慢，只修改了一个文件，你就不得不等好几秒，等着屏幕上的东西更新。</p>
+<p>变慢主要是因为我们要打包，我们为什么需要打包呢？<br>因为过去浏览器不支持ES Modules，无法加载模块化的代码，所以早期我们发明了模块化规范，比如AMD和CommonJS，我们写完代码后，用一些工具，比如webpack、Parcel、Browserfy，把代码打包成一个浏览器上可以运行的文件。</p>
+<p>幸运的是，如今大部分的现代浏览器都能支持ES Modules，这意味着开发阶段的大量工作我们不用做了，浏览器会帮我们处理，所以用Vite的前提是我们把代码写成ES Modules，编译文件时找到import申明，并对每个模块发一个HTTP请求到开发服务器，由于大部分工作浏览器做了，所以我们需要做点额外的工作。</p>
+<p>另一方面，如果你有很多依赖，Vite会很智能的先用esbuild打包来减少请求。</p>
+<p>Esbuild是Evan Wallace用Go写的一个工具，把代码编译成浏览器可执行的程序，所以要快几个数量级，然后Javascript有了同样的工具。</p>
+<p>因为上面这些原因，Vite可以提供一个极快的开发体验。所以，这是为什么是Vite。</p>
+<p>对于快字，我认为Vite有多快你用一下就知道了，那么，我们现在就用用看。</p>
+<p>首先确保你装了Node.js和npm，然后就可以简单的运行命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm init @vitejs/app</span><br></pre></td></tr></table></figure>
+
+<p>回车后会问你项目名，这里我就叫它hello-vite吧，然后会让你选一个框架，Vite对框架没有限制，所以即使你用react或者preact，你也可以用Vite，不过，作为第一个demo，我根本不想用框架，所以我们就选vanilla模板，Vite也可以支持Typescript，不过现在我们只选择vanilla，接下来我们进入hello-vite目录，开始前要先用npm安装依赖。</p>
+<p><img src="/../images/2022/init.png" alt="init"></p>
+<p>这时我们先看看我们的项目，有一个index.html，里面有一个script标签，type属性是module，src指向main.js，这个语法需要浏览器支持ESM。<br><img src="/../images/2022/index.png" alt="index"></p>
+<p>接下来我们看看package.json，你可以看到，Vite是唯一的依赖，此外，还有一些npm scripts，有dev,build和serve的scripts，所以，让我们直接<code>npm install</code>吧。<br><img src="/../images/2022/package.png" alt="package"></p>
+<p>我要开始运行npm install了，你可以看到安装过程非常的快，一共安装了13个包，就是这么简洁。而且我认为Vite没有本地缓存，从注册中心安装，花了不到1秒。<br><img src="/../images/2022/install.png" alt="install"></p>
+<p>接下来我运行npm run dev启动服务，同样很快，本地服务就跑起来了，接着打开页面，就看到了Hello Vite，这就是一个普通的本地开发服务器。<br><img src="/../images/2022/serve.png" alt="serve"></p>
+<p>我们再看回代码，index.html和main.js都没什么变化，如果我们把main.js改成main.ts，重启服务，一样能跑起来，在Vite项目中，你可以直接引进ts文件，Vite会自动转译，仅此而已，这意味着Vite不会做类型检查。<br><img src="/../images/2022/ts.png" alt="ts"></p>
+<p>我们这样做的第一个原因是，我们用esbuild来编译ts文件，esbuild是用Go写的，比起用javascript写的ts自身的编译要快30倍，所以当我们用esbuild来编译，由于没有类型检查，如果你import一个type，确保是从另一个文件中import的，这是一个坑。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import type &#123; &#125; from &#x27;./&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>但这对于非常大的typescript项目中开发体验得到极大改善来说，只是一个很小很小的代价。</p>
+<p>另一个原因是如果对你的编辑器，比如VS Code，做了TS相关的合适设置，可能你的IDE就会对ts文件做类型检查，ts已经在你的IDE中运行了。所以Vite就说：“好吧，就把这部分给IDE和打包程序吧”，在开发阶段Vite对ts的类型检查是不确定的，因为这部分交给其他工具了。关于typescript的就这么多。</p>
+<p>接下来我们花1分钟讲下CSS。<br>可以看到我们能直接import CSS，接着我准备把这里的color改成red，你可以看到页面立刻就更新了，注意看浏览器地址栏，我们再把color改成green，地址栏没有重新加载，接着我打开控制台的Elements栏，这时我们再次改变color，你可以看到，页面没有重载，这里热更新了，加载的CSS局部更新。<br><img src="/../images/2022/css.png" alt="css"></p>
+<p>过去我们通过npm来<code>import</code>、<code>install</code>、使用依赖，比如我想用lodash，从lodash-es中<code>import debounce</code>，浏览器并不能处理，因为它不知道什么是npm，不知道怎么处理依赖，但是Vite知道怎么处理。</p>
+<p>接下来我要<code>install lodsah-es</code>，然后<code>npm run dev</code>重启服务，你可以看到IDE已经判断出我们安装了lodash-es，所以它现在有类型定义，我加个<code>console.log(debounce)</code>，打开浏览器控制台，可以看到我们能够从lodsah-es中拿到debounce函数，这点很棒，Vite能够为你处理npm依赖。</p>
+<p>还有一点很棒，如果我们去network中查看下debounce，可以发现Vite把lodash-es的众多模块组合成了一个文件，所以它比一般情况下加载地更快，如果你通过ES Modules加载loadsh-es，那就是另外一个表现了，嗯，npm依赖地加载就这么多。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上就是视频的主要内容了，视频是2021年9月15日发布，从Vite名字的由来，讲到为什么需要Vite，能解决什么问题，需要付出什么代价，然后带大家初步体验Vite的使用，体验启动及热更新速度，处理typescript和npm依赖。</p>
+<p>想了解更多，建议看看<a target="_blank" rel="noopener" href="https://cn.vitejs.dev/">官网</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/js/js%E6%A8%A1%E5%9D%97%E5%8C%96/" rel="prev" title="js模块化">
+                  <i class="fa fa-angle-left"></i> js模块化
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/js/%E5%89%8D%E7%AB%AF%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8/" rel="next" title="前端包管理器">
+                  前端包管理器 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Lovelyun</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
